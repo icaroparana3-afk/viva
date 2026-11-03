@@ -1,0 +1,19 @@
+/* Tela cheia, sem barras de rolagem, fundo preto nas sobras */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+/* touch-action: none impede o celular de rolar a página quando você toca no jogo */
+#game {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* Mantém os pixels quadradinhos ao ampliar (sem borrar) */
+canvas {
+  image-rendering: pixelated;
+}

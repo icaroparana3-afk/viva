@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <!-- Faz o jogo ocupar a tela do celular sem deixar dar zoom com os dedos -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Viva</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <!-- Phaser 3 vindo da internet (CDN): não precisa instalar nada -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+</head>
+<body>
+  <!-- O jogo é desenhado dentro desta caixa -->
+  <div id="game"></div>
+
+  <!-- A ordem importa: primeiro os ajustes, depois as cenas, por último o main.js -->
+  <script src="./js/config.js"></script>
+  <script src="./js/scenes/Boot.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>
