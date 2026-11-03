@@ -13,5 +13,5 @@ const jogo = new Phaser.Game({
     mode: Phaser.Scale.FIT,               // amplia até caber na tela, sem cortar
     autoCenter: Phaser.Scale.CENTER_BOTH  // centraliza
   },
-  scene: [Boot]               // lista de cenas (vai crescer a cada etapa)
+  scene: [Boot, Menu, Configuracoes] // lista de cenas (vai crescer a cada etapa)
 });
