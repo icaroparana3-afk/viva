@@ -26,6 +26,7 @@
   - Textos nítidos (v0.0.7): o jogo desenha numa tela interna maior (ESCALA) e os textos são escritos nessa resolução.
   - Botões desenhados pelo autor (v0.0.8): Próximo, Começar, Papai, Mamãe, Sim e Não. Papai/Mamãe mostram a versão "_sel" quando escolhidos; Sim/Não mostram "_sel" enquanto o dedo aperta. Próximo e Começar ficam apagados até as respostas estarem prontas.
   - Visual do autor (v0.0.10): títulos "SEU PERFIL"/"SUA REGIÃO", rótulos "Nome"/"Você é", novo botão Voltar e fundo em degradê, nas posições exatas da tela de exemplo do autor (Perfil idêntico ao exemplo pixel a pixel). Campo do nome com 110 de largura, como os botões.
+  - Menu melhorado (v0.0.11): título "VIVA / CUIDE DE UMA VIDA" (tirado da tela de exemplo do autor; o subtítulo foi remontado na mesma fonte 3×5), estrela cadente que risca o céu de vez em quando (feita por código, a pedido do autor), botões de música e efeitos no canto superior direito (desenho provisório até chegar a arte do autor). Os botões só guardam a escolha por enquanto; os sons entram na Etapa 30.
   - Textos de clima (v0.0.9): nome + subtítulo + texto curto (até 3 linhas) ao tocar na região. Textos completos do autor guardados no DESIGN.md.
 
 ## Arquivos de arte no projeto
@@ -47,8 +48,10 @@
 | assets/ui/texto_nome.png / texto_voce_e.png | 24×9 / 33×9 | rótulos |
 | assets/ui/mapa_brasil.png | 160×160 | 18 cores; sombra semitransparente proposital (1 cor só) |
 | assets/ui/botao_voltar.png | 110×20 | desenhado pelo autor (v0.0.10) |
+| assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
 
 ## Falta desenhar (pode ser depois)
+- **Botões de som (o autor está fazendo):** 16×16 cada, 4 arquivos: `botao_musica.png`, `botao_musica_off.png`, `botao_som.png`, `botao_som_off.png`. Posição: música (141,4), efeitos (159,4). Quando chegarem: colocar em assets/ui e mudar `BOTOES_SOM_DESENHADOS` para true no config.js.
 - Telas de Perfil e confirmação: as caixas são retângulos provisórios. Para desenhá-las, o melhor é antes termos uma fonte pixel (bitmap font), senão cada texto vira um desenho separado. Sugestão: deixar para uma etapa de acabamento.
 - Nada obrigatório.
 
@@ -68,6 +71,8 @@
 - Posições no Perfil (tela de exemplo do autor): título (37,10), Nome (36,48), campo do nome centro (90,70), Você é (36,92), Papai (36,104), Mamãe (92,104), Próximo (35,222), Voltar (35,250). Região: título (37,3), mapa (10,22).
 - Exceção à regra "Claude não desenha": a pedido do autor, o botão Voltar 110×20 foi montado por código só com pixels das letras/fundo dos botões dele (sem arte nova), podendo ser substituído por um desenho próprio.
 - Velocidades de nuvens e pássaro ficam em `CONFIG.MENU` (config.js).
+- Estrela cadente: velocidade, duração, intervalo e altura em `CONFIG.MENU` (ESTRELA_...). Cai na diagonal para a esquerda.
+- Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
 Etapa 3 — Gerador do bebê (só lógica): sorteia origem e atributos, com uma tela de teste que gera 1000 bebês e mostra as porcentagens.

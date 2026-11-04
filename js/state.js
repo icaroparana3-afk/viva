@@ -71,3 +71,31 @@ const Estado = {
     }
   }
 };
+
+// =============================================================
+// Opções do jogador (música e efeitos sonoros ligados ou não).
+// Ficam numa gaveta separada (CONFIG.CHAVE_OPCOES), então
+// continuam valendo mesmo depois de começar uma história nova.
+// =============================================================
+const Opcoes = {
+  musica: true,
+  som: true,
+
+  carregar() {
+    try {
+      const texto = localStorage.getItem(CONFIG.CHAVE_OPCOES);
+      if (texto) {
+        const o = JSON.parse(texto);
+        this.musica = o.musica !== false;
+        this.som = o.som !== false;
+      }
+    } catch (e) { /* sem armazenamento: fica tudo ligado */ }
+    return this;
+  },
+
+  salvar() {
+    try {
+      localStorage.setItem(CONFIG.CHAVE_OPCOES, JSON.stringify({ musica: this.musica, som: this.som }));
+    } catch (e) { /* ignora */ }
+  }
+};

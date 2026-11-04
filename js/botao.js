@@ -170,6 +170,28 @@ function criarConfirmacao(cena, texto, aoSim) {
   [sim, nao].forEach(o => { o.setDepth(102); itens.push(o); });
 }
 
+// ---------- Botão liga/desliga (música, efeitos) ----------
+// criarBotaoAlternar(cena, x, y, imgLigado, imgDesligado, ligado, aoMudar)
+//   Mostra imgLigado ou imgDesligado. Cada toque troca e chama aoMudar(novoValor).
+function criarBotaoAlternar(cena, x, y, imgLigado, imgDesligado, ligado, aoMudar) {
+  let valor = ligado;
+  const img = cena.add.image(x, y, valor ? imgLigado : imgDesligado).setOrigin(0, 0).setInteractive();
+  let apertado = false;
+
+  img.on('pointerdown', () => { apertado = true; img.setTint(0xb0b0b0); img.y = y + 1; });
+  const soltar = () => { apertado = false; img.clearTint(); img.y = y; };
+  img.on('pointerout', soltar);
+  img.on('pointerup', () => {
+    const valeu = apertado;
+    soltar();
+    if (!valeu) return;
+    valor = !valor;
+    img.setTexture(valor ? imgLigado : imgDesligado);
+    aoMudar(valor);
+  });
+  return img;
+}
+
 // ---------- Existe save guardado? ----------
 function temSave() {
   return Estado.existe();

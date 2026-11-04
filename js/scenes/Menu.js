@@ -1,7 +1,8 @@
 // =============================================================
 // Menu.js — tela inicial com o pôr do sol, o casal e os 3 botões.
 // Camadas (de trás para frente):
-//   céu com sol → nuvens → montanhas e grama → casal → pássaro → botões
+//   céu com sol → estrela cadente → nuvens → montanhas e grama → casal
+//   → pássaro → título → botões
 // =============================================================
 
 class Menu extends Phaser.Scene {
@@ -21,6 +22,11 @@ class Menu extends Phaser.Scene {
     // ---------- Cenário ----------
     this.add.image(0, 0, 'menu_ceu').setOrigin(0, 0);
 
+    // Estrela cadente: começa escondida e risca o céu de tempos em tempos
+    this.estrela = this.add.image(0, 0, 'estrela_cadente').setOrigin(0, 1).setVisible(false);
+    this.estrela.caindo = false;
+    this.agendarEstrela();
+
     // Nuvens (posições iguais às do menu antigo)
     this.nuvem1 = this.add.image(14, 52, 'nuvem1').setOrigin(0, 0);
     this.nuvem2 = this.add.image(124, 84, 'nuvem2').setOrigin(0, 0);
@@ -35,6 +41,18 @@ class Menu extends Phaser.Scene {
     this.passaro.setVisible(false);
     this.passaro.voando = false;
     this.agendarPassaro();
+
+    // ---------- Título (VIVA + "Cuide de uma vida") ----------
+    this.add.image(53, 15, 'texto_titulo').setOrigin(0, 0);
+
+    // ---------- Música e efeitos sonoros (canto superior direito) ----------
+    // Por enquanto só guardam a escolha; os sons entram na Etapa 30.
+    criarBotaoAlternar(this, 141, 4, 'botao_musica', 'botao_musica_off', Opcoes.musica, v => {
+      Opcoes.musica = v; Opcoes.salvar();
+    });
+    criarBotaoAlternar(this, 159, 4, 'botao_som', 'botao_som_off', Opcoes.som, v => {
+      Opcoes.som = v; Opcoes.salvar();
+    });
 
     // ---------- Botões ----------
     criarBotao(this, 35, 120, 'botao_nova_historia', () => this.novaHistoria());
@@ -61,6 +79,24 @@ class Menu extends Phaser.Scene {
       nuvem.x = Math.round(nuvem.posX); // sempre em pixel inteiro
     }
 
+    // Estrela cadente: anda na diagonal (2 para a esquerda, 1 para baixo) e some no fim
+    const e = this.estrela;
+    if (e.caindo) {
+      e.tempo += seg;
+      const passo = M.ESTRELA_VELOCIDADE * seg / Math.sqrt(5);
+      e.posX -= 2 * passo;
+      e.posY += passo;
+      e.x = Math.round(e.posX);
+      e.y = Math.round(e.posY);
+      const fim = M.ESTRELA_DURACAO;
+      if (e.tempo > fim * 0.6) e.setAlpha(Math.max(0, 1 - (e.tempo - fim * 0.6) / (fim * 0.4)));
+      if (e.tempo >= fim) {
+        e.caindo = false;
+        e.setVisible(false);
+        this.agendarEstrela();
+      }
+    }
+
     // Pássaro atravessando
     if (this.passaro.voando) {
       this.passaro.posX += M.PASSARO_VELOCIDADE * seg;
@@ -71,6 +107,20 @@ class Menu extends Phaser.Scene {
         this.agendarPassaro();
       }
     }
+  }
+
+  // Espera um tempo sorteado e faz uma estrela cadente riscar o céu
+  agendarEstrela() {
+    const M = CONFIG.MENU;
+    const espera = Phaser.Math.FloatBetween(M.ESTRELA_INTERVALO_MIN, M.ESTRELA_INTERVALO_MAX) * 1000;
+    this.time.delayedCall(espera, () => {
+      const e = this.estrela;
+      e.posX = Phaser.Math.Between(70, CONFIG.LARGURA + 10);   // nasce na metade direita do céu
+      e.posY = Phaser.Math.Between(0, M.ESTRELA_ALTURA_MAX);
+      e.tempo = 0;
+      e.setAlpha(1).setVisible(true);
+      e.caindo = true;
+    });
   }
 
   // Espera um tempo sorteado e solta o pássaro pela esquerda

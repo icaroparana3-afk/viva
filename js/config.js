@@ -18,11 +18,15 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.10',
+  VERSAO: '0.0.11',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
   CHAVE_SAVE: 'viva_save',
+
+  // Gaveta separada para as opções (música e efeitos ligados/desligados).
+  // Fica fora do save para não acender o "Continuar História".
+  CHAVE_OPCOES: 'viva_opcoes',
 
   // ---------- MENU ----------
   MENU: {
@@ -38,6 +42,18 @@ const CONFIG = {
     PASSARO_INTERVALO_MAX: 10,     // espera máxima (segundos)
     PASSARO_ALTURA_MIN: 30,        // altura mais alta onde ele pode voar (y)
     PASSARO_ALTURA_MAX: 105,       // altura mais baixa (y) — acima dos botões
+
+    // Estrela cadente: risca o céu de vez em quando.
+    ESTRELA_VELOCIDADE: 110,       // pixels por segundo
+    ESTRELA_DURACAO: 0.8,          // quanto tempo ela fica visível (segundos)
+    ESTRELA_INTERVALO_MIN: 3,      // espera mínima entre uma e outra (segundos)
+    ESTRELA_INTERVALO_MAX: 9,      // espera máxima (segundos)
+    ESTRELA_ALTURA_MAX: 45,        // nasce entre y=0 e este valor (parte alta do céu)
+
+    // Botões de música e efeitos sonoros (16×16, canto superior direito).
+    // Enquanto for false, o jogo usa um desenho provisório feito por código.
+    // Quando os seus desenhos chegarem, isto vira true.
+    BOTOES_SOM_DESENHADOS: false,
 
     // Quanto o botão "Continuar" fica apagado quando não há save (0 = invisível, 1 = normal).
     BOTAO_DESATIVADO_OPACIDADE: 0.45
