@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.19',
+  VERSAO: '0.0.21',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -67,6 +67,17 @@ const CONFIG = {
     sombras: false     // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
   },
 
+  // ---------- TELA DE CARREGAMENTO ----------
+  // O cenário do menu parado, sem botões, crianças, animal, estrela e pássaro,
+  // com a mamadeira do autor enchendo conforme o jogo carrega.
+  CARREGAMENTO: {
+    TEMPO_MINIMO: 1.5,        // segundos: a tela fica pelo menos isso, para dar tempo de ver a mamadeira encher
+    MAMADEIRA_X: 74,          // canto superior esquerdo da mamadeira (já ampliada)
+    MAMADEIRA_Y: 116,
+    MAMADEIRA_ESCALA: 2,      // 16×32 desenhada 2× maior (32×64)
+    MOSTRAR_PORCENTAGEM: true // número embaixo da mamadeira
+  },
+
   // ---------- VIDA NO MENU: vento, sombras e animal ----------
   VENTO: {
     // De tempos em tempos vem uma rajada de vento (da esquerda para a direita).
@@ -89,13 +100,13 @@ const CONFIG = {
   // Sombras no chão: tipo (grande/media/pequena), centro (x, y) e opacidade.
   // O centro é o ponto do chão logo abaixo de quem faz a sombra.
   SOMBRAS: [
-    { tipo: 'media',   x: 15,  y: 279, opacidade: 0.45 }, // árvore da esquerda
-    { tipo: 'media',   x: 164, y: 269, opacidade: 0.45 }, // árvore da direita
-    { tipo: 'media',   x: 12,  y: 299, opacidade: 0.35 }, // moita da esquerda
-    { tipo: 'media',   x: 162, y: 291, opacidade: 0.35 }, // moita da direita
-    { tipo: 'grande',  x: 90,  y: 305, opacidade: 0.45 }, // casal
-    { tipo: 'pequena', x: 124, y: 306, opacidade: 0.45 }, // cesta de piquenique
-    { tipo: 'pequena', x: 146, y: 308, opacidade: 0.45 }  // animal
+    { tipo: 'media',   x: 15,  y: 279, opacidade: 0.45, quem: 'arvore' }, // árvore da esquerda
+    { tipo: 'media',   x: 164, y: 269, opacidade: 0.45, quem: 'arvore' }, // árvore da direita
+    { tipo: 'media',   x: 12,  y: 299, opacidade: 0.35, quem: 'moita' },  // moita da esquerda
+    { tipo: 'media',   x: 162, y: 291, opacidade: 0.35, quem: 'moita' },  // moita da direita
+    { tipo: 'grande',  x: 90,  y: 305, opacidade: 0.45, quem: 'casal' },  // casal
+    { tipo: 'pequena', x: 124, y: 306, opacidade: 0.45, quem: 'cesta' },  // cesta de piquenique
+    { tipo: 'pequena', x: 146, y: 308, opacidade: 0.45, quem: 'animal' }  // animal
   ],
 
   // Piquenique: toalha xadrez embaixo do casal e cesta ao lado da menina.

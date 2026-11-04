@@ -30,7 +30,7 @@ class TesteBebe extends Phaser.Scene {
     this.mostrarRegiao();
 
     // ---------- Cartão do bebê ----------
-    this.add.rectangle(6, 26, 168, 80, 0x2a1838, 0.6).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
+    this.add.rectangle(6, 26, 168, 95, 0x2a1838, 0.6).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
     // Camadas (todas 32×32, ampliadas 2×). Ordem: pele → contorno → olhos → cabelo → extra
     const cx = 9, cy = 33;
     // Ordem de baixo para cima: corpo → brilho → cabelo → olhos → contorno → extra
@@ -43,16 +43,21 @@ class TesteBebe extends Phaser.Scene {
       extra: this.add.image(cx, cy, 'bebe_extra_vampiro').setOrigin(0, 0).setScale(2).setVisible(false)
     };
     this.txtBebe = escrever(this, 76, 29, '', Object.assign(fonte(7), { lineSpacing: 1 }));
-    escrever(this, 10, 97, '* no jogo só aparece se for especial', fonte(6, U.TEXTO_FRACO));
+    // Largura de uma letra (a fonte é monoespaçada) e espaço disponível no cartão
+    const medida = escrever(this, 0, 0, '0000000000', fonte(7));
+    this.larguraLetra = medida.width / 10;
+    medida.destroy();
+    this.larguraTexto = 172 - 76;
+    escrever(this, 10, 112, '* no jogo só aparece se for especial', fonte(6, U.TEXTO_FRACO));
 
-    criarOpcao(this, 6, 110, 82, 16, 'Novo bebê', () => this.novoBebe(), 8);
-    criarOpcao(this, 92, 110, 82, 16, 'Gerar 1000', () => this.gerarMil(), 8);
+    criarOpcao(this, 6, 125, 82, 16, 'Novo bebê', () => this.novoBebe(), 8);
+    criarOpcao(this, 92, 125, 82, 16, 'Gerar 1000', () => this.gerarMil(), 8);
 
     // ---------- Painel de porcentagens ----------
-    this.add.rectangle(6, 130, 168, 158, 0x2a1838, 0.6).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
-    this.txtTitulo = escrever(this, 90, 134, '', fonte(8, U.TEXTO)).setOrigin(0.5, 0);
-    criarOpcao(this, 9, 132, 16, 12, '<', () => this.mudarPagina(-1), 8);
-    criarOpcao(this, 155, 132, 16, 12, '>', () => this.mudarPagina(1), 8);
+    this.add.rectangle(6, 145, 168, 144, 0x2a1838, 0.6).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
+    this.txtTitulo = escrever(this, 90, 149, '', fonte(8, U.TEXTO)).setOrigin(0.5, 0);
+    criarOpcao(this, 9, 147, 16, 12, '<', () => this.mudarPagina(-1), 8);
+    criarOpcao(this, 155, 147, 16, 12, '>', () => this.mudarPagina(1), 8);
     this.linhas = this.add.container(0, 0);
     this.txtRodape = escrever(this, 90, 277, '', fonte(7, U.TEXTO_FRACO)).setOrigin(0.5, 0);
 
@@ -105,7 +110,22 @@ class TesteBebe extends Phaser.Scene {
       'Olhos: ' + n(b.olhos),
       'Estado: ' + b.estado,
       problemas.length ? 'ERRO: ' + problemas[0] : ''
-    ].join('\n'));
+    ].map(l => this.quebrar(l)).join('\n'));
+  }
+
+  // Se a linha não cabe no cartão, quebra na palavra e recua a continuação.
+  quebrar(linha) {
+    const max = Math.floor(this.larguraTexto / this.larguraLetra);
+    if (linha.length <= max) return linha;
+    const partes = [];
+    let atual = '';
+    for (const palavra of linha.split(' ')) {
+      const tentativa = atual ? atual + ' ' + palavra : palavra;
+      if (tentativa.length > max && atual) { partes.push(atual); atual = '  ' + palavra; }
+      else atual = tentativa;
+    }
+    partes.push(atual);
+    return partes.join('\n');
   }
 
   // ---------- 1000 bebês ----------
@@ -159,7 +179,7 @@ class TesteBebe extends Phaser.Scene {
     this.linhas.removeAll(true);
 
     if (!this.resultado) {
-      this.linhas.add(escrever(this, 90, 205, 'Toque em "Gerar 1000"', {
+      this.linhas.add(escrever(this, 90, 215, 'Toque em "Gerar 1000"', {
         fontFamily: 'monospace', fontSize: '8px', color: U.TEXTO_FRACO }).setOrigin(0.5));
       this.txtRodape.setText('');
       return;
@@ -169,11 +189,11 @@ class TesteBebe extends Phaser.Scene {
     const cont = contar[p.campo];
     // Especiais: porcentagem DENTRO dos especiais (e quantos saíram no total)
     const base = p.deTotal ? Object.values(cont).reduce((s, v) => s + v, 0) : N;
-    const alt = 13;
+    const alt = 12;
     const cores = CONFIG.BEBE.CORES[p.campo];
 
     p.valores.forEach((v, i) => {
-      const y = 148 + i * alt;
+      const y = 163 + i * alt;
       const qtd = cont[v] || 0;
       const pct = base ? 100 * qtd / base : 0;
       // nome

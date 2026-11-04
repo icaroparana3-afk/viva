@@ -38,7 +38,10 @@
   - Tela de teste `TesteBebe` (Configurações → "Teste: gerador do bebê"): mostra 1 bebê em camadas provisórias coloridas por tint, gera 1000 e mostra as porcentagens em 8 páginas (origem com o alvo, sexo, especiais, pele, tipo e cor do cabelo, olhos, estado). Toque em "Região" troca a região.
   - Conferido: 100.000 bebês com 0 erros de regra e porcentagens iguais às chances.
   - Bebê do autor (v0.0.16): desenho 32×32 + tufo de cabelo 9×6 do autor, separados em camadas 32×32 por cor: `bebe_corpo` (cinzas da pele, clareados para o tint), `bebe_cabelo` (tufo em (11,2), recortado para ficar só dentro da cabeça; 2 pixels de cabelo acrescentados em (17,2) e (11,3) a pedido do autor), `bebe_brilho` (brilho da careca, embaixo do cabelo), `bebe_olhos` (pupilas, feitas por Claude), `bebe_contorno` (contorno, boca, fralda e brilhos, cores fixas) e `bebe_extra_alienigena` (antenas do autor 26×5, em (3,0), recebem a cor da pele) / `vampiro` / `lobisomem` (feitos por Claude). Ordem: corpo → brilho → cabelo → olhos → contorno → extra.
+- Tela de teste (v0.0.20): linhas longas (ex.: "Rio Grande do Norte") quebram sozinhas, com recuo; cartão maior.
 - O teste ainda mostra o tipo de cabelo no texto (ele só aparece no desenho a partir de 1 ano).
+
+- **Tela de carregamento (v0.0.21):** `Boot` carrega só o cenário e a mamadeira; a cena nova `Carregando` mostra o menu parado (sem botões, crianças, animal, estrela e pássaro) com a mamadeira do autor enchendo de 0% a 100% e a porcentagem embaixo, depois abre o Menu. Fica pelo menos `CONFIG.CARREGAMENTO.TEMPO_MINIMO` (1,5 s) para dar tempo de ver a mamadeira encher. Números em `CONFIG.CARREGAMENTO`.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -66,6 +69,8 @@
 | assets/sprites/bebe_corpo / bebe_cabelo / bebe_olhos / bebe_contorno .png | 32×32 cada | camadas do bebê (desenho e cabelo do autor; olhos e contorno separados por Claude) |
 | assets/sprites/bebe_extra_alienigena.png | 32×32 | antenas do autor (v0.0.17), recebem a cor da pele |
 | assets/sprites/bebe_extra_vampiro / _lobisomem .png | 32×32 cada | detalhes dos especiais (provisórios, feitos por Claude) |
+| assets/ui/mamadeira.png | 16×32 | mamadeira do autor (original) |
+| assets/ui/mamadeira_carregando.png | 288×32 | 18 quadros de 16×32 (0 = vazia, 17 = cheia), feitos a partir da mamadeira do autor |
 | assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
 
 ## Falta desenhar (pode ser depois)
@@ -96,6 +101,7 @@
 - Velocidades de nuvens e pássaro ficam em `CONFIG.MENU` (config.js).
 - Estrela cadente: velocidade, duração, intervalo e altura em `CONFIG.MENU` (ESTRELA_...). Cai na diagonal para a esquerda.
 - Posições da toalha e da cesta em `CONFIG.PIQUENIQUE`.
+- Mamadeira de carregamento: o interior tem 17 linhas, então ela enche em 17 passos (cerca de 6% cada). Cada sombra em `CONFIG.SOMBRAS` diz de quem é (`quem`), para a tela de carregamento esconder as do casal e do animal.
 - Vento, sombras e animal: números em `CONFIG.VENTO`, `CONFIG.SOMBRAS` e `CONFIG.ANIMAL`. Desenhos provisórios em `js/provisorios.js`, usados enquanto o item de `CONFIG.ARTES_PRONTAS` estiver false.
 - Balanço das árvores: o mesmo desenho aparece em duas partes (copa e tronco); só a copa anda 1 px. Linhas de corte: árvore esquerda 47, direita 50, moita esquerda 7, direita 9 (em `Menu.js`, `criarBalanco`).
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
