@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.14',
+  VERSAO: '0.0.19',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -114,6 +114,83 @@ const CONFIG = {
     ACAO_INTERVALO_MIN: 4,     // espera mínima entre uma ação e outra (segundos)
     ACAO_INTERVALO_MAX: 9,
     VIRAR: false               // true = espelha o desenho (olhar para o outro lado)
+  },
+
+  // ---------- BEBÊ (Etapa 3) ----------
+  // Regras do sorteio do bebê que a cegonha traz.
+  // Listas: cada valor tem a mesma chance. Para um valor sair mais,
+  // repita ele na lista (ex.: ['liso', 'liso', 'cacheado'] = liso 2x mais).
+  BEBE: {
+    // Chance de ser menina (0.5 = metade).
+    CHANCE_MENINA: 0.5,
+
+    // Chance de cada origem, em "pesos" (aqui somam 100, então = porcentagem).
+    // Miscigenado tem chance menor que as outras 4 (regra do DESIGN).
+    ORIGENS: {
+      negro: 26,
+      branco: 26,
+      indigena: 20,
+      cabo_verde: 16,
+      miscigenado: 10,
+      especial: 2
+    },
+
+    // O que cada origem pode ter. (Miscigenado sorteia de TODAS as listas normais.)
+    REGRAS: {
+      negro:      { pele: ['negro'],  cabeloTipo: ['crespo', 'cacheado'], cabeloCor: ['preto', 'castanho_escuro'],
+                    olhos: ['castanho_escuro'] },
+      branco:     { pele: ['branco'], cabeloTipo: ['liso', 'cacheado'],
+                    cabeloCor: ['ruivo', 'loiro', 'castanho_claro', 'castanho_escuro'],
+                    olhos: ['azul_claro', 'azul_escuro', 'verde_claro', 'verde_escuro', 'castanho_claro'] },
+      indigena:   { pele: ['pardo'],  cabeloTipo: ['liso'], cabeloCor: ['preto'],
+                    olhos: ['castanho_claro', 'castanho_escuro'] },
+      // "Pele escura" do Cabo Verde = tom negro (decisão provisória; troque para 'pardo' se preferir)
+      cabo_verde: { pele: ['negro'],  cabeloTipo: ['liso'], cabeloCor: ['preto'],
+                    olhos: ['verde_claro', 'verde_escuro'] }
+    },
+
+    // Listas completas (usadas pelo Miscigenado).
+    TODOS: {
+      pele: ['branco', 'pardo', 'negro'],
+      cabeloTipo: ['liso', 'cacheado', 'crespo'],
+      cabeloCor: ['loiro', 'castanho_claro', 'castanho_escuro', 'preto', 'ruivo'],
+      olhos: ['azul_claro', 'azul_escuro', 'castanho_claro', 'castanho_escuro', 'verde_claro', 'verde_escuro']
+    },
+
+    // Especiais (2%): cada um tem a mesma chance e o seu próprio visual.
+    // Provisório até a Etapa 5, quando os desenhos dizem o que muda.
+    ESPECIAIS: {
+      alienigena: { pele: ['alien'],  cabeloTipo: ['liso'], cabeloCor: ['prateado'], olhos: ['preto'] },
+      vampiro:    { pele: ['palido'], cabeloTipo: ['liso', 'cacheado'], cabeloCor: ['preto'], olhos: ['vermelho'] },
+      lobisomem:  { pele: ['branco', 'pardo', 'negro'], cabeloTipo: ['crespo', 'cacheado'],
+                    cabeloCor: ['castanho_escuro', 'preto'], olhos: ['amarelo'] }
+    },
+
+    // O estado de nascimento é sorteado entre os estados da região, todos com a mesma chance.
+
+    // Cores PROVISÓRIAS de cada atributo (aplicadas por "tint" nas camadas do desenho).
+    // Na Etapa 5, com os desenhos do bebê, você ajusta para os tons da sua paleta.
+    CORES: {
+      pele:      { branco: '#f2d0b4', pardo: '#c48a5c', negro: '#7a4a2e', alien: '#8fd16a', palido: '#e4e0ee' },
+      cabeloCor: { loiro: '#f0d070', castanho_claro: '#a0703c', castanho_escuro: '#5a3620', preto: '#2a1e1e',
+                   ruivo: '#c8502a', prateado: '#c8ccd8' },
+      olhos:     { azul_claro: '#7ec8f0', azul_escuro: '#2a5ab0', castanho_claro: '#a8743c', castanho_escuro: '#4a2a18',
+                   verde_claro: '#7cd27c', verde_escuro: '#2e7a3a', vermelho: '#d82020', amarelo: '#f0c020', preto: '#101010' }
+    },
+
+    // Como cada valor aparece escrito na tela.
+    NOMES: {
+      M: 'Menino', F: 'Menina',
+      negro: 'Negro', branco: 'Branco', indigena: 'Indígena', cabo_verde: 'Cabo Verde',
+      miscigenado: 'Miscigenado', especial: 'Especial',
+      alienigena: 'Alienígena', vampiro: 'Vampiro', lobisomem: 'Lobisomem',
+      pardo: 'Pardo', alien: 'Verde (alien)', palido: 'Pálido',
+      liso: 'Liso', cacheado: 'Cacheado', crespo: 'Crespo',
+      loiro: 'Loiro', castanho_claro: 'Castanho claro', castanho_escuro: 'Castanho escuro',
+      preto: 'Preto', ruivo: 'Ruivo', prateado: 'Prateado',
+      azul_claro: 'Azul claro', azul_escuro: 'Azul escuro', verde_claro: 'Verde claro', verde_escuro: 'Verde escuro',
+      vermelho: 'Vermelho', amarelo: 'Amarelo'
+    }
   },
 
   // ---------- PERFIL (Etapa 2) ----------

@@ -58,6 +58,11 @@ class Boot extends Phaser.Scene {
         .forEach(nome => this.load.image(nome, './assets/sprites/' + nome + '.png'));
     }
 
+    // ---------- Bebê (camadas: a cor é aplicada pelo código) ----------
+    ['bebe_corpo', 'bebe_brilho', 'bebe_cabelo', 'bebe_olhos', 'bebe_contorno',
+     'bebe_extra_alienigena', 'bebe_extra_vampiro', 'bebe_extra_lobisomem']
+      .forEach(nome => this.load.image(nome, './assets/sprites/' + nome + '.png'));
+
     // ---------- Perfil ----------
     this.load.image('mapa_brasil', './assets/ui/mapa_brasil.png');
     // Botões das telas de Perfil, Região e confirmação ("_sel" = versão selecionada)

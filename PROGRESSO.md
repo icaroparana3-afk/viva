@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 2 — Perfil** (aguardando "aprovado")
+**Etapa 3 — Gerador do bebê** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -14,7 +14,7 @@
   - Tela de Configurações vazia com botão Voltar desenhado (110×20, centralizado).
   - `js/botao.js`: função `criarBotao` (reação ao toque) e `temSave()`.
 
-- **Etapa 2:**
+- **Etapa 2 (aprovada em 2026-11-04):**
   - Perfil em duas telas: (1) nome + Papai/Mamãe → "Próximo"; (2) mapa do Brasil → "Começar".
   - Nome: campo de texto de verdade (abre o teclado do celular).
   - Mapa: tocar numa região acende ela, escurece o resto e mostra nome + clima. Toque com tolerância de 4 px perto da borda.
@@ -31,6 +31,14 @@
   - Vida no menu (v0.0.13): rajadas de vento (nuvens aceleram, copas e moitas balançam 1 px, folhas voam, riscos de vento no céu), sombras no chão (árvores, moitas, casal, animal) e um animal parado ao lado do casal (anima parado, faz uma ação de vez em quando e quando é tocado). Tudo funciona com desenhos provisórios até a arte do autor chegar.
   - Piquenique (v0.0.14): toalha xadrez (vermelho #e53a29, rosa #ebaba2, branco #f7f7f9, cores escolhidas pelo autor; desenho feito por código a pedido dele) embaixo do casal, e cesta de piquenique ao lado da menina (reduzida da imagem do autor para 22×20). O animal foi para a direita, fora da toalha.
   - Textos de clima (v0.0.9): nome + subtítulo + texto curto (até 3 linhas) ao tocar na região. Textos completos do autor guardados no DESIGN.md.
+
+- **Etapa 3 (v0.0.15):**
+  - `js/bebe.js`: `BEBE.gerar(regiao)` sorteia sexo, origem (e especial), pele, tipo e cor do cabelo, olhos e estado; `BEBE.confere(bebe)` checa as regras; `BEBE.revelaOrigem(bebe)` = só especiais.
+  - Regras e chances em `CONFIG.BEBE` (config.js): pesos das origens, listas permitidas por origem, especiais, cores provisórias (tint) e nomes na tela.
+  - Tela de teste `TesteBebe` (Configurações → "Teste: gerador do bebê"): mostra 1 bebê em camadas provisórias coloridas por tint, gera 1000 e mostra as porcentagens em 8 páginas (origem com o alvo, sexo, especiais, pele, tipo e cor do cabelo, olhos, estado). Toque em "Região" troca a região.
+  - Conferido: 100.000 bebês com 0 erros de regra e porcentagens iguais às chances.
+  - Bebê do autor (v0.0.16): desenho 32×32 + tufo de cabelo 9×6 do autor, separados em camadas 32×32 por cor: `bebe_corpo` (cinzas da pele, clareados para o tint), `bebe_cabelo` (tufo em (11,2), recortado para ficar só dentro da cabeça; 2 pixels de cabelo acrescentados em (17,2) e (11,3) a pedido do autor), `bebe_brilho` (brilho da careca, embaixo do cabelo), `bebe_olhos` (pupilas, feitas por Claude), `bebe_contorno` (contorno, boca, fralda e brilhos, cores fixas) e `bebe_extra_alienigena` (antenas do autor 26×5, em (3,0), recebem a cor da pele) / `vampiro` / `lobisomem` (feitos por Claude). Ordem: corpo → brilho → cabelo → olhos → contorno → extra.
+- O teste ainda mostra o tipo de cabelo no texto (ele só aparece no desenho a partir de 1 ano).
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -55,6 +63,9 @@
 | assets/sprites/moita_esquerda.png / moita_direita.png | 26×14 / 36×18 | posições (0,286) e (144,274) |
 | assets/sprites/toalha.png | 86×17 | toalha xadrez em perspectiva, posição (50,296) |
 | assets/sprites/cesta.png | 22×20 | cesta reduzida da imagem do autor, posição (113,287); pode ser redesenhada no mesmo tamanho |
+| assets/sprites/bebe_corpo / bebe_cabelo / bebe_olhos / bebe_contorno .png | 32×32 cada | camadas do bebê (desenho e cabelo do autor; olhos e contorno separados por Claude) |
+| assets/sprites/bebe_extra_alienigena.png | 32×32 | antenas do autor (v0.0.17), recebem a cor da pele |
+| assets/sprites/bebe_extra_vampiro / _lobisomem .png | 32×32 cada | detalhes dos especiais (provisórios, feitos por Claude) |
 | assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
 
 ## Falta desenhar (pode ser depois)
@@ -90,13 +101,16 @@
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
-Etapa 3 — Gerador do bebê (só lógica): sorteia origem e atributos, com uma tela de teste que gera 1000 bebês e mostra as porcentagens.
+Etapa 4 — Cegonha: entra voando com o bebê, fica segurando até o jogador tocar (nunca solta nem derruba), mostra só o sexo (e a origem, se especial) e guarda o bebê no save.
 
-## A decidir na Etapa 3
-- O estado de nascimento é sorteado entre os estados da região (lista em `CONFIG.PERFIL.REGIOES`). Todos com a mesma chance?
-- Chance exata de cada origem (Negro, Branco, Indígena, Cabo Verde, Miscigenado), sabendo que Especial = 2%.
-- Cabo Verde "pele escura": usa o tom negro ou o pardo?
-- Especiais (alienígena, vampiro, lobisomem) têm pele/cabelo/olhos próprios?
+## Decisões da Etapa 3 (padrões, ajustáveis no config.js)
+- Origens: Negro 26, Branco 26, Indígena 20, Cabo Verde 16, Miscigenado 10, Especial 2 (%).
+- Cabo Verde "pele escura" = tom negro.
+- Especiais com atributos próprios (alienígena, vampiro, lobisomem), cada um com 1/3 dos 2%.
+- Estado de nascimento: todos os estados da região com a mesma chance.
+- O botão de teste em Configurações sai antes da versão final.
+- Tipo de cabelo só aparece a partir de 1 ano (o bebê tem um único desenho de cabelo até lá). Idade exata na Etapa 8.
+- Arte do bebê simplificada: 7 peças (corpo, cabelo de bebê, olhos, contorno, 3 extras dos especiais). Cabelo liso/cacheado/crespo só na fase infantil.
 
 ## Lembrete
 Ao fim de toda etapa: aumentar `VERSAO` no `config.js` e enviar ao GitHub (Confirmar → Sincronizar).

@@ -1,6 +1,7 @@
 // =============================================================
 // Configuracoes.js — tela de Configurações (vazia por enquanto).
 // Na Etapa 30 entram volume e "apagar save".
+// Por enquanto tem só o botão da tela de teste do gerador do bebê (Etapa 3).
 // =============================================================
 
 class Configuracoes extends Phaser.Scene {
@@ -18,6 +19,9 @@ class Configuracoes extends Phaser.Scene {
     escrever(this, CONFIG.LARGURA / 2, 40, 'Configurações', {
       fontFamily: 'monospace', fontSize: '14px', color: CONFIG.COR_TEXTO
     }).setOrigin(0.5);
+
+    // Ferramenta de teste da Etapa 3 (sai antes da versão final)
+    criarOpcao(this, 30, 90, 120, 18, 'Teste: gerador do bebê', () => this.scene.start('TesteBebe'), 8);
 
     // Botão Voltar: centralizado na horizontal, qualquer que seja a largura do desenho
     const larg = this.textures.get('botao_voltar').getSourceImage().width;

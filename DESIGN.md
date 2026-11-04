@@ -31,6 +31,11 @@ Tempo: 7 dias reais = 2 anos no jogo (1 ano = 3,5 dias reais; 0 a 18 anos ≈ 63
   - Miscigenado: atributos aleatórios (chance menor que as anteriores).
   - Especial: alienígena, vampiro ou lobisomem (2% de chance).
 - Ao receber o bebê, mostra só o sexo. A origem só aparece se for especial.
+- Chances (Etapa 3, ajustáveis em `CONFIG.BEBE.ORIGENS`): Negro 26%, Branco 26%, Indígena 20%, Cabo Verde 16%, Miscigenado 10%, Especial 2%.
+- Cabo Verde "pele escura" = tom negro (provisório, ajustável).
+- Especiais (cada um 1/3 dos 2%): alienígena (pele verde, cabelo liso prateado, olhos pretos, anteninhas); vampiro (pele pálida, cabelo liso ou cacheado preto, olhos vermelhos, dentinhos); lobisomem (pele branca/parda/negra, cabelo crespo ou cacheado castanho escuro ou preto, olhos amarelos, orelhas de lobo). Visual definitivo na Etapa 5.
+- Estado de nascimento: sorteado entre os estados da região, todos com a mesma chance.
+- Tipo de cabelo (liso, cacheado, crespo): sorteado no nascimento e guardado, mas só aparece a partir de 1 ano (idade exata na Etapa 8). Até lá, o bebê tem um único desenho de cabelo, com a cor sorteada.
 
 ## Cegonha
 Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta nem derruba o bebê. Depois do toque, o bebê vai para o berço no quarto.
@@ -114,9 +119,9 @@ Interações inspiradas em "Meu Talking Tom" (só a ideia; nada de arte, nomes o
 1. Idades exatas de cada fase e alimentação entre 1 e 2 anos. (Etapa 8)
 2. Infância termina aos 10? (Etapa 18)
 3. Regra das 12 h: manter, aumentar, "modo noite", notificação? (Etapa 6/17)
-4. Chance exata de cada origem. (Etapa 3)
+4. ~~Chance exata de cada origem.~~ Decidido na Etapa 3 (ver Geração do bebê).
 5. "Nível médio" de fala e quanto cada atividade sobe as habilidades. (Etapa 14)
 6. Como o bebê mata a sede de 0 a 1 ano (a mamadeira enche fome e sede?). (Etapa 8)
-7. Cabo Verde "pele escura": usa o tom negro ou pardo da lista? (Etapa 3)
-8. Especiais (alienígena, vampiro, lobisomem): têm pele/cabelo/olhos próprios? Precisam de camadas extras de desenho? (Etapa 3/5)
+7. ~~Cabo Verde "pele escura".~~ Decidido: tom negro (provisório).
+8. Especiais: atributos próprios decididos na Etapa 3; cada um tem uma camada extra de desenho (antenas, dentes, orelhas). Visual final na Etapa 5.
 9. Fala: vale o nível (nível médio) ou a idade (fim do 1º/3º ano)? Provável: o nível, com velocidade de subida que leva a essas idades. (Etapa 14)
