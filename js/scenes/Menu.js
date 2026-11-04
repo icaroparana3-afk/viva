@@ -9,6 +9,11 @@ class Menu extends Phaser.Scene {
     super('Menu');
   }
 
+  // Recebe um recado de outra cena (ex.: "Perfil salvo!")
+  init(dados) {
+    this.recado = dados && dados.avisar ? dados.avisar : null;
+  }
+
   create() {
     const M = CONFIG.MENU;
 
@@ -39,6 +44,8 @@ class Menu extends Phaser.Scene {
     this.add.text(CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
+
+    if (this.recado) mostrarAviso(this, this.recado);
   }
 
   // Roda a cada quadro. "delta" = milissegundos desde o quadro anterior.
@@ -79,22 +86,21 @@ class Menu extends Phaser.Scene {
   }
 
   novaHistoria() {
-    // Etapa 2 vai abrir a tela de Perfil aqui. Por enquanto, só um aviso.
-    this.avisar('Em breve: Perfil');
+    // Se já existe uma história salva, pergunta antes de apagar.
+    if (temSave()) {
+      criarConfirmacao(this, 'Isso vai apagar a\nhistória salva.\nContinuar?', () => {
+        Estado.apagar();
+        this.scene.start('Perfil');
+      });
+      return;
+    }
+    this.scene.start('Perfil');
   }
 
   continuarHistoria() {
-    // Etapa 6 vai carregar o save aqui.
-    this.avisar('Em breve: Continuar');
-  }
-
-  // Mensagem curta que aparece e some
-  avisar(texto) {
-    if (this.aviso) this.aviso.destroy();
-    this.aviso = this.add.text(CONFIG.LARGURA / 2, 205, texto, {
-      fontFamily: 'monospace', fontSize: '10px', color: '#ffffff',
-      backgroundColor: '#1a1c2c', padding: { x: 4, y: 2 }
-    }).setOrigin(0.5, 0);
-    this.tweens.add({ targets: this.aviso, alpha: 0, delay: 1200, duration: 400 });
+    const save = Estado.carregar();
+    if (!save) return;
+    // A Etapa 5/6 vai abrir o quarto aqui.
+    mostrarAviso(this, 'Em breve: ' + save.perfil.nome);
   }
 }

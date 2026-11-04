@@ -35,6 +35,9 @@ class Boot extends Phaser.Scene {
     this.load.image('botao_continuar_historia', './assets/ui/botao_continuar_historia.png');
     this.load.image('botao_configuracoes', './assets/ui/botao_configuracoes.png');
     this.load.image('botao_voltar', './assets/ui/botao_voltar.png');
+
+    // ---------- Perfil ----------
+    this.load.image('mapa_brasil', './assets/ui/mapa_brasil.png');
   }
 
   create() {
@@ -45,6 +48,9 @@ class Boot extends Phaser.Scene {
       frameRate: CONFIG.MENU.PASSARO_QUADROS_POR_SEG,
       repeat: -1
     });
+
+    // Prepara o mapa para saber qual região foi tocada (ver js/mapa.js)
+    MAPA.preparar(this);
 
     this.scene.start('Menu');
   }

@@ -16,7 +16,10 @@ Tempo: 7 dias reais = 2 anos no jogo (1 ano = 3,5 dias reais; 0 a 18 anos ≈ 63
 
 ## Menu e perfil
 - Menu: Nova História, Continuar História (só ativo se houver save), Configurações.
-- Antes de receber o bebê, o jogador cria o perfil: nome, papai ou mamãe, região do Brasil (define o clima).
+- Antes de receber o bebê, o jogador cria o perfil em duas telas:
+  1. Nome e papai ou mamãe.
+  2. Região, escolhida tocando no mapa do Brasil (cada região tem uma cor). Ao tocar, a região acende e aparecem o nome e a descrição do clima.
+- O bebê nasce em um estado sorteado dentro da região escolhida.
 
 ## Geração do bebê
 - Atributos: sexo (M/F); pele (branco, pardo, negro); tipo de cabelo (liso, cacheado, crespo); cor do cabelo (loiro, castanho claro, castanho escuro, preto, ruivo); olhos (azul claro, azul escuro, castanho claro, castanho escuro, verde claro, verde escuro).
@@ -54,11 +57,26 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 ## Doenças (todas as idades)
 Gripe, catapora, enjoo/vômito. Mais cuidado e, quando fizer sentido, remédio.
 
-## Clima por região (simulado)
+## Regiões e estados
+- Norte: Acre, Amapá, Amazonas, Pará, Rondônia, Roraima e Tocantins.
+- Nordeste: Alagoas, Bahia, Ceará, Maranhão, Paraíba, Pernambuco, Piauí, Rio Grande do Norte e Sergipe.
+- Centro-Oeste: Goiás, Mato Grosso, Mato Grosso do Sul e Distrito Federal.
+- Sudeste: Espírito Santo, Minas Gerais, Rio de Janeiro e São Paulo.
+- Sul: Paraná, Rio Grande do Sul e Santa Catarina.
+
+## Descrição do clima (texto mostrado ao escolher a região)
+- Norte: clima quente, com chuvas abundantes.
+- Nordeste: clima tropical no litoral e semiárido no interior, com longos períodos de estiagem.
+- Centro-Oeste: clima tropical típico, com verão chuvoso e inverno seco.
+- Sudeste: clima tropical de altitude e tropical atlântico.
+- Sul: clima mais frio, com possíveis geadas e neve.
+
+## Clima por região (simulado pelo jogo)
 - Nordeste: mais calor, pouco frio.
 - Norte: equilibrado.
 - Sul: mais frio, menos calor.
 - Sudeste e Centro-Oeste: um pouco mais frio que o Nordeste, menos que o Sul.
+- ⚠️ A decidir na Etapa 15: a regra simulada diz Norte "equilibrado", mas o texto mostrado diz "clima quente, com chuvas". Qual vale?
 
 ## Ausência
 - Bebê: mais de 12 h sem entrar = aviso. De novo = adoção e fim da história.
@@ -91,4 +109,5 @@ Interações inspiradas em "Meu Talking Tom" (só a ideia; nada de arte, nomes o
 6. Como o bebê mata a sede de 0 a 1 ano (a mamadeira enche fome e sede?). (Etapa 8)
 7. Cabo Verde "pele escura": usa o tom negro ou pardo da lista? (Etapa 3)
 8. Especiais (alienígena, vampiro, lobisomem): têm pele/cabelo/olhos próprios? Precisam de camadas extras de desenho? (Etapa 3/5)
+10. Norte: clima simulado "equilibrado" ou "quente e chuvoso" como no texto? (Etapa 15)
 9. Fala: vale o nível (nível médio) ou a idade (fim do 1º/3º ano)? Provável: o nível, com velocidade de subida que leva a essas idades. (Etapa 14)
