@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.11',
+  VERSAO: '0.0.14',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -50,13 +50,70 @@ const CONFIG = {
     ESTRELA_INTERVALO_MAX: 9,      // espera máxima (segundos)
     ESTRELA_ALTURA_MAX: 45,        // nasce entre y=0 e este valor (parte alta do céu)
 
-    // Botões de música e efeitos sonoros (16×16, canto superior direito).
-    // Enquanto for false, o jogo usa um desenho provisório feito por código.
-    // Quando os seus desenhos chegarem, isto vira true.
-    BOTOES_SOM_DESENHADOS: false,
 
     // Quanto o botão "Continuar" fica apagado quando não há save (0 = invisível, 1 = normal).
     BOTAO_DESATIVADO_OPACIDADE: 0.45
+  },
+
+  // ---------- DESENHOS PRONTOS ----------
+  // Enquanto um item estiver false, o jogo usa um desenho PROVISÓRIO feito
+  // por código (no mesmo tamanho). Quando o seu desenho chegar, ele vai para
+  // a pasta indicada e o item vira true. Nada mais precisa mudar.
+  ARTES_PRONTAS: {
+    botoes_som: false, // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada
+    animal: false,     // assets/sprites/animal.png — 8 quadros de 16×16 lado a lado (128×16)
+    folha: false,      // assets/sprites/folha.png — 4 quadros de 4×4 lado a lado (16×4)
+    vento: false,      // assets/sprites/vento.png — risco de vento, 24×3
+    sombras: false     // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
+  },
+
+  // ---------- VIDA NO MENU: vento, sombras e animal ----------
+  VENTO: {
+    // De tempos em tempos vem uma rajada de vento (da esquerda para a direita).
+    INTERVALO_MIN: 5,          // espera mínima entre rajadas (segundos)
+    INTERVALO_MAX: 12,         // espera máxima (segundos)
+    DURACAO: 3.5,              // quanto dura cada rajada (segundos)
+    NUVEM_MULTIPLICADOR: 4,    // no pico da rajada, as nuvens andam X vezes mais rápido
+    BALANCO_PIXELS: 1,         // quantos pixels a copa das árvores e o topo das moitas se movem
+    BALANCO_POR_SEG: 2.5,      // quantas vezes por segundo elas balançam no pico
+    FOLHAS_POR_RAJADA: 6,      // quantas folhas voam em cada rajada
+    FOLHA_VELOCIDADE_MIN: 35,  // pixels por segundo
+    FOLHA_VELOCIDADE_MAX: 60,
+    FOLHA_QUADROS_POR_SEG: 8,  // velocidade da folha girando
+    RISCOS_POR_RAJADA: 3,      // riscos de vento no céu em cada rajada
+    RISCO_VELOCIDADE: 90,      // pixels por segundo
+    RISCO_ALTURA_MIN: 50,      // faixa do céu onde os riscos aparecem (y)
+    RISCO_ALTURA_MAX: 200
+  },
+
+  // Sombras no chão: tipo (grande/media/pequena), centro (x, y) e opacidade.
+  // O centro é o ponto do chão logo abaixo de quem faz a sombra.
+  SOMBRAS: [
+    { tipo: 'media',   x: 15,  y: 279, opacidade: 0.45 }, // árvore da esquerda
+    { tipo: 'media',   x: 164, y: 269, opacidade: 0.45 }, // árvore da direita
+    { tipo: 'media',   x: 12,  y: 299, opacidade: 0.35 }, // moita da esquerda
+    { tipo: 'media',   x: 162, y: 291, opacidade: 0.35 }, // moita da direita
+    { tipo: 'grande',  x: 90,  y: 305, opacidade: 0.45 }, // casal
+    { tipo: 'pequena', x: 124, y: 306, opacidade: 0.45 }, // cesta de piquenique
+    { tipo: 'pequena', x: 146, y: 308, opacidade: 0.45 }  // animal
+  ],
+
+  // Piquenique: toalha xadrez embaixo do casal e cesta ao lado da menina.
+  PIQUENIQUE: {
+    TOALHA_X: 50, TOALHA_Y: 296,   // canto superior esquerdo da toalha (86×17)
+    CESTA_X: 113, CESTA_Y: 287     // canto superior esquerdo da cesta (22×20)
+  },
+
+  ANIMAL: {
+    X: 138, Y: 293,            // canto superior esquerdo do quadro (16×16), ao lado do piquenique
+    LARGURA: 16, ALTURA: 16,   // tamanho de cada quadro do desenho
+    QUADROS_PARADO: [0, 1, 2, 3], // animação parada (respirar, piscar...) — fica repetindo
+    QUADROS_ACAO: [4, 5, 6, 7],   // ação de vez em quando (pulinho, coçar a orelha...)
+    PARADO_QUADROS_POR_SEG: 3,
+    ACAO_QUADROS_POR_SEG: 8,
+    ACAO_INTERVALO_MIN: 4,     // espera mínima entre uma ação e outra (segundos)
+    ACAO_INTERVALO_MAX: 9,
+    VIRAR: false               // true = espelha o desenho (olhar para o outro lado)
   },
 
   // ---------- PERFIL (Etapa 2) ----------

@@ -29,6 +29,8 @@ class Boot extends Phaser.Scene {
     this.load.image('nuvem1', './assets/sprites/nuvem1.png');
     this.load.image('nuvem2', './assets/sprites/nuvem2.png');
     this.load.image('casal', './assets/sprites/casal.png');
+    ['arvore_esquerda', 'arvore_direita', 'moita_esquerda', 'moita_direita', 'toalha', 'cesta']
+      .forEach(nome => this.load.image(nome, './assets/sprites/' + nome + '.png'));
     this.load.spritesheet('passaro', './assets/sprites/passaro.png', { frameWidth: 8, frameHeight: 8 });
 
     // ---------- Botões ----------
@@ -38,10 +40,22 @@ class Boot extends Phaser.Scene {
     this.load.image('botao_voltar', './assets/ui/botao_voltar.png');
     this.load.image('texto_titulo', './assets/ui/texto_titulo.png');
 
-    // Botões de música e efeitos (16×16). Só carrega quando os desenhos existirem.
-    if (CONFIG.MENU.BOTOES_SOM_DESENHADOS) {
+    // ---------- Desenhos que só carregam quando estiverem prontos ----------
+    // (ver CONFIG.ARTES_PRONTAS; enquanto false, entra o provisório de js/provisorios.js)
+    const P = CONFIG.ARTES_PRONTAS;
+    if (P.botoes_som) {
       ['botao_musica', 'botao_musica_off', 'botao_som', 'botao_som_off']
         .forEach(nome => this.load.image(nome, './assets/ui/' + nome + '.png'));
+    }
+    if (P.animal) {
+      this.load.spritesheet('animal', './assets/sprites/animal.png',
+        { frameWidth: CONFIG.ANIMAL.LARGURA, frameHeight: CONFIG.ANIMAL.ALTURA });
+    }
+    if (P.folha) this.load.spritesheet('folha', './assets/sprites/folha.png', { frameWidth: 4, frameHeight: 4 });
+    if (P.vento) this.load.image('vento', './assets/sprites/vento.png');
+    if (P.sombras) {
+      ['sombra_grande', 'sombra_media', 'sombra_pequena']
+        .forEach(nome => this.load.image(nome, './assets/sprites/' + nome + '.png'));
     }
 
     // ---------- Perfil ----------
@@ -63,9 +77,35 @@ class Boot extends Phaser.Scene {
       repeat: -1
     });
 
-    // Estrela cadente (desenhada por código) e botões de som provisórios
+    // Estrela cadente (desenhada por código) e desenhos provisórios
     criarTexturaEstrela(this);
-    if (!CONFIG.MENU.BOTOES_SOM_DESENHADOS) criarBotoesSomProvisorios(this);
+    const P = CONFIG.ARTES_PRONTAS;
+    if (!P.botoes_som) criarBotoesSomProvisorios(this);
+    if (!P.animal) criarAnimalProvisorio(this);
+    if (!P.folha) criarFolhaProvisoria(this);
+    if (!P.vento) criarVentoProvisorio(this);
+    if (!P.sombras) criarSombrasProvisorias(this);
+
+    // Animações do animal e da folha
+    const A = CONFIG.ANIMAL;
+    this.anims.create({
+      key: 'animal_parado',
+      frames: this.anims.generateFrameNumbers('animal', { frames: A.QUADROS_PARADO }),
+      frameRate: A.PARADO_QUADROS_POR_SEG,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'animal_acao',
+      frames: this.anims.generateFrameNumbers('animal', { frames: A.QUADROS_ACAO }),
+      frameRate: A.ACAO_QUADROS_POR_SEG,
+      repeat: 0
+    });
+    this.anims.create({
+      key: 'folha_girando',
+      frames: this.anims.generateFrameNumbers('folha', { frames: [0, 1, 2, 3] }),
+      frameRate: CONFIG.VENTO.FOLHA_QUADROS_POR_SEG,
+      repeat: -1
+    });
 
     // Lê as opções de música/efeitos guardadas
     Opcoes.carregar();
