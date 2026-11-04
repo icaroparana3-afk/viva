@@ -15,6 +15,7 @@ class Menu extends Phaser.Scene {
   }
 
   create() {
+    prepararCamera(this);
     const M = CONFIG.MENU;
 
     // ---------- Cenário ----------
@@ -41,7 +42,7 @@ class Menu extends Phaser.Scene {
     criarBotao(this, 35, 172, 'botao_configuracoes', () => this.scene.start('Configuracoes'));
 
     // Versão no rodapé (discreta)
-    this.add.text(CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
+    escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
 

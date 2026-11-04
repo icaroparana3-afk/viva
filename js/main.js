@@ -5,8 +5,10 @@
 const jogo = new Phaser.Game({
   type: Phaser.AUTO,          // o Phaser escolhe o melhor jeito de desenhar
   parent: 'game',             // desenha dentro da <div id="game">
-  width: CONFIG.LARGURA,      // 180
-  height: CONFIG.ALTURA,      // 320
+  // Tela interna ESCALA vezes maior (ver "NITIDEZ" no config.js).
+  // O código e os desenhos continuam usando 180 x 320.
+  width: CONFIG.LARGURA * CONFIG.ESCALA,
+  height: CONFIG.ALTURA * CONFIG.ESCALA,
   pixelArt: true,             // pixels nítidos, sem borrar
   backgroundColor: CONFIG.COR_FUNDO,
   // Permite colocar campos de texto de verdade (HTML) por cima do jogo.

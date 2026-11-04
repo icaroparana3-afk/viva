@@ -23,7 +23,10 @@
   - `js/state.js`: cria, salva, lê e apaga o save no localStorage.
   - "Nova História" leva ao Perfil; se já houver save, pergunta antes de apagar.
   - "Continuar História" acende sozinho quando existe save e mostra o nome salvo.
-  - Caixas e botões "Próximo"/"Começar" ainda são SUBSTITUTOS (retângulos).
+  - Textos nítidos (v0.0.7): o jogo desenha numa tela interna maior (ESCALA) e os textos são escritos nessa resolução.
+  - Botões desenhados pelo autor (v0.0.8): Próximo, Começar, Papai, Mamãe, Sim e Não. Papai/Mamãe mostram a versão "_sel" quando escolhidos; Sim/Não mostram "_sel" enquanto o dedo aperta. Próximo e Começar ficam apagados até as respostas estarem prontas.
+  - Visual do autor (v0.0.10): títulos "SEU PERFIL"/"SUA REGIÃO", rótulos "Nome"/"Você é", novo botão Voltar e fundo em degradê, nas posições exatas da tela de exemplo do autor (Perfil idêntico ao exemplo pixel a pixel). Campo do nome com 110 de largura, como os botões.
+  - Textos de clima (v0.0.9): nome + subtítulo + texto curto (até 3 linhas) ao tocar na região. Textos completos do autor guardados no DESIGN.md.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -36,12 +39,18 @@
 | assets/ui/botao_nova_historia.png | 110×20 | |
 | assets/ui/botao_continuar_historia.png | 110×20 | |
 | assets/ui/botao_configuracoes.png | 110×20 | |
+| assets/ui/botao_proximo.png / botao_comecar.png | 110×20 | |
+| assets/ui/botao_papai(_sel).png / botao_mamae(_sel).png | 53×20 | "_sel" = selecionado |
+| assets/ui/botao_sim(_sel).png / botao_nao(_sel).png | 53×20 | "_sel" = apertado |
+| assets/ui/fundo_perfil.png | 180×320 | degradê das telas de Perfil e Região (tirado da tela de exemplo do autor) |
+| assets/ui/texto_seu_perfil.png / texto_sua_regiao.png | 105×15 / 105×18 | títulos |
+| assets/ui/texto_nome.png / texto_voce_e.png | 24×9 / 33×9 | rótulos |
 | assets/ui/mapa_brasil.png | 160×160 | 18 cores; sombra semitransparente proposital (1 cor só) |
-| assets/ui/botao_voltar.png | 110×20 | montado a partir das letras e do fundo dos outros botões (L derivado do E). O desenho original 165×30 do autor está guardado em assets/originais/ (não é carregado pelo jogo) |
+| assets/ui/botao_voltar.png | 110×20 | desenhado pelo autor (v0.0.10) |
 
 ## Falta desenhar (pode ser depois)
 - Telas de Perfil e confirmação: as caixas são retângulos provisórios. Para desenhá-las, o melhor é antes termos uma fonte pixel (bitmap font), senão cada texto vira um desenho separado. Sugestão: deixar para uma etapa de acabamento.
-- Nada obrigatório. Opcional: redesenhar `botao_voltar.png` por conta própria (110×20, paleta dos outros botões) para substituir a versão montada.
+- Nada obrigatório.
 
 ## Decisões tomadas
 - Phaser 3.90.0 por CDN (jsDelivr).
@@ -53,6 +62,10 @@
 - Regiões salvas pelo id: norte, nordeste, centro-oeste, sudeste, sul.
 - Cada região em `CONFIG.PERFIL.REGIOES` guarda: cor principal no mapa, texto do clima e lista de estados.
 - O estado de nascimento é sorteado na Etapa 3 (gerador do bebê), não no Perfil.
+- Clima do Norte: quente, com chuvas abundantes (decisão do autor, 2026-11-04).
+- `criarBotaoImg(...)` (js/botao.js): botão de desenho que acende/apaga (`.ativar`) e marca (`.marcar`) trocando para a imagem "_sel".
+- Nitidez (v0.0.7): o mundo do jogo continua 180×320, mas o canvas interno é 180×320 × `CONFIG.ESCALA` (calculada pela tela do aparelho, inteira, de 1 a 8). Cada cena chama `prepararCamera(this)` no começo, e todo texto é criado com `escrever(...)` em vez de `this.add.text(...)`. Toques no mapa usam `ponteiro.worldX/worldY`.
+- Posições no Perfil (tela de exemplo do autor): título (37,10), Nome (36,48), campo do nome centro (90,70), Você é (36,92), Papai (36,104), Mamãe (92,104), Próximo (35,222), Voltar (35,250). Região: título (37,3), mapa (10,22).
 - Exceção à regra "Claude não desenha": a pedido do autor, o botão Voltar 110×20 foi montado por código só com pixels das letras/fundo dos botões dele (sem arte nova), podendo ser substituído por um desenho próprio.
 - Velocidades de nuvens e pássaro ficam em `CONFIG.MENU` (config.js).
 

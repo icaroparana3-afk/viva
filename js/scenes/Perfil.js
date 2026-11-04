@@ -19,27 +19,23 @@ class Perfil extends Phaser.Scene {
   }
 
   create() {
+    prepararCamera(this);
     const U = CONFIG.UI;
 
-    // ---------- Fundo ----------
-    this.add.image(0, 0, 'menu_ceu').setOrigin(0, 0);
-    this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x1a1c2c, 0.72).setOrigin(0, 0);
-
-    this.add.text(90, 10, 'SEU PERFIL', {
-      fontFamily: 'monospace', fontSize: '12px', color: U.TEXTO
-    }).setOrigin(0.5, 0);
+    // ---------- Fundo e título (seus desenhos; posições da sua tela de exemplo) ----------
+    this.add.image(0, 0, 'fundo_perfil').setOrigin(0, 0);
+    this.add.image(37, 10, 'texto_seu_perfil').setOrigin(0, 0);
 
     // ---------- Nome ----------
-    this.add.text(35, 50, 'Nome', {
-      fontFamily: 'monospace', fontSize: '8px', color: U.TEXTO_FRACO
-    }).setOrigin(0, 0);
+    this.add.image(36, 48, 'texto_nome').setOrigin(0, 0);
 
     // "DOM" = um campo de texto de verdade do navegador, colocado
     // por cima do jogo. É ele que faz o teclado do celular abrir.
+    // Mesma largura dos botões (110), entre "Nome" e "Você é".
     this.campoNome = this.add.dom(90, 70).createFromHTML(
       '<input type="text" maxlength="' + CONFIG.PERFIL.NOME_MAX + '" placeholder="seu nome" ' +
       'autocomplete="off" autocorrect="off" spellcheck="false" ' +
-      'style="width:98px;height:16px;background:#2a1838;color:#ffd860;' +
+      'style="width:108px;height:16px;background:#2a1838;color:#ffd860;' +
       'border:1px solid #7b4aa6;font-family:monospace;font-size:9px;' +
       'text-align:center;outline:none;padding:0;border-radius:0;">'
     );
@@ -48,31 +44,30 @@ class Perfil extends Phaser.Scene {
     this.input.addEventListener('input', () => this.conferir());
 
     // ---------- Papai ou mamãe ----------
-    this.add.text(35, 96, 'Você é', {
-      fontFamily: 'monospace', fontSize: '8px', color: U.TEXTO_FRACO
-    }).setOrigin(0, 0);
+    this.add.image(36, 92, 'texto_voce_e').setOrigin(0, 0);
 
+    // Seus botões Papai e Mamãe (53×20). O escolhido fica com a versão "_sel".
     this.opcoesPapel = [];
-    [{ id: 'papai', nome: 'Papai' }, { id: 'mamae', nome: 'Mamãe' }].forEach((p, i) => {
-      const o = criarOpcao(this, 35 + i * 57, 106, 53, 20, p.nome, () => {
+    [{ id: 'papai', x: 36 }, { id: 'mamae', x: 92 }].forEach(p => {
+      const o = criarBotaoImg(this, p.x, 104, 'botao_' + p.id, () => {
         this.input.blur();               // fecha o teclado do celular
         this.papel = p.id;
         this.opcoesPapel.forEach(x => x.marcar(x.id === p.id));
         this.conferir();
-      });
+      }, 'botao_' + p.id + '_sel');
       o.id = p.id;
       if (p.id === this.papel) o.marcar(true);
       this.opcoesPapel.push(o);
     });
 
     // ---------- Próximo ----------
-    this.btProximo = criarOpcao(this, 35, 216, 110, 20, 'Próximo', () => this.proximo(), 10);
+    this.btProximo = criarBotaoImg(this, 35, 222, 'botao_proximo', () => this.proximo());
     this.conferir();
 
     // ---------- Voltar (usa o seu desenho) ----------
-    criarBotao(this, 35, 244, 'botao_voltar', () => this.scene.start('Menu'));
+    criarBotao(this, 35, 250, 'botao_voltar', () => this.scene.start('Menu'));
 
-    this.add.text(CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
+    escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
   }

@@ -17,18 +17,16 @@ class Regiao extends Phaser.Scene {
   }
 
   create() {
+    prepararCamera(this);
     const U = CONFIG.UI;
     const regioes = CONFIG.PERFIL.REGIOES;
     this.mapaX = 10;
     this.mapaY = 22;
 
     // ---------- Fundo ----------
-    this.add.image(0, 0, 'menu_ceu').setOrigin(0, 0);
-    this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x1a1c2c, 0.72).setOrigin(0, 0);
-
-    this.add.text(90, 6, 'SUA REGIÃO', {
-      fontFamily: 'monospace', fontSize: '12px', color: U.TEXTO
-    }).setOrigin(0.5, 0);
+    this.add.image(0, 0, 'fundo_perfil').setOrigin(0, 0);
+    // Título desenhado (105×18), centralizado
+    this.add.image(37, 3, 'texto_sua_regiao').setOrigin(0, 0);
 
     // ---------- Mapa ----------
     this.mapa = this.add.image(this.mapaX, this.mapaY, 'mapa_brasil').setOrigin(0, 0).setInteractive();
@@ -38,26 +36,29 @@ class Regiao extends Phaser.Scene {
     );
 
     this.mapa.on('pointerup', (ponteiro) => {
-      const idx = MAPA.regiaoEm(ponteiro.x - this.mapaX, ponteiro.y - this.mapaY);
+      const idx = MAPA.regiaoEm(ponteiro.worldX - this.mapaX, ponteiro.worldY - this.mapaY);
       if (idx >= 0) this.escolher(regioes[idx].id);
     });
 
     // ---------- Informações da região ----------
-    this.txtNome = this.add.text(90, 188, '', {
+    this.txtNome = escrever(this, 90, 186, '', {
       fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO
     }).setOrigin(0.5, 0);
-    this.txtClima = this.add.text(90, 202, '', {
+    this.txtSub = escrever(this, 90, 199, '', {
+      fontFamily: 'monospace', fontSize: '8px', color: U.TEXTO_FRACO
+    }).setOrigin(0.5, 0);
+    this.txtClima = escrever(this, 90, 211, '', {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff',
       align: 'center', wordWrap: { width: 164 }
     }).setOrigin(0.5, 0);
 
     // ---------- Botões ----------
-    this.btComecar = criarOpcao(this, 35, 258, 110, 20, 'Começar', () => this.comecar(), 10);
+    this.btComecar = criarBotaoImg(this, 35, 258, 'botao_comecar', () => this.comecar());
     criarBotao(this, 35, 284, 'botao_voltar', () =>
       this.scene.start('Perfil', { nome: this.nome, papel: this.papel, regiao: this.escolhida })
     );
 
-    this.add.text(CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
+    escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
 
@@ -69,6 +70,7 @@ class Regiao extends Phaser.Scene {
     this.mapa.clearTint();
     this.camadas.forEach(c => c.setVisible(false));
     this.txtNome.setText('');
+    this.txtSub.setText('');
     this.txtClima.setText('Toque em uma região do mapa');
     this.btComecar.ativar(false);
   }
@@ -84,6 +86,7 @@ class Regiao extends Phaser.Scene {
     this.camadas.forEach((c, i) => c.setVisible(i === idx));
 
     this.txtNome.setText(regioes[idx].nome);
+    this.txtSub.setText(regioes[idx].subtitulo);
     this.txtClima.setText(regioes[idx].clima);
     this.btComecar.ativar(true);
   }

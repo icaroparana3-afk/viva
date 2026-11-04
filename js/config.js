@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.6',
+  VERSAO: '0.0.10',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -56,23 +56,30 @@ const CONFIG = {
     //   cor     = a cor PRINCIPAL da região no seu desenho do mapa (assets/ui/mapa_brasil.png).
     //             As sombras e brilhos não precisam estar aqui: o jogo liga cada pixel
     //             à cor principal mais próxima. Se você repintar uma região, troque só esta cor.
-    //   clima   = texto que aparece ao escolher a região
+    //   subtitulo = frase curta que aparece embaixo do nome da região
+    //   clima     = texto curto (até 3 linhas) que aparece ao escolher a região
+    //               (os textos completos do autor estão no DESIGN.md)
     //   estados = o bebê nasce em um destes, sorteado (Etapa 3)
     REGIOES: [
       { id: 'norte', nome: 'Norte', cor: '#96e646',
-        clima: 'Clima quente, com chuvas abundantes.',
+        subtitulo: 'Calor de floresta',
+        clima: 'Quente o ano todo (25°C a 28°C) e chuva quase todo dia.',
         estados: ['Acre', 'Amapá', 'Amazonas', 'Pará', 'Rondônia', 'Roraima', 'Tocantins'] },
       { id: 'nordeste', nome: 'Nordeste', cor: '#84cede',
-        clima: 'Clima tropical no litoral e semiárido no interior, com longos períodos de estiagem.',
+        subtitulo: 'Sol de sertão e mar de litoral',
+        clima: 'Sertão: sol forte e longas secas. Litoral: calor, com chuva no outono e inverno.',
         estados: ['Alagoas', 'Bahia', 'Ceará', 'Maranhão', 'Paraíba', 'Pernambuco', 'Piauí', 'Rio Grande do Norte', 'Sergipe'] },
       { id: 'centro-oeste', nome: 'Centro-Oeste', cor: '#f08c40',
-        clima: 'Clima tropical típico, com verão chuvoso e inverno seco.',
+        subtitulo: 'Duas estações bem marcadas',
+        clima: 'Verão quente, com temporais. Inverno seco, com o ar bem seco.',
         estados: ['Goiás', 'Mato Grosso', 'Mato Grosso do Sul', 'Distrito Federal'] },
       { id: 'sudeste', nome: 'Sudeste', cor: '#2c80a2',
-        clima: 'Clima tropical de altitude e tropical atlântico.',
+        subtitulo: 'Três climas numa região só',
+        clima: 'Serra: verão ameno e inverno frio, com geada. Litoral: calor forte e chuva frequente.',
         estados: ['Espírito Santo', 'Minas Gerais', 'Rio de Janeiro', 'São Paulo'] },
       { id: 'sul', nome: 'Sul', cor: '#faec3c',
-        clima: 'Clima mais frio, com possíveis geadas e neve.',
+        subtitulo: 'As quatro estações',
+        clima: 'A região mais fria do Brasil. Inverno com geada, que pede casaco de verdade.',
         estados: ['Paraná', 'Rio Grande do Sul', 'Santa Catarina'] }
     ],
 
@@ -95,3 +102,23 @@ const CONFIG = {
     TEXTO_FRACO: '#b07ad6'
   }
 };
+
+// =============================================================
+// NITIDEZ — escala interna do jogo (calculada sozinha, não precisa mexer).
+//
+// O jogo continua sendo 180 x 320 para o código e para os seus desenhos.
+// Mas por dentro ele desenha numa tela ESCALA vezes maior
+// (ex.: 6 → 1080 x 1920), do tamanho da tela do aparelho.
+// Assim: os desenhos são ampliados pixel por pixel (nítidos)
+// e os textos são escritos já no tamanho grande (nítidos também).
+// =============================================================
+CONFIG.ESCALA_MAXIMA = 8; // limite, para não pesar em telas muito grandes
+
+CONFIG.ESCALA = (() => {
+  const dpr = window.devicePixelRatio || 1;                // densidade da tela (celular costuma ser 2 ou 3)
+  const larg = window.innerWidth * dpr;                    // largura real da tela, em pixels físicos
+  const alt = window.innerHeight * dpr;                    // altura real da tela, em pixels físicos
+  const cabe = Math.min(larg / CONFIG.LARGURA, alt / CONFIG.ALTURA);
+  // Arredonda para baixo (número inteiro), para os pixels da arte ficarem todos do mesmo tamanho
+  return Math.max(1, Math.min(CONFIG.ESCALA_MAXIMA, Math.floor(cabe)));
+})();

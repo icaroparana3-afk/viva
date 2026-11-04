@@ -64,19 +64,29 @@ Gripe, catapora, enjoo/vômito. Mais cuidado e, quando fizer sentido, remédio.
 - Sudeste: Espírito Santo, Minas Gerais, Rio de Janeiro e São Paulo.
 - Sul: Paraná, Rio Grande do Sul e Santa Catarina.
 
-## Descrição do clima (texto mostrado ao escolher a região)
-- Norte: clima quente, com chuvas abundantes.
-- Nordeste: clima tropical no litoral e semiárido no interior, com longos períodos de estiagem.
-- Centro-Oeste: clima tropical típico, com verão chuvoso e inverno seco.
-- Sudeste: clima tropical de altitude e tropical atlântico.
-- Sul: clima mais frio, com possíveis geadas e neve.
+## Descrição do clima (mostrada ao tocar na região)
+Na tela aparece: nome da região, subtítulo e um texto curto (até 3 linhas, para caber embaixo do mapa).
+
+| Região | Subtítulo | Texto curto (no jogo) |
+|---|---|---|
+| Norte | Calor de floresta | Quente o ano todo (25°C a 28°C) e chuva quase todo dia. |
+| Nordeste | Sol de sertão e mar de litoral | Sertão: sol forte e longas secas. Litoral: calor, com chuva no outono e inverno. |
+| Centro-Oeste | Duas estações bem marcadas | Verão quente, com temporais. Inverno seco, com o ar bem seco. |
+| Sudeste | Três climas numa região só | Serra: verão ameno e inverno frio, com geada. Litoral: calor forte e chuva frequente. |
+| Sul | As quatro estações | A região mais fria do Brasil. Inverno com geada, que pede casaco de verdade. |
+
+Textos completos do autor (guardados para uma futura tela de detalhes):
+- Norte — Calor de floresta: Clima equatorial úmido, quente o ano todo, com chuva quase diária e temperaturas entre 25°C e 28°C. Aqui o calor não vai embora e a chuva aparece quase todo dia.
+- Nordeste — Sol de sertão e mar de litoral: No sertão, o sol é forte e a chuva é escassa, com longas secas. No litoral, a umidade do mar traz calor com chuva no outono e inverno. Num mesmo estado pode ter seca no sertão e chuva na praia.
+- Centro-Oeste — Duas estações bem marcadas: Verão quente e chuvoso, com temporais, e inverno seco, com ar bem pesado de secura. Chuva forte no verão e ar seco no inverno.
+- Sudeste — Três climas numa região só: Nas serras, o verão é ameno e o inverno frio, com chance de geada. No litoral, o calor é forte e a chuva frequente. Dá para sentir frio na serra e calor na praia no mesmo dia de viagem.
+- Sul — As quatro estações: É a região mais fria do Brasil, com grande diferença entre verão e inverno e chuva distribuída o ano todo. O inverno chega com geada e pede casaco de verdade.
 
 ## Clima por região (simulado pelo jogo)
 - Nordeste: mais calor, pouco frio.
-- Norte: equilibrado.
+- Norte: quente, com chuvas abundantes.
 - Sul: mais frio, menos calor.
 - Sudeste e Centro-Oeste: um pouco mais frio que o Nordeste, menos que o Sul.
-- ⚠️ A decidir na Etapa 15: a regra simulada diz Norte "equilibrado", mas o texto mostrado diz "clima quente, com chuvas". Qual vale?
 
 ## Ausência
 - Bebê: mais de 12 h sem entrar = aviso. De novo = adoção e fim da história.
@@ -109,5 +119,4 @@ Interações inspiradas em "Meu Talking Tom" (só a ideia; nada de arte, nomes o
 6. Como o bebê mata a sede de 0 a 1 ano (a mamadeira enche fome e sede?). (Etapa 8)
 7. Cabo Verde "pele escura": usa o tom negro ou pardo da lista? (Etapa 3)
 8. Especiais (alienígena, vampiro, lobisomem): têm pele/cabelo/olhos próprios? Precisam de camadas extras de desenho? (Etapa 3/5)
-10. Norte: clima simulado "equilibrado" ou "quente e chuvoso" como no texto? (Etapa 15)
 9. Fala: vale o nível (nível médio) ou a idade (fim do 1º/3º ano)? Provável: o nível, com velocidade de subida que leva a essas idades. (Etapa 14)

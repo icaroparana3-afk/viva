@@ -9,11 +9,12 @@ class Boot extends Phaser.Scene {
   }
 
   preload() {
+    prepararCamera(this);
     const meioX = CONFIG.LARGURA / 2;
     const meioY = CONFIG.ALTURA / 2;
 
     // Título enquanto carrega
-    this.add.text(meioX, meioY - 20, 'Viva', {
+    escrever(this, meioX, meioY - 20, 'Viva', {
       fontFamily: 'monospace', fontSize: '32px', color: CONFIG.COR_TEXTO
     }).setOrigin(0.5);
 
@@ -38,6 +39,12 @@ class Boot extends Phaser.Scene {
 
     // ---------- Perfil ----------
     this.load.image('mapa_brasil', './assets/ui/mapa_brasil.png');
+    // Botões das telas de Perfil, Região e confirmação ("_sel" = versão selecionada)
+    ['botao_proximo', 'botao_comecar',
+     'botao_papai', 'botao_papai_sel', 'botao_mamae', 'botao_mamae_sel',
+     'botao_sim', 'botao_sim_sel', 'botao_nao', 'botao_nao_sel',
+     'fundo_perfil', 'texto_seu_perfil', 'texto_sua_regiao', 'texto_nome', 'texto_voce_e'
+    ].forEach(nome => this.load.image(nome, './assets/ui/' + nome + '.png'));
   }
 
   create() {
