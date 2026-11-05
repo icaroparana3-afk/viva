@@ -11,6 +11,20 @@ function prepararCamera(cena) {
   cam.setZoom(CONFIG.ESCALA);
   cam.centerOn(CONFIG.LARGURA / 2, CONFIG.ALTURA / 2);
   cam.setRoundPixels(true);
+  // Transição: toda tela aparece clareando a partir do escuro
+  cena._saindo = false;
+  cam.fadeIn(CONFIG.TRANSICAO_SEGUNDOS * 1000, 0, 0, 0);
+}
+
+// ---------- Trocar de tela com transição ----------
+// A tela atual escurece e a próxima aparece clareando (ver prepararCamera).
+// Use irPara(this, 'Menu') no lugar de this.scene.start('Menu').
+function irPara(cena, chave, dados) {
+  if (cena._saindo) return;          // evita dois toques seguidos trocarem duas vezes
+  cena._saindo = true;
+  const cam = cena.cameras.main;
+  cam.once('camerafadeoutcomplete', () => cena.scene.start(chave, dados));
+  cam.fadeOut(CONFIG.TRANSICAO_SEGUNDOS * 1000, 0, 0, 0);
 }
 
 // ---------- Texto nítido ----------
@@ -146,10 +160,12 @@ function mostrarAviso(cena, texto, y = 205) {
 function mostrarAvisoCaixa(cena, texto, y = 40, segundos = 2.5) {
   const U = CONFIG.UI;
   const txt = escrever(cena, CONFIG.LARGURA / 2, y + 7, texto, {
-    fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO, align: 'center'
+    fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO, align: 'center', lineSpacing: 3
   }).setOrigin(0.5, 0).setDepth(51);
-  const larg = Math.ceil(txt.width) + 20;   // a caixa acompanha o tamanho do texto
-  const caixa = cena.add.rectangle(Math.round((CONFIG.LARGURA - larg) / 2), y, larg, 26, 0x2a1838, 0.92)
+  // a caixa acompanha o tamanho do texto (aceita mais de uma linha, com \n)
+  const larg = Math.ceil(txt.width) + 20;
+  const alt = Math.ceil(txt.height) + 12;
+  const caixa = cena.add.rectangle(Math.round((CONFIG.LARGURA - larg) / 2), y, larg, alt, 0x2a1838, 0.92)
     .setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA).setDepth(50);
   const itens = [caixa, txt];
   itens.forEach(o => { const a = o.alpha; o.setAlpha(0); cena.tweens.add({ targets: o, alpha: a, duration: 300 }); });
@@ -158,6 +174,30 @@ function mostrarAvisoCaixa(cena, texto, y = 40, segundos = 2.5) {
     onComplete: () => itens.forEach(o => o.destroy())
   });
   return itens;
+}
+
+// ---------- Campo de texto (abre o teclado do celular) ----------
+// Mesmo campo da tela de Perfil: um <input> de verdade por cima do jogo.
+//   const c = criarCampoTexto(cena, 90, 70, 12, 'nome', texto => ...);
+//   c.input.value  → o que foi digitado;  c.destroy() → tira da tela
+function criarCampoTexto(cena, x, y, max, dica, aoMudar) {
+  const el = cena.add.dom(x, y).createFromHTML(
+    '<input type="text" maxlength="' + max + '" placeholder="' + dica + '" ' +
+    'autocomplete="off" autocorrect="off" spellcheck="false" ' +
+    'style="width:108px;height:16px;background:#2a1838;color:#ffd860;' +
+    'border:1px solid #7b4aa6;font-family:monospace;font-size:9px;' +
+    'text-align:center;outline:none;padding:0;border-radius:0;">'
+  );
+  const input = el.node.querySelector('input');
+  if (aoMudar) input.addEventListener('input', () => aoMudar(input.value));
+  return { el, input, destroy() { input.blur(); el.destroy(); } };
+}
+
+// Arruma um nome digitado: tira espaços sobrando e põe a primeira letra
+// de cada palavra em maiúscula ("maria  eduarda " → "Maria Eduarda").
+function nomeBonito(texto) {
+  return texto.trim().replace(/\s+/g, ' ')
+    .split(' ').map(p => p.charAt(0).toLocaleUpperCase('pt-BR') + p.slice(1)).join(' ');
 }
 
 // ---------- Caixa de confirmação (Sim / Não) ----------

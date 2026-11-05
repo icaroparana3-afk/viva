@@ -134,6 +134,15 @@ function criarCoracaoProvisorio(cena) {
   t.refresh();
 }
 
+// ---------- Estrelinha da festa (chegada do bebê) ----------
+//   estrelinha  5×5  brilho em cruz, amarelo
+function criarEstrelinha(cena) {
+  const t = cena.textures.createCanvas('estrelinha', 5, 5);
+  pintarPixels(t.getContext(), ['..a..', '..y..', 'ayway', '..y..', '..a..'],
+    { w: '#ffffff', y: '#ffd860', a: '#e8a640' });
+  t.refresh();
+}
+
 // ---------- O mundo lá fora da janela do quarto (Etapa 5) ----------
 //   nuvem_janela1  12×5   nuvem maior que passa de dia
 //   nuvem_janela2  8×4    nuvem menor

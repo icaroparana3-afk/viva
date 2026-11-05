@@ -96,7 +96,7 @@ class Cegonha extends Phaser.Scene {
     this.cegonha.y = Math.round(this.cegonha.posY + balanco);
   }
 
-  // ---------- Toque: mostra o bebê ----------
+  // ---------- Toque: mostra o bebê, faz a festa e pede o nome ----------
   receber() {
     this.fase = 'revelando';
     this.tweens.killTweensOf(this.dica);
@@ -104,24 +104,30 @@ class Cegonha extends Phaser.Scene {
 
     const U = CONFIG.UI;
     const b = this.bebe;
-    const itens = [];
+    const menina = b.sexo === 'F';
     const fundo = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x000000, 0.45).setOrigin(0, 0).setDepth(20);
-    const painel = this.add.rectangle(14, 140, 152, 150, 0x2a1838, 0.92).setOrigin(0, 0)
+    const painel = this.add.rectangle(14, 112, 152, 180, 0x2a1838, 0.92).setOrigin(0, 0)
       .setStrokeStyle(1, U.CAIXA_ESCOLHIDA).setDepth(21);
-    itens.push(fundo, painel);
+
+    // Festa: corações e estrelinhas saem de trás do bebê
+    this.festa();
 
     // O bebê (as camadas do autor, 2×)
-    const visual = criarBebeVisual(this, 58, 146, 2).mostrar(b).setDepth(22);
+    const visual = criarBebeVisual(this, 58, 118, 2).mostrar(b).setDepth(22);
 
     const fonte = (tam, cor) => ({ fontFamily: 'monospace', fontSize: tam + 'px', color: cor, align: 'center' });
-    const menina = b.sexo === 'F';
-    const linhas = [escrever(this, 90, 212, menina ? 'É uma menina!' : 'É um menino!', fonte(11, U.TEXTO))];
+    let y = 184;
+    const linhas = [escrever(this, 90, y, menina ? 'É uma menina!' : 'É um menino!', fonte(11, U.TEXTO))];
+    y += 16;
     // A origem só é revelada se for especial (regra do DESIGN)
     if (BEBE.revelaOrigem(b)) {
       const nome = { alienigena: 'alienígena', vampiro: menina ? 'vampira' : 'vampiro', lobisomem: 'lobisomem' }[b.especial];
-      linhas.push(escrever(this, 90, 228, (menina ? 'E ela é uma ' : 'E ele é um ') + nome + '!', fonte(8, '#ff9cf0')));
+      linhas.push(escrever(this, 90, y, (menina ? 'E ela é uma ' : 'E ele é um ') + nome + '!', fonte(8, '#ff9cf0')));
+      y += 12;
     }
-    linhas.push(escrever(this, 90, BEBE.revelaOrigem(b) ? 242 : 232, 'Nasceu ' + BEBE.ondeNasceu(b), fonte(7, U.TEXTO_FRACO)));
+    linhas.push(escrever(this, 90, y, 'Nasceu ' + BEBE.ondeNasceu(b), fonte(7, U.TEXTO_FRACO)));
+    const qy = Math.max(224, y + 14);   // pergunta do nome (desce um pouco quando há a linha do especial)
+    linhas.push(escrever(this, 90, qy, menina ? 'Qual vai ser o nome dela?' : 'Qual vai ser o nome dele?', fonte(8, '#ffffff')));
     linhas.forEach(l => l.setOrigin(0.5, 0).setDepth(22));
 
     // Entrada suave
@@ -129,13 +135,50 @@ class Cegonha extends Phaser.Scene {
     visual.setAlpha(0);
     this.tweens.addCounter({ from: 0, to: 1, duration: 300, onUpdate: t => visual.setAlpha(t.getValue()) });
 
-    // Botão do autor (110×20), centralizado embaixo do painel
-    const botao = criarBotaoImg(this, Math.round((CONFIG.LARGURA - 110) / 2), 262, 'botao_levar_berco', () => {
+    // Nome do bebê: o botão só acende com um nome
+    const B = CONFIG.BEBE;
+    const pronto = () => nomeBonito(campo.input.value).length >= B.NOME_MIN;
+    const campo = criarCampoTexto(this, 90, qy + 22, B.NOME_MAX, 'nome', () => botao.ativar(pronto()));
+    const levar = () => {
+      if (!pronto()) return;
+      const dados = Estado.carregar();
+      dados.bebe.nome = nomeBonito(campo.input.value);
+      Estado.salvar();
+      campo.destroy();
       [fundo, painel, ...linhas].forEach(o => o.destroy());
       visual.destroy();
       botao.destroy();
       this.levarParaBerco();
-    }).setDepth(22);
+    };
+    campo.input.addEventListener('keydown', e => { if (e.key === 'Enter') levar(); });
+
+    // Botão do autor (110×20), centralizado embaixo do painel
+    const botao = criarBotaoImg(this, Math.round((CONFIG.LARGURA - 110) / 2), qy + 40, 'botao_levar_berco', levar).setDepth(22);
+    botao.ativar(false);
+  }
+
+  // Corações e estrelinhas saindo de trás do bebê para todos os lados e sumindo
+  // (por cima do painel, mas atrás do bebê e dos textos)
+  festa() {
+    const F = CONFIG.FESTA;
+    const cx = 90, cy = 150;
+    for (let i = 0; i < F.QUANTIDADE; i++) {
+      const p = this.add.image(cx, cy, i % 3 ? 'coracao' : 'estrelinha').setDepth(21.5);
+      const ang = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const dist = Phaser.Math.Between(F.DISTANCIA_MIN, F.DISTANCIA_MAX);
+      p.posX = cx; p.posY = cy;
+      this.tweens.add({
+        targets: p,
+        posX: cx + Math.cos(ang) * dist,
+        posY: cy + Math.sin(ang) * dist * 1.3 - 20,   // mais alto que largo, e subindo um pouco
+        alpha: { from: 1, to: 0 },
+        delay: Phaser.Math.Between(0, 250),
+        duration: Phaser.Math.FloatBetween(F.DURACAO_MIN, F.DURACAO_MAX) * 1000,
+        ease: 'Cubic.easeOut',
+        onUpdate: () => p.setPosition(Math.round(p.posX), Math.round(p.posY)),
+        onComplete: () => p.destroy()
+      });
+    }
   }
 
   // ---------- A cegonha leva o bebê (sem soltar) ----------
@@ -152,7 +195,7 @@ class Cegonha extends Phaser.Scene {
         const dados = Estado.carregar();
         dados.bebeRecebido = true;
         Estado.salvar();
-        this.scene.start('Quarto', { chegou: true });
+        irPara(this, 'Quarto', { chegou: true });
       }
     });
   }

@@ -55,7 +55,7 @@ class Regiao extends Phaser.Scene {
     // ---------- Botões ----------
     this.btComecar = criarBotaoImg(this, 35, 258, 'botao_comecar', () => this.comecar());
     criarBotao(this, 35, 284, 'botao_voltar', () =>
-      this.scene.start('Perfil', { nome: this.nome, papel: this.papel, regiao: this.escolhida })
+      irPara(this, 'Perfil', { nome: this.nome, papel: this.papel, regiao: this.escolhida })
     );
 
     escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
@@ -95,6 +95,6 @@ class Regiao extends Phaser.Scene {
     if (!this.escolhida) return;
     Estado.criarNovo({ nome: this.nome, papel: this.papel, regiao: this.escolhida });
     // A cegonha traz o bebê (Etapa 4)
-    this.scene.start('Cegonha');
+    irPara(this, 'Cegonha');
   }
 }

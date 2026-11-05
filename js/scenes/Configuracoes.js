@@ -21,13 +21,13 @@ class Configuracoes extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Ferramenta de teste da Etapa 3 (sai antes da versão final)
-    criarOpcao(this, 30, 90, 120, 18, 'Teste: gerador do bebê', () => this.scene.start('TesteBebe'), 8);
+    criarOpcao(this, 30, 90, 120, 18, 'Teste: gerador do bebê', () => irPara(this, 'TesteBebe'), 8);
 
     // Botão Voltar: centralizado na horizontal, qualquer que seja a largura do desenho
     const larg = this.textures.get('botao_voltar').getSourceImage().width;
     const alt = this.textures.get('botao_voltar').getSourceImage().height;
     const x = Math.floor((CONFIG.LARGURA - larg) / 2);
     const y = CONFIG.ALTURA - alt - 20;
-    criarBotao(this, x, y, 'botao_voltar', () => this.scene.start('Menu'));
+    criarBotao(this, x, y, 'botao_voltar', () => irPara(this, 'Menu'));
   }
 }

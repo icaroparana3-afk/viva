@@ -51,6 +51,8 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 - Quarto (Etapa 5): o bebê fica sentado no berço, respira, pisca e reage ao toque: fecha os olhos sorrindo, dá um pulinho e solta um coração.
 - Quarto de menina (rosa) e quarto de menino (azul), escolhido pelo sexo do bebê. O berço não tem grade na frente.
 - Janela viva: de dia, claridade, céu azul e nuvens passando; de noite, céu escuro e estrelas (e lua). O quarto escurece um pouco à noite.
+- Nome do bebê: o jogador escolhe quando a cegonha entrega (2 a 12 letras). Aparece nas boas-vindas do quarto.
+- Brinquedos do chão do quarto reagem ao toque (pulam, balançam, o carrinho anda). Janela: passarinho de dia, estrela cadente à noite.
 - Relógio da parede do quarto funciona: os ponteiros mostram a hora do jogo.
 - Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
 

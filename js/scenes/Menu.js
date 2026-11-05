@@ -101,7 +101,7 @@ class Menu extends Phaser.Scene {
     // ---------- Botões ----------
     criarBotao(this, 35, 120, 'botao_nova_historia', () => this.novaHistoria());
     criarBotao(this, 35, 146, 'botao_continuar_historia', () => this.continuarHistoria(), temSave());
-    criarBotao(this, 35, 172, 'botao_configuracoes', () => this.scene.start('Configuracoes'));
+    criarBotao(this, 35, 172, 'botao_configuracoes', () => irPara(this, 'Configuracoes'));
 
     // Versão no rodapé (discreta)
     escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
@@ -306,18 +306,18 @@ class Menu extends Phaser.Scene {
     if (temSave()) {
       criarConfirmacao(this, 'Isso vai apagar a\nhistória salva.\nContinuar?', () => {
         Estado.apagar();
-        this.scene.start('Perfil');
+        irPara(this, 'Perfil');
       });
       return;
     }
-    this.scene.start('Perfil');
+    irPara(this, 'Perfil');
   }
 
   continuarHistoria() {
     const save = Estado.carregar();
     if (!save) return;
     // Se a cegonha ainda não entregou o bebê, ela volta (com o MESMO bebê, que já está salvo).
-    if (!save.bebe || !save.bebeRecebido) { this.scene.start('Cegonha'); return; }
-    this.scene.start('Quarto');
+    if (!save.bebe || !save.bebeRecebido) { irPara(this, 'Cegonha'); return; }
+    irPara(this, 'Quarto');
   }
 }

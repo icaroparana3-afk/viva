@@ -18,7 +18,10 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.33',
+  VERSAO: '0.0.35',
+
+  // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
+  TRANSICAO_SEGUNDOS: 0.25,
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -150,6 +153,15 @@ const CONFIG = {
     DICA_Y: 156                      // altura do texto "Toque para receber seu bebê"
   },
 
+  // ---------- FESTA NA CHEGADA DO BEBÊ (tela da cegonha) ----------
+  FESTA: {
+    QUANTIDADE: 26,          // quantos corações e estrelinhas saem
+    DISTANCIA_MIN: 40,       // até onde eles voam (pixels)
+    DISTANCIA_MAX: 95,
+    DURACAO_MIN: 0.9,        // segundos
+    DURACAO_MAX: 1.6
+  },
+
   // ---------- QUARTO (Etapa 5) ----------
   // Fundo: assets/ui/quarto_menina.png ou quarto_menino.png (180×320), conforme o bebê.
   // O vidro da janela é transparente no desenho: atrás dele o jogo desenha o céu.
@@ -174,6 +186,27 @@ const CONFIG = {
     LUZ_FORCA_DIA: 0.45,                         // brilho de dia (mais fraco: já está claro)
     NOITE_ESCURECER_ABAJUR: 0.12,                // escuro da noite com o abajur aceso (sem ele: CONFIG.JANELA.NOITE_ESCURECER)
     LUZ_TROCA_SEGUNDOS: 0.25                     // tempo para acender/apagar
+  },
+
+  // ---------- BRINQUEDOS DO CHÃO DO QUARTO (tocáveis) ----------
+  // Recortados do desenho do autor (assets/sprites/brinquedo_<quarto>_<nome>.png).
+  // x, y = canto superior esquerdo. acao: 'pulo' (pulinho), 'pulinhos' (dois pulinhos),
+  // 'balanca' (treme de um lado para o outro) ou 'anda' (vai para a frente e volta).
+  BRINQUEDOS: {
+    menina: [
+      { nome: 'urso',     x: 2,  y: 253, acao: 'pulo' },
+      { nome: 'coelho',   x: 20, y: 253, acao: 'pulinhos' },
+      { nome: 'elefante', x: 2,  y: 273, acao: 'balanca' },
+      { nome: 'blocos',   x: 21, y: 271, acao: 'balanca' }
+    ],
+    menino: [
+      { nome: 'dino',   x: 1,  y: 252, acao: 'pulinhos' },
+      { nome: 'blocos', x: 20, y: 257, acao: 'balanca' },
+      { nome: 'carro',  x: 4,  y: 272, acao: 'anda' }
+    ],
+    PULO_PIXELS: 4,          // altura do pulinho
+    ANDA_PIXELS: 10,         // quanto o carrinho anda antes de voltar
+    BALANCA_PIXELS: 1        // quanto treme para cada lado
   },
 
   // ---------- RELÓGIO DA PAREDE DO QUARTO ----------
@@ -206,6 +239,11 @@ const CONFIG = {
     LUA_X: 96, LUA_Y: 79,            // onde fica a lua (canto superior esquerdo)
     TROCA_SEGUNDOS: 1.5,             // tempo da passagem dia ↔ noite
     NOITE_ESCURECER: 0.28,           // quanto o quarto escurece à noite (0 = nada, 1 = preto)
+    // Vida lá fora: de dia passa um passarinho; à noite cai uma estrela cadente
+    PASSARO_INTERVALO_MIN: 6, PASSARO_INTERVALO_MAX: 14,   // segundos entre um passarinho e outro
+    PASSARO_VELOCIDADE: 14,                                 // pixels por segundo
+    ESTRELA_INTERVALO_MIN: 5, ESTRELA_INTERVALO_MAX: 12,   // segundos entre uma estrela cadente e outra
+    ESTRELA_VELOCIDADE: 55,                                 // pixels por segundo
     TESTE_TOQUE_JANELA: true         // TESTE: tocar na janela troca dia/noite (sai na Etapa 6)
   },
 
@@ -214,6 +252,10 @@ const CONFIG = {
   // Listas: cada valor tem a mesma chance. Para um valor sair mais,
   // repita ele na lista (ex.: ['liso', 'liso', 'cacheado'] = liso 2x mais).
   BEBE: {
+    // Nome do bebê (escolhido pelo jogador quando a cegonha entrega)
+    NOME_MAX: 12,
+    NOME_MIN: 2,
+
     // Chance de ser menina (0.5 = metade).
     CHANCE_MENINA: 0.5,
 

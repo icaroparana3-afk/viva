@@ -65,7 +65,7 @@ class Perfil extends Phaser.Scene {
     this.conferir();
 
     // ---------- Voltar (usa o seu desenho) ----------
-    criarBotao(this, 35, 250, 'botao_voltar', () => this.scene.start('Menu'));
+    criarBotao(this, 35, 250, 'botao_voltar', () => irPara(this, 'Menu'));
 
     escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
@@ -83,6 +83,6 @@ class Perfil extends Phaser.Scene {
   proximo() {
     if (!this.conferir()) return;
     this.input.blur();
-    this.scene.start('Regiao', { nome: this.input.value.trim(), papel: this.papel, regiao: this.regiao });
+    irPara(this, 'Regiao', { nome: this.input.value.trim(), papel: this.papel, regiao: this.regiao });
   }
 }

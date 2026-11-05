@@ -78,6 +78,10 @@ class Carregando extends Phaser.Scene {
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
     this.load.image('berco_tras', './assets/sprites/berco_tras.png');
     this.load.image('berco_frente', './assets/sprites/berco_frente.png');
+    for (const quarto of ['menina', 'menino']) {
+      CONFIG.BRINQUEDOS[quarto].forEach(b =>
+        this.load.image('brinquedo_' + quarto + '_' + b.nome, './assets/sprites/brinquedo_' + quarto + '_' + b.nome + '.png'));
+    }
     this.load.image('abajur_aceso_menina', './assets/sprites/abajur_aceso_menina.png');
     this.load.image('abajur_aceso_menino', './assets/sprites/abajur_aceso_menino.png');
     if (P.janela) {
@@ -128,6 +132,7 @@ class Carregando extends Phaser.Scene {
     if (!P.janela) criarJanelaProvisoria(this);
     if (!P.coracao) criarCoracaoProvisorio(this);
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
+    criarEstrelinha(this);      // estrelinha da festa de chegada
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)
 
     // Animações do animal e da folha
@@ -175,7 +180,7 @@ class Carregando extends Phaser.Scene {
       p: 1,
       duration: falta * 1000,
       onUpdate: () => this.mostrar(estado.p),
-      onComplete: () => this.time.delayedCall(250, () => this.scene.start('Menu'))
+      onComplete: () => this.time.delayedCall(250, () => irPara(this, 'Menu'))
     });
   }
 }

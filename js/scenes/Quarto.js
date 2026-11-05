@@ -38,6 +38,9 @@ class Quarto extends Phaser.Scene {
     // ---------- Quarto e berço ----------
     this.add.image(0, 0, this.bebe.sexo === 'F' ? 'quarto_menina' : 'quarto_menino').setOrigin(0, 0);
 
+    // ---------- Brinquedos do chão (tocáveis) ----------
+    this.criarBrinquedos();
+
     // ---------- Relógio da parede (ponteiros andam com a hora do jogo) ----------
     this.ponteiros = this.add.graphics();
     this.ultimoMinuto = -1;
@@ -60,15 +63,14 @@ class Quarto extends Phaser.Scene {
     this.criarAbajur(save);
 
     // ---------- Topo: botão de voltar ao menu ----------
-    criarBotaoImg(this, 4, 4, 'botao_menu', () => this.scene.start('Menu'));   // botão do autor (34×14)
+    criarBotaoImg(this, 4, 4, 'botao_menu', () => irPara(this, 'Menu'));   // botão do autor (34×14)
 
     escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
 
-    if (this.chegou) {
-      mostrarAvisoCaixa(this, this.bebe.sexo === 'F' ? 'Sua filha chegou!' : 'Seu filho chegou!', Q.AVISO_Y);
-    }
+    if (!this.bebe.nome) this.pedirNome();          // save antigo, de antes do nome: pergunta agora
+    else if (this.chegou) this.boasVindas();
 
     // ---------- Dia ou noite ----------
     this.forcado = false;                 // true depois do toque de teste na janela
@@ -125,6 +127,40 @@ class Quarto extends Phaser.Scene {
       });
     }
     this.noiteCeu.add(this.add.image(J.LUA_X, J.LUA_Y, 'lua').setOrigin(0, 0));
+
+    // Passarinho (de dia): atravessa a janela de vez em quando, por cima das nuvens
+    this.passaro = this.add.sprite(0, 0, 'passaro').setOrigin(0, 0).play('passaro_voando').setVisible(false);
+    this.dia.add(this.passaro);
+    // Estrela cadente (à noite): risca o céu da janela de vez em quando
+    this.cadente = this.add.image(0, 0, 'estrela_cadente').setOrigin(0, 1).setVisible(false);
+    this.noiteCeu.add(this.cadente);
+    this.agendarPassaro();
+    this.agendarCadente();
+  }
+
+  agendarPassaro() {
+    const J = CONFIG.JANELA;
+    this.time.delayedCall(Phaser.Math.FloatBetween(J.PASSARO_INTERVALO_MIN, J.PASSARO_INTERVALO_MAX) * 1000, () => {
+      const p = this.passaro;
+      p.posX = J.X - 9;                                            // começa escondido atrás da parede
+      p.y = Phaser.Math.Between(J.Y + 3, J.Y + J.ALTURA - 14);
+      p.x = p.posX;
+      p.setVisible(true);
+      p.voando = true;
+    });
+  }
+
+  agendarCadente() {
+    const J = CONFIG.JANELA;
+    this.time.delayedCall(Phaser.Math.FloatBetween(J.ESTRELA_INTERVALO_MIN, J.ESTRELA_INTERVALO_MAX) * 1000, () => {
+      const e = this.cadente;
+      // Nasce na parte de cima da janela, à direita, e cai para baixo e para a esquerda
+      e.posX = Phaser.Math.Between(J.X + 18, J.X + J.LARGURA);
+      e.posY = Phaser.Math.Between(J.Y - 2, J.Y + 12);
+      e.vida = 0;
+      e.setPosition(e.posX, e.posY).setAlpha(1).setVisible(true);
+      e.caindo = true;
+    });
   }
 
   // Coloca uma nuvem num ponto de partida (à esquerda da janela) com velocidade sorteada.
@@ -180,6 +216,74 @@ class Quarto extends Phaser.Scene {
     g.fillRect(R.CENTRO_X, R.CENTRO_Y, 1, 1);   // pino do centro
   }
 
+  // ---------- Nome do bebê ----------
+  boasVindas() {
+    const menina = this.bebe.sexo === 'F';
+    const texto = (menina ? 'Sua filha chegou!' : 'Seu filho chegou!') + '\n' +
+      (menina ? 'Bem-vinda, ' : 'Bem-vindo, ') + this.bebe.nome + '!';
+    mostrarAvisoCaixa(this, texto, CONFIG.QUARTO.AVISO_Y, 3);
+  }
+
+  // Para bebês que chegaram antes de existir o nome: pergunta uma vez.
+  pedirNome() {
+    const U = CONFIG.UI, B = CONFIG.BEBE;
+    const menina = this.bebe.sexo === 'F';
+    const fundo = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x000000, 0.6)
+      .setOrigin(0, 0).setDepth(100).setInteractive();      // bloqueia os toques de trás
+    const painel = this.add.rectangle(20, 112, 140, 84, 0x2a1838, 0.95).setOrigin(0, 0)
+      .setStrokeStyle(1, U.CAIXA_ESCOLHIDA).setDepth(101);
+    const txt = escrever(this, 90, 122, menina ? 'Qual é o nome\nda sua filha?' : 'Qual é o nome\ndo seu filho?', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#ffffff', align: 'center'
+    }).setOrigin(0.5, 0).setDepth(102);
+    const pronto = () => nomeBonito(campo.input.value).length >= B.NOME_MIN;
+    const campo = criarCampoTexto(this, 90, 156, B.NOME_MAX, 'nome', () => {});
+    const confirmar = () => {
+      if (!pronto()) return;
+      const dados = Estado.carregar();
+      dados.bebe.nome = nomeBonito(campo.input.value);
+      Estado.salvar();
+      this.bebe = dados.bebe;
+      campo.destroy();
+      [fundo, painel, txt, ok.caixa, ok.rotulo].forEach(o => o.destroy());
+      this.boasVindas();
+    };
+    campo.input.addEventListener('keydown', e => { if (e.key === 'Enter') confirmar(); });
+    const ok = criarOpcao(this, 55, 172, 70, 16, 'Pronto', confirmar, 8);
+    ok.caixa.setDepth(102); ok.rotulo.setDepth(103);
+  }
+
+  // ---------- Brinquedos ----------
+  // Cada brinquedo é um desenho separado por cima do quarto. Ao tocar, ele se mexe.
+  criarBrinquedos() {
+    const quarto = this.bebe.sexo === 'F' ? 'menina' : 'menino';
+    this.brinquedos = CONFIG.BRINQUEDOS[quarto].map(b => {
+      const img = this.add.image(b.x, b.y, 'brinquedo_' + quarto + '_' + b.nome).setOrigin(0, 0);
+      const brinq = { img, x: b.x, y: b.y, acao: b.acao, dx: 0, dy: 0, ocupado: false };
+      this.add.zone(b.x - 2, b.y - 2, img.width + 4, img.height + 4).setOrigin(0, 0).setInteractive()
+        .on('pointerup', () => this.mexerBrinquedo(brinq));
+      return brinq;
+    });
+  }
+
+  mexerBrinquedo(b) {
+    if (b.ocupado) return;
+    b.ocupado = true;
+    const B = CONFIG.BRINQUEDOS;
+    const posicionar = () => b.img.setPosition(b.x + Math.round(b.dx), b.y + Math.round(b.dy));
+    const fim = () => { b.dx = 0; b.dy = 0; posicionar(); b.ocupado = false; };
+    const comum = { targets: b, onUpdate: posicionar, onComplete: fim };
+    if (b.acao === 'pulo') {
+      this.tweens.add({ ...comum, dy: -B.PULO_PIXELS, duration: 140, yoyo: true, ease: 'Sine.easeOut' });
+    } else if (b.acao === 'pulinhos') {
+      this.tweens.add({ ...comum, dy: -B.PULO_PIXELS + 1, duration: 110, yoyo: true, repeat: 1, ease: 'Sine.easeOut' });
+    } else if (b.acao === 'balanca') {
+      b.dx = -B.BALANCA_PIXELS;
+      this.tweens.add({ ...comum, dx: B.BALANCA_PIXELS, duration: 70, yoyo: true, repeat: 2 });
+    } else if (b.acao === 'anda') {
+      this.tweens.add({ ...comum, dx: B.ANDA_PIXELS, duration: 550, yoyo: true, hold: 200, ease: 'Sine.easeInOut' });
+    }
+  }
+
   // ---------- Abajur ----------
   // Por cima do escuro da noite: a cúpula acesa e o brilho em volta.
   criarAbajur(save) {
@@ -222,6 +326,7 @@ class Quarto extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (!this.visual) return;     // a cena saiu antes de montar (sem save)
     const Q = CONFIG.QUARTO;
     const seg = delta / 1000;
     this.tempo += seg;
@@ -233,6 +338,23 @@ class Quarto extends Phaser.Scene {
       n.posX += n.vel * seg;
       if (n.posX > J.X + J.LARGURA) this.sortearNuvem(n, false);
       n.x = Math.round(n.posX);
+    }
+    // Passarinho atravessando a janela
+    const p = this.passaro;
+    if (p.voando) {
+      p.posX += J.PASSARO_VELOCIDADE * seg;
+      p.x = Math.round(p.posX);
+      if (p.x > J.X + J.LARGURA) { p.voando = false; p.setVisible(false); this.agendarPassaro(); }
+    }
+    // Estrela cadente: anda na diagonal (2 para o lado, 1 para baixo) e apaga
+    const e = this.cadente;
+    if (e.caindo) {
+      e.vida += seg;
+      e.posX -= J.ESTRELA_VELOCIDADE * seg;
+      e.posY += J.ESTRELA_VELOCIDADE * seg / 2;
+      e.setPosition(Math.round(e.posX), Math.round(e.posY));
+      e.setAlpha(Math.max(0, 1 - e.vida / 0.7));
+      if (e.vida > 0.7) { e.caindo = false; e.setVisible(false); this.agendarCadente(); }
     }
 
     // Respirar: metade do tempo 1 px para cima, metade no lugar

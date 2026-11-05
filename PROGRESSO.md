@@ -65,6 +65,12 @@
   - TESTE: tocar na janela troca dia/noite (`CONFIG.JANELA.TESTE_TOQUE_JANELA`, sai na Etapa 6).
   - Nuvens da janela (12×5 e 8×4) e lua (5×5) provisórias, feitas por código com as cores da nuvem do autor.
   - Originais do autor guardados em `assets/originais/` (berco_original, quarto_menina_original, quarto_menino_original).
+- **Acabamentos (v0.0.34):**
+  - Transição suave entre todas as telas (escurece e clareia): `irPara(cena, 'Tela')` em js/botao.js; tempo em `CONFIG.TRANSICAO_SEGUNDOS`.
+  - Vida na janela: de dia um passarinho atravessa o vidro; à noite cai uma estrela cadente. Intervalos e velocidades em `CONFIG.JANELA`.
+  - Brinquedos tocáveis: recortados do chão dos quartos do autor (`brinquedo_menina_urso/coelho/elefante/blocos`, `brinquedo_menino_dino/blocos/carro`), o chão embaixo deles foi completado com as tábuas. Ao tocar: pulinho, dois pulinhos, balançar ou o carrinho anda e volta. Posições e ações em `CONFIG.BRINQUEDOS`.
+  - Festa na chegada: corações e estrelinhas saem de trás do bebê quando ele é revelado (`CONFIG.FESTA`).
+  - Nome do bebê: na tela da cegonha, "Qual vai ser o nome dela/dele?" com campo de texto; o botão "Levar para o berço" só acende com um nome (2 a 12 letras, `CONFIG.BEBE.NOME_MIN/MAX`). Salvo em `bebe.nome`, com a primeira letra de cada palavra em maiúscula. No quarto: "Sua filha chegou! / Bem-vinda, Luna!". Save antigo sem nome: o quarto pergunta o nome uma vez.
 - **Abajur acende e apaga (v0.0.33):** tocar no abajur acende/apaga. Aceso: a cúpula brilha (`abajur_aceso_menina/menino.png`, 28×10, feitas a partir da cúpula do desenho do autor) e um brilho amarelo em anéis (`luz_abajur`, por código) clareia o canto; à noite o quarto fica bem menos escuro. O estado fica salvo (`abajurAceso` no save). Sem ligação com o sono. Ajustes em `CONFIG.QUARTO` (ABAJUR_*, LUZ_*).
 - **Relógio do quarto funcionando (v0.0.32):** os ponteiros do desenho foram apagados (nos dois quartos) e o jogo desenha os ponteiros pixel a pixel, com as cores do autor, conforme a hora do jogo. Ajustes em `CONFIG.RELOGIO`.
   - Novo `js/tempo.js`: `TEMPO.agora()` e `TEMPO.ehNoite()` são o único lugar que diz a hora do jogo. Hoje é a hora do aparelho; na Etapa 6 só esse arquivo muda e o relógio e a janela acompanham.
@@ -108,6 +114,7 @@
 | assets/ui/quarto_menina.png / quarto_menino.png | 180×320 | quartos do autor (v0.0.27); vidro da janela transparente (x 69–110, y 76–120) para o céu vivo |
 | assets/sprites/berco_tras.png / berco_frente.png | 80×64 cada | berço do autor reduzido e limpo; frente = postes + painel |
 | assets/ui/botao_levar_berco.png / botao_menu.png | 110×20 / 34×14 | botões do autor (v0.0.30) |
+| assets/sprites/brinquedo_menina_*.png / brinquedo_menino_*.png | 10×17 a 23×13 | brinquedos recortados dos quartos do autor (v0.0.34) |
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
@@ -127,7 +134,7 @@
 - Versão aparece no rodapé para conferir se o celular pegou a atualização.
 - Backup: Git pelo VS Code ("Publish to GitHub" já feito).
 - Menu reaproveitado do jogo antigo, peças separadas pelo autor; posições idênticas ao original (botões em x=35, y=120/146/172).
-- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado}, bebeRecebido, abajurAceso}`.
+- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado, nome}, bebeRecebido, abajurAceso}`.
 - Nome do jogador: máximo 12 letras, mínimo 2 (em `CONFIG.PERFIL`).
 - Regiões salvas pelo id: norte, nordeste, centro-oeste, sudeste, sul.
 - Cada região em `CONFIG.PERFIL.REGIOES` guarda: cor principal no mapa, texto do clima e lista de estados.

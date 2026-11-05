@@ -52,7 +52,7 @@ class TesteBebe extends Phaser.Scene {
     this.linhas = this.add.container(0, 0);
     this.txtRodape = escrever(this, 90, 277, '', fonte(7, U.TEXTO_FRACO)).setOrigin(0.5, 0);
 
-    criarBotao(this, 35, 295, 'botao_voltar', () => this.scene.start('Configuracoes'));
+    criarBotao(this, 35, 295, 'botao_voltar', () => irPara(this, 'Configuracoes'));
 
     this.pagina = 0;
     this.resultado = null;
