@@ -66,6 +66,8 @@
   - Abajur (criado-mudo à direita) reservado como botão de dormir: posição em `CONFIG.QUARTO.ABAJUR_*`; a função entra na etapa do sono.
   - Nuvens da janela (12×5 e 8×4) e lua (5×5) provisórias, feitas por código com as cores da nuvem do autor.
   - Originais do autor guardados em `assets/originais/` (berco_original, quarto_menina_original, quarto_menino_original).
+- **Relógio do quarto funcionando (v0.0.32):** os ponteiros do desenho foram apagados (nos dois quartos) e o jogo desenha os ponteiros pixel a pixel, com as cores do autor, conforme a hora do jogo. Ajustes em `CONFIG.RELOGIO`.
+  - Novo `js/tempo.js`: `TEMPO.agora()` e `TEMPO.ehNoite()` são o único lugar que diz a hora do jogo. Hoje é a hora do aparelho; na Etapa 6 só esse arquivo muda e o relógio e a janela acompanham.
 - **Borda da cegonha limpa (v0.0.31):** a redução tinha deixado pixels brancos/cinzas na borda; agora toda a borda tem o contorno escuro, como no desenho original.
 - **Botões do autor e aviso em caixa (v0.0.30):** `botao_levar_berco.png` 110×20 (centralizado em y 262 na cegonha) e `botao_menu.png` 34×14 (canto do quarto, em (4,4)). "Sua filha/Seu filho chegou!" agora aparece numa caixa roxa igual ao painel da cegonha (`mostrarAvisoCaixa` em js/botao.js), some depois de 2,5 s.
 - **Cegonha menor (v0.0.29):** `cegonha.png` reduzida de 110×119 para 80×87 por quadro (160×87 no total), pairando em (50,50). O original 220×119 está em `assets/originais/cegonha_220x119_original.png`.

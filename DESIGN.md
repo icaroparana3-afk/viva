@@ -51,6 +51,7 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 - Quarto (Etapa 5): o bebê fica sentado no berço, respira, pisca e reage ao toque: fecha os olhos sorrindo, dá um pulinho e solta um coração.
 - Quarto de menina (rosa) e quarto de menino (azul), escolhido pelo sexo do bebê. O berço não tem grade na frente.
 - Janela viva: de dia, claridade, céu azul e nuvens passando; de noite, céu escuro e estrelas (e lua). O quarto escurece um pouco à noite.
+- Relógio da parede do quarto funciona: os ponteiros mostram a hora do jogo.
 - Abajur (no criado-mudo) é o botão de dormir: abajur aceso = bebê dormindo; abajur apagado = bebê acordado. (Função na etapa do sono.)
 
 ## Bebê

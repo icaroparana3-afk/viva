@@ -37,6 +37,11 @@ class Quarto extends Phaser.Scene {
 
     // ---------- Quarto e berço ----------
     this.add.image(0, 0, this.bebe.sexo === 'F' ? 'quarto_menina' : 'quarto_menino').setOrigin(0, 0);
+
+    // ---------- Relógio da parede (ponteiros andam com a hora do jogo) ----------
+    this.ponteiros = this.add.graphics();
+    this.ultimoMinuto = -1;
+    this.desenharRelogio();
     this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_tras').setOrigin(0, 0);
 
     // ---------- Bebê (camadas do autor) ----------
@@ -132,9 +137,44 @@ class Quarto extends Phaser.Scene {
   }
 
   ehNoite() {
-    const J = CONFIG.JANELA;
-    const h = new Date().getHours();
-    return h < J.DIA_COMECA || h >= J.NOITE_COMECA;
+    return TEMPO.ehNoite();   // hora do jogo (js/tempo.js)
+  }
+
+  // ---------- Relógio ----------
+  // Desenha os dois ponteiros pixel a pixel, saindo do centro do mostrador.
+  // Só redesenha quando o minuto muda.
+  desenharRelogio() {
+    const R = CONFIG.RELOGIO;
+    const t = TEMPO.agora();
+    if (t.minuto === this.ultimoMinuto) return;
+    this.ultimoMinuto = t.minuto;
+
+    const g = this.ponteiros;
+    g.clear();
+    // Ângulos: 0 = para cima (12h), girando no sentido do relógio
+    const angMin = (t.minuto / 60) * Math.PI * 2;
+    const angHora = (((t.hora % 12) + t.minuto / 60) / 12) * Math.PI * 2;
+    const linha = (ang, comp, cor) => {
+      const x1 = R.CENTRO_X + Math.round(Math.sin(ang) * comp);
+      const y1 = R.CENTRO_Y - Math.round(Math.cos(ang) * comp);
+      // Linha de pixels (Bresenham) do centro até a ponta
+      let x = R.CENTRO_X, y = R.CENTRO_Y;
+      const dx = Math.abs(x1 - x), dy = -Math.abs(y1 - y);
+      const sx = x < x1 ? 1 : -1, sy = y < y1 ? 1 : -1;
+      let erro = dx + dy;
+      g.fillStyle(cor, 1);
+      while (true) {
+        g.fillRect(x, y, 1, 1);
+        if (x === x1 && y === y1) break;
+        const e2 = 2 * erro;
+        if (e2 >= dy) { erro += dy; x += sx; }
+        if (e2 <= dx) { erro += dx; y += sy; }
+      }
+    };
+    linha(angMin, R.MINUTO_COMPRIMENTO, R.COR_MINUTO);
+    linha(angHora, R.HORA_COMPRIMENTO, R.COR_HORA);
+    g.fillStyle(R.COR_CENTRO, 1);
+    g.fillRect(R.CENTRO_X, R.CENTRO_Y, 1, 1);   // pino do centro
   }
 
   // Passa para dia ou noite (segundos = duração da passagem; 0 = na hora)
@@ -157,6 +197,7 @@ class Quarto extends Phaser.Scene {
     const Q = CONFIG.QUARTO;
     const seg = delta / 1000;
     this.tempo += seg;
+    this.desenharRelogio();
 
     // Nuvens atravessam a janela devagar (fora do vidro ficam escondidas atrás da parede)
     const J = CONFIG.JANELA;

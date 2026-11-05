@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.31',
+  VERSAO: '0.0.32',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -167,6 +167,18 @@ const CONFIG = {
     // Abajur (no criado-mudo, à direita): será o botão de dormir.
     // Aceso = bebê dormindo; apagado = acordado. (A função entra na etapa do sono.)
     ABAJUR_X: 153, ABAJUR_Y: 237, ABAJUR_LARGURA: 21, ABAJUR_ALTURA: 27
+  },
+
+  // ---------- RELÓGIO DA PAREDE DO QUARTO ----------
+  // Os ponteiros do desenho foram apagados; o jogo desenha os dois
+  // ponteiros conforme a hora do jogo (js/tempo.js).
+  RELOGIO: {
+    CENTRO_X: 110, CENTRO_Y: 153,    // pixel do centro do mostrador
+    MINUTO_COMPRIMENTO: 4,           // ponteiro grande (pixels)
+    HORA_COMPRIMENTO: 3,             // ponteiro pequeno
+    COR_MINUTO: 0x12232a,            // as cores dos ponteiros do desenho do autor
+    COR_HORA: 0x4f3e45,
+    COR_CENTRO: 0x785640
   },
 
   // ---------- JANELA DO QUARTO: o mundo lá fora ----------
