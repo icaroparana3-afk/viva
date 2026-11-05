@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 4 — Cegonha** (aguardando "aprovado")
+**Etapa 5 — Quarto e bebê** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -43,7 +43,7 @@
 
 - **Tela de carregamento (v0.0.21):** `Boot` carrega só o cenário e a mamadeira; a cena nova `Carregando` mostra o menu parado (sem botões, crianças, animal, estrela e pássaro) com a mamadeira do autor enchendo de 0% a 100% e a porcentagem embaixo, depois abre o Menu. Fica pelo menos `CONFIG.CARREGAMENTO.TEMPO_MINIMO` (1,5 s) para dar tempo de ver a mamadeira encher. Números em `CONFIG.CARREGAMENTO`.
 
-- **Etapa 4 (v0.0.22):**
+- **Etapa 4 (aprovada em 2026-11-05, v0.0.22–0.0.25):**
   - Cena `Cegonha`: cenário do menu (sem piquenique), a cegonha entra voando da direita com a trouxinha no bico, para e fica pairando (sobe e desce) com "Toque para receber seu bebê".
   - Regra: a trouxinha é reposicionada no bico a cada quadro (sem física): nunca cai. Conferido no teste (distância bico↔trouxinha sempre igual).
   - Toque: aparece o bebê (camadas do autor, 2×), "É um menino!/É uma menina!", a origem só se for especial ("E ela é uma vampira!") e "Nasceu no/na/em <estado>". Botão "Levar para o berço": a cegonha sai voando com o bebê, o save marca `bebeRecebido: true` e volta ao Menu com "O bebê está no berço!".
@@ -52,6 +52,12 @@
   - `js/bebe_visual.js`: `criarBebeVisual(cena, x, y, escala)` desenha o bebê em camadas (usado no teste e na cegonha).
   - `BEBE.ondeNasceu(bebe)` + `CONFIG.PERFIL.NASCEU_EM`: artigo certo de cada estado (no Paraná, na Bahia, em São Paulo).
   - Cegonha e trouxinha provisórias (feitas por código) até a arte do autor chegar. Números em `CONFIG.CEGONHA`.
+
+- **Etapa 5 (v0.0.26):**
+  - Cena `Quarto`: fundo do quarto, berço em duas camadas (trás e frente) e o bebê sentado no colchão entre elas (a grade da frente fica na frente dele).
+  - Bebê vivo: respira (sobe 1 px e desce), pisca a cada 2,5–6 s (pálpebras com a cor da pele, feitas a partir dos olhos do desenho do autor) e, ao ser tocado, dá um pulinho e solta um coração.
+  - Fluxo: a cegonha leva o bebê e o jogo abre o quarto com "Seu filho chegou!/Sua filha chegou!". "Continuar História" abre o quarto quando o bebê já foi recebido. Botão "Menu" no canto volta ao menu.
+  - Quarto, berço e coração provisórios (feitos por código); números em `CONFIG.QUARTO`.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -85,6 +91,7 @@
 | assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
 
 ## Falta desenhar (pode ser depois)
+- **Quarto (Etapa 5):** `assets/ui/quarto_fundo.png` 180×320 (parede, janela, chão; o berço fica em (50,186)). `assets/sprites/berco_tras.png` e `berco_frente.png`, 80×64 cada, no mesmo quadro: a de trás tem cabeceira, grade de trás e colchão; a da frente tem só a grade da frente (o resto transparente). O bebê (32×32) fica sentado em (74,200), com o bumbum na altura do colchão. Ao chegar: ligar `ARTES_PRONTAS.quarto`.
 - **Cegonha (Etapa 4):** `assets/sprites/cegonha.png` 192×32 = 4 quadros de 48×32 lado a lado (asas para cima, no meio, para baixo, no meio), olhando para a ESQUERDA, com o bico na ponta esquerda. `assets/sprites/trouxinha.png` 14×16 com o nó em cima (onde o bico segura). Ao chegar: ligar `ARTES_PRONTAS.cegonha` e ajustar `CONFIG.CEGONHA.BICO_X/BICO_Y` ao bico do desenho.
 - **Desenhos da vida no menu (o autor está fazendo).** Ao chegar, colocar na pasta e ligar o item em `CONFIG.ARTES_PRONTAS`:
   - `assets/sprites/animal.png`: 128×16 (8 quadros de 16×16 lado a lado). Quadros 0–3 = parado (repete), 4–7 = ação. Olhando para a esquerda (para o casal).
@@ -118,7 +125,7 @@
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
-Etapa 5 — Quarto e bebê: o quarto com o berço, o bebê aparecendo nele (camadas do autor) e "Continuar História" abrindo o quarto.
+Etapa 6 — Relógio e save: o tempo do jogo (7 dias reais = 2 anos), a idade do bebê andando, a hora do dia (dia/noite na janela) e o save guardando a última vez que o jogador entrou.
 
 ## Decisões da Etapa 3 (padrões, ajustáveis no config.js)
 - Origens: Negro 26, Branco 26, Indígena 20, Cabo Verde 16, Miscigenado 10, Especial 2 (%).

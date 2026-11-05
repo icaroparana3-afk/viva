@@ -71,6 +71,11 @@ class Carregando extends Phaser.Scene {
     }
     if (P.folha) this.load.spritesheet('folha', './assets/sprites/folha.png', { frameWidth: 4, frameHeight: 4 });
     if (P.vento) this.load.image('vento', './assets/sprites/vento.png');
+    if (P.quarto) {
+      this.load.image('quarto_fundo', './assets/ui/quarto_fundo.png');
+      this.load.image('berco_tras', './assets/sprites/berco_tras.png');
+      this.load.image('berco_frente', './assets/sprites/berco_frente.png');
+    }
     if (P.cegonha) {
       this.load.spritesheet('cegonha', './assets/sprites/cegonha.png',
         { frameWidth: CONFIG.CEGONHA.LARGURA, frameHeight: CONFIG.CEGONHA.ALTURA });
@@ -115,6 +120,8 @@ class Carregando extends Phaser.Scene {
     if (!P.folha) criarFolhaProvisoria(this);
     if (!P.vento) criarVentoProvisorio(this);
     if (!P.cegonha) criarCegonhaProvisoria(this);
+    if (!P.quarto) criarQuartoProvisorio(this);
+    criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)
 
     // Animações do animal e da folha
     const A = CONFIG.ANIMAL;

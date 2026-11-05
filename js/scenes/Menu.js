@@ -318,7 +318,6 @@ class Menu extends Phaser.Scene {
     if (!save) return;
     // Se a cegonha ainda não entregou o bebê, ela volta (com o MESMO bebê, que já está salvo).
     if (!save.bebe || !save.bebeRecebido) { this.scene.start('Cegonha'); return; }
-    // A Etapa 5 vai abrir o quarto aqui.
-    mostrarAviso(this, 'Em breve: o quarto');
+    this.scene.start('Quarto');
   }
 }

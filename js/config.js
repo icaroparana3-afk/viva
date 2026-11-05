@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.25',
+  VERSAO: '0.0.26',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -69,8 +69,10 @@ const CONFIG = {
     folha: false,      // assets/sprites/folha.png — 4 quadros de 4×4 lado a lado (16×4)
     vento: false,      // assets/sprites/vento.png — risco de vento, 24×3
     sombras: false,    // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
-    cegonha: false     // assets/sprites/cegonha.png — 4 quadros de 48×32 (192×32), olhando para a esquerda
+    cegonha: false,    // assets/sprites/cegonha.png — 4 quadros de 48×32 (192×32), olhando para a esquerda
                        // e assets/sprites/trouxinha.png — 14×16 (a trouxinha que ela segura no bico)
+    quarto: false      // assets/ui/quarto_fundo.png 180×320 (parede, janela, chão)
+                       // e assets/sprites/berco_tras.png + berco_frente.png — 80×64 cada (mesmo tamanho, um por cima do outro)
   },
 
   // ---------- TELA DE CARREGAMENTO ----------
@@ -145,6 +147,17 @@ const CONFIG = {
     BALANCO_PIXELS: 3,               // quanto ela sobe e desce enquanto paira
     BALANCO_POR_SEG: 0.8,
     SAIDA_SEGUNDOS: 2                // tempo para sair voando com o bebê (indo para o berço)
+  },
+
+  // ---------- QUARTO (Etapa 5) ----------
+  QUARTO: {
+    BERCO_X: 50, BERCO_Y: 186,       // canto superior esquerdo do berço (80×64)
+    BEBE_X: 74,  BEBE_Y: 200,        // canto superior esquerdo do bebê (32×32), sentado no colchão
+    RESPIRAR_SEGUNDOS: 1.4,          // tempo de uma respiração (sobe 1 px e desce)
+    PISCAR_MIN: 2.5,                 // espera mínima entre uma piscada e outra (segundos)
+    PISCAR_MAX: 6,
+    PISCAR_DURACAO: 0.15,            // quanto tempo o olho fica fechado (segundos)
+    PULINHO_PIXELS: 3                // altura do pulinho quando o jogador toca no bebê
   },
 
   // ---------- BEBÊ (Etapa 3) ----------

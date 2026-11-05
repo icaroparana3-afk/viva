@@ -9,7 +9,7 @@
 //    presa ao bico em todo quadro (sem física, sem queda).
 // 3. Ao tocar: aparece o bebê, só com o sexo (e a origem, se for especial).
 // 4. "Levar para o berço": a cegonha sai voando com o bebê e o save marca
-//    o bebê como recebido. O quarto chega na Etapa 5.
+//    o bebê como recebido e o jogo abre o quarto (o bebê já no berço).
 // =============================================================
 
 class Cegonha extends Phaser.Scene {
@@ -162,8 +162,7 @@ class Cegonha extends Phaser.Scene {
         const dados = Estado.carregar();
         dados.bebeRecebido = true;
         Estado.salvar();
-        // O quarto (com o berço) chega na Etapa 5.
-        this.scene.start('Menu', { avisar: 'O bebê está no berço!' });
+        this.scene.start('Quarto', { chegou: true });
       }
     });
   }

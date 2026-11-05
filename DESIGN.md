@@ -48,6 +48,7 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
 
 ## Casa
 Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (cadeirinha). O jogador navega entre eles.
+- Quarto (Etapa 5): o bebê fica sentado no berço, respira, pisca e reage ao toque (pulinho e coração).
 
 ## Bebê
 - Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome. Depois, na cozinha.

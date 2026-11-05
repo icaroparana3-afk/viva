@@ -7,18 +7,22 @@
 //
 //   const v = criarBebeVisual(cena, x, y, escala);
 //   v.mostrar(bebe);      // pinta as camadas para este bebê
+//   v.piscar(true);       // fecha os olhos (false abre)
 //   v.setVisible(false);  v.setDepth(10);  v.setAlpha(0.5);  v.destroy();
 // =============================================================
 
 function criarBebeVisual(cena, x, y, escala = 1) {
-  // Ordem de baixo para cima: corpo → brilho → cabelo → olhos → contorno → extra
-  const nomes = ['corpo', 'brilho', 'cabelo', 'olhos', 'contorno', 'extra'];
+  // Ordem de baixo para cima: corpo → brilho → cabelo → olhos → contorno → pálpebras → olho fechado → extra
+  // (pálpebras e olho fechado só aparecem quando o bebê pisca)
+  const nomes = ['corpo', 'brilho', 'cabelo', 'olhos', 'contorno', 'palpebras', 'olhos_fechados', 'extra'];
   const camadas = {};
   for (const n of nomes) {
     const textura = n === 'extra' ? 'bebe_extra_vampiro' : 'bebe_' + n;
     camadas[n] = cena.add.image(x, y, textura).setOrigin(0, 0).setScale(escala);
   }
   camadas.extra.setVisible(false);
+  camadas.palpebras.setVisible(false);
+  camadas.olhos_fechados.setVisible(false);
 
   const hex = (h) => parseInt(h.slice(1), 16);
   const todas = () => nomes.map(n => camadas[n]);
@@ -28,6 +32,7 @@ function criarBebeVisual(cena, x, y, escala = 1) {
     mostrar(b) {
       const C = CONFIG.BEBE.CORES;
       camadas.corpo.setTint(hex(C.pele[b.pele]));
+      camadas.palpebras.setTint(hex(C.pele[b.pele]));
       camadas.olhos.setTint(hex(C.olhos[b.olhos]));
       camadas.cabelo.setTint(hex(C.cabeloCor[b.cabeloCor]));
       camadas.extra.setVisible(!!b.especial);
@@ -38,8 +43,15 @@ function criarBebeVisual(cena, x, y, escala = 1) {
       obj.bebe = b;
       return obj;
     },
+    piscar(fechado) {
+      camadas.palpebras.setVisible(fechado);
+      camadas.olhos_fechados.setVisible(fechado);
+      return obj;
+    },
     setVisible(v) {
       todas().forEach(c => c.setVisible(v));
+      camadas.palpebras.setVisible(false);
+      camadas.olhos_fechados.setVisible(false);
       if (v && obj.bebe) camadas.extra.setVisible(!!obj.bebe.especial);
       return obj;
     },
