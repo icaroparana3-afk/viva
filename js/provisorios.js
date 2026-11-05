@@ -125,89 +125,6 @@ function criarSombrasProvisorias(cena) {
   }
 }
 
-// ---------- Cegonha (4 quadros de 48×32, olhando para a esquerda) ----------
-// Quadros: 0 asas para cima, 1 asas no meio, 2 asas para baixo, 3 = 1.
-// O bico fica na ponta esquerda; a trouxinha é presa em CONFIG.CEGONHA.BICO_X/BICO_Y.
-function criarCegonhaProvisoria(cena) {
-  const L = 48, A = 32;
-  const tex = cena.textures.createCanvas('cegonha', L * 4, A);
-  const ctx = tex.getContext();
-  const BRANCO = '#f4f4f4', SOMBRA = '#c8c8d8', PRETO = '#2a2430', LARANJA = '#f08c40', CONT = '#2a1838';
-
-  for (let q = 0; q < 4; q++) {
-    const m = [];                                   // mapa de cores do quadro
-    for (let y = 0; y < A; y++) m.push(new Array(L).fill(null));
-    const pinta = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < L && y < A) m[y][x] = c; };
-    const elipse = (cx, cy, rx, ry, cor, corBaixo) => {
-      for (let y = 0; y < A; y++) for (let x = 0; x < L; x++)
-        if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1) pinta(x, y, corBaixo && y > cy + ry * 0.3 ? corBaixo : cor);
-    };
-    const linha = (x0, y0, x1, y1, cor, grossura = 1) => {
-      const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
-      for (let i = 0; i <= n; i++) {
-        const x = x0 + (x1 - x0) * i / n, y = y0 + (y1 - y0) * i / n;
-        for (let g = 0; g < grossura; g++) pinta(x, y + g, cor);
-      }
-    };
-    // pernas para trás
-    linha(32, 19, 46, 22, LARANJA);
-    linha(31, 20, 45, 24, LARANJA);
-    // corpo, cauda preta, pescoço e cabeça
-    elipse(25, 16, 10, 5, BRANCO, SOMBRA);
-    elipse(35, 15, 3, 2, PRETO);
-    linha(15, 13, 19, 15, BRANCO, 3);
-    elipse(11, 10, 4, 3.5, BRANCO);
-    pinta(10, 9, PRETO);                            // olho
-    linha(7, 11, 1, 13, LARANJA, 2);                // bico
-    // asa, conforme o quadro
-    const fase = q === 3 ? 1 : q;
-    if (fase === 0) {                               // para cima
-      for (let i = 0; i < 10; i++) linha(19 + i, 12, 15 + i * 1.2, 2 + i * 0.3, i > 6 ? PRETO : BRANCO);
-    } else if (fase === 1) {                        // no meio
-      for (let i = 0; i < 6; i++) linha(16, 11 + i * 0.5, 36, 12 + i * 0.4, i < 2 ? SOMBRA : BRANCO);
-      linha(31, 11, 37, 12, PRETO, 2);
-    } else {                                        // para baixo
-      for (let i = 0; i < 10; i++) linha(19 + i, 17, 16 + i * 1.2, 26 + i * 0.3, i > 6 ? PRETO : SOMBRA);
-    }
-    // contorno escuro em volta de tudo
-    for (let y = 0; y < A; y++) for (let x = 0; x < L; x++) {
-      if (m[y][x]) continue;
-      const viz = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => (m[y + dy] || [])[x + dx] && (m[y + dy][x + dx] !== 'C'));
-      if (viz) m[y][x] = 'C';
-    }
-    for (let y = 0; y < A; y++) for (let x = 0; x < L; x++) {
-      const c = m[y][x];
-      if (!c) continue;
-      ctx.fillStyle = c === 'C' ? CONT : c;
-      ctx.fillRect(q * L + x, y, 1, 1);
-    }
-  }
-  tex.refresh();
-  registrarQuadros(tex, L, A, 4);
-
-  // Trouxinha (14×16): pano creme com o nó em cima (onde o bico segura)
-  const t = cena.textures.createCanvas('trouxinha', 14, 16);
-  pintarPixels(t.getContext(), [
-    '.....ooo......',
-    '....oaao......',
-    '....oaaoo.....',
-    '...oaabbao....',
-    '..oaaaaaaao...',
-    '.oaaaaaaabbo..',
-    '.oaacaaaaabo..',
-    'oaaacaaaaaabo.',
-    'oaaaaaaaaaabo.',
-    'oaaaaaaaaabbo.',
-    'oaaaaaaaaabbo.',
-    '.oaaaaaaabbo..',
-    '.oaaaaaabbbo..',
-    '..obbbbbbbo...',
-    '...ooooooo....',
-    '..............'
-  ], { o: '#2a1838', a: '#f6ead2', b: '#d8c8a8', c: '#ffffff' });
-  t.refresh();
-}
-
 // ---------- Coraçãozinho (Etapa 5) ----------
 //   coracao  7×6  sobe quando o bebê é tocado
 function criarCoracaoProvisorio(cena) {
@@ -253,18 +170,22 @@ function criarJanelaProvisoria(cena) {
 }
 
 // ---------- Pálpebras do bebê (piscar) ----------
-// Feitas a partir das posições dos olhos no desenho do autor (2×2 em (11,11) e (19,11)).
-//   bebe_palpebras       cobre os olhos com a cor da pele (recebe tint da pele)
-//   bebe_olhos_fechados  risquinho escuro do olho fechado (cor fixa)
+// Feitas a partir das posições dos olhos no desenho do autor (olhos em x 11–12 e 19–20, linhas 11–13).
+//   bebe_palpebras       cobre os olhos com a cor da pele (branco: o jogo pinta com a cor da pele)
+//   bebe_olhos_fechados  olho fechado tranquilo, curvinha para baixo (◡ ◡) — piscar
+//   bebe_olhos_felizes   olho fechado sorrindo, curvinha para cima (^ ^) — quando é tocado
 function criarPalpebrasBebe(cena) {
+  const olhos = [10, 18];   // coluna onde começa cada olho (4 px de largura)
   let t = cena.textures.createCanvas('bebe_palpebras', 32, 32);
   let c = t.getContext();
-  c.fillStyle = '#f0f0f0';
-  for (const x of [11, 19]) c.fillRect(x, 11, 2, 2);
+  c.fillStyle = '#ffffff';
+  for (const x of olhos) c.fillRect(x, 11, 4, 3);
   t.refresh();
-  t = cena.textures.createCanvas('bebe_olhos_fechados', 32, 32);
-  c = t.getContext();
-  c.fillStyle = '#141414';
-  for (const x of [11, 19]) c.fillRect(x, 12, 2, 1);
-  t.refresh();
+  const desenho = (nome, linhas) => {
+    const tx = cena.textures.createCanvas(nome, 32, 32);
+    for (const x of olhos) pintarPixels(tx.getContext(), linhas, { o: '#141414' }, x, 12);
+    tx.refresh();
+  };
+  desenho('bebe_olhos_fechados', ['o..o', '.oo.']);
+  desenho('bebe_olhos_felizes', ['.oo.', 'o..o']);
 }

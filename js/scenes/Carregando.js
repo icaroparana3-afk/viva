@@ -58,6 +58,8 @@ class Carregando extends Phaser.Scene {
     this.load.image('botao_continuar_historia', './assets/ui/botao_continuar_historia.png');
     this.load.image('botao_configuracoes', './assets/ui/botao_configuracoes.png');
     this.load.image('botao_voltar', './assets/ui/botao_voltar.png');
+    this.load.image('botao_levar_berco', './assets/ui/botao_levar_berco.png');
+    this.load.image('botao_menu', './assets/ui/botao_menu.png');
 
     // Desenhos que só carregam quando estiverem prontos (ver CONFIG.ARTES_PRONTAS)
     const P = CONFIG.ARTES_PRONTAS;
@@ -80,11 +82,9 @@ class Carregando extends Phaser.Scene {
       ['nuvem_janela1', 'nuvem_janela2', 'lua'].forEach(nome => this.load.image(nome, './assets/sprites/' + nome + '.png'));
     }
     if (P.coracao) this.load.image('coracao', './assets/sprites/coracao.png');
-    if (P.cegonha) {
-      this.load.spritesheet('cegonha', './assets/sprites/cegonha.png',
-        { frameWidth: CONFIG.CEGONHA.LARGURA, frameHeight: CONFIG.CEGONHA.ALTURA });
-      this.load.image('trouxinha', './assets/sprites/trouxinha.png');
-    }
+    // Cegonha do autor (2 quadros, já com a trouxinha no bico)
+    this.load.spritesheet('cegonha', './assets/sprites/cegonha.png',
+      { frameWidth: CONFIG.CEGONHA.LARGURA, frameHeight: CONFIG.CEGONHA.ALTURA });
 
     // Bebê (camadas: a cor é aplicada pelo código)
     ['bebe_corpo', 'bebe_brilho', 'bebe_cabelo', 'bebe_olhos', 'bebe_contorno',
@@ -123,7 +123,6 @@ class Carregando extends Phaser.Scene {
     if (!P.animal) criarAnimalProvisorio(this);
     if (!P.folha) criarFolhaProvisoria(this);
     if (!P.vento) criarVentoProvisorio(this);
-    if (!P.cegonha) criarCegonhaProvisoria(this);
     if (!P.janela) criarJanelaProvisoria(this);
     if (!P.coracao) criarCoracaoProvisorio(this);
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)
@@ -149,10 +148,10 @@ class Carregando extends Phaser.Scene {
       repeat: -1
     });
 
-    // Cegonha batendo asas (quadros 0, 1, 2, 3)
+    // Cegonha batendo asas (quadros 0 e 1)
     this.anims.create({
       key: 'cegonha_voando',
-      frames: this.anims.generateFrameNumbers('cegonha', { frames: [0, 1, 2, 3] }),
+      frames: this.anims.generateFrameNumbers('cegonha', { frames: [0, 1] }),
       frameRate: CONFIG.CEGONHA.QUADROS_POR_SEG,
       repeat: -1
     });

@@ -141,6 +141,25 @@ function mostrarAviso(cena, texto, y = 205) {
   cena.tweens.add({ targets: cena._aviso, alpha: 0, delay: 1400, duration: 400 });
 }
 
+// ---------- Aviso numa caixa roxa (mesmo estilo do painel da cegonha) ----------
+// Aparece, fica 'segundos' na tela e some devagar.
+function mostrarAvisoCaixa(cena, texto, y = 40, segundos = 2.5) {
+  const U = CONFIG.UI;
+  const txt = escrever(cena, CONFIG.LARGURA / 2, y + 7, texto, {
+    fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO, align: 'center'
+  }).setOrigin(0.5, 0).setDepth(51);
+  const larg = Math.ceil(txt.width) + 20;   // a caixa acompanha o tamanho do texto
+  const caixa = cena.add.rectangle(Math.round((CONFIG.LARGURA - larg) / 2), y, larg, 26, 0x2a1838, 0.92)
+    .setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA).setDepth(50);
+  const itens = [caixa, txt];
+  itens.forEach(o => { const a = o.alpha; o.setAlpha(0); cena.tweens.add({ targets: o, alpha: a, duration: 300 }); });
+  cena.tweens.add({
+    targets: itens, alpha: 0, delay: 300 + segundos * 1000, duration: 500,
+    onComplete: () => itens.forEach(o => o.destroy())
+  });
+  return itens;
+}
+
 // ---------- Caixa de confirmação (Sim / Não) ----------
 // Usada ao começar uma história nova por cima de outra já salva.
 function criarConfirmacao(cena, texto, aoSim) {

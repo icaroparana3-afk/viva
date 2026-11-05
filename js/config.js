@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.27',
+  VERSAO: '0.0.30',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -69,11 +69,9 @@ const CONFIG = {
     folha: false,      // assets/sprites/folha.png — 4 quadros de 4×4 lado a lado (16×4)
     vento: false,      // assets/sprites/vento.png — risco de vento, 24×3
     sombras: false,    // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
-    cegonha: false,    // assets/sprites/cegonha.png — 4 quadros de 48×32 (192×32), olhando para a esquerda
-                       // e assets/sprites/trouxinha.png — 14×16 (a trouxinha que ela segura no bico)
     janela: false,     // assets/sprites/nuvem_janela1.png 12×5, nuvem_janela2.png 8×4 e lua.png 5×5
     coracao: false     // assets/sprites/coracao.png 7×6
-    // O quarto (menina e menino) e o berço já são os desenhos do autor (v0.0.27).
+    // O quarto (menina e menino), o berço e a cegonha já são desenhos do autor.
   },
 
   // ---------- TELA DE CARREGAMENTO ----------
@@ -139,15 +137,17 @@ const CONFIG = {
   // ---------- CEGONHA (Etapa 4) ----------
   // A cegonha entra voando com o bebê, fica segurando até o jogador tocar
   // e NUNCA solta nem derruba o bebê: a trouxinha fica presa no bico o tempo todo.
+  // Desenho do autor: assets/sprites/cegonha.png = 2 quadros de 80×87 lado a lado (160×87),
+  // olhando para a esquerda, com a trouxinha já no bico (faz parte do desenho: nunca cai).
   CEGONHA: {
-    LARGURA: 48, ALTURA: 32,         // tamanho de cada quadro do desenho
-    BICO_X: 3, BICO_Y: 13,           // ponto do bico (dentro do quadro) onde a trouxinha fica presa
-    QUADROS_POR_SEG: 8,              // velocidade do bater de asas
+    LARGURA: 80, ALTURA: 87,         // tamanho de cada quadro do desenho
+    QUADROS_POR_SEG: 4,              // velocidade do bater de asas (2 quadros: asas para baixo e para cima)
     ENTRADA_SEGUNDOS: 2.5,           // tempo para chegar voando até o meio da tela
-    PARADA_X: 70, PARADA_Y: 92,      // onde ela fica pairando (canto superior esquerdo do quadro)
+    PARADA_X: 50, PARADA_Y: 50,      // onde ela fica pairando (canto superior esquerdo do quadro)
     BALANCO_PIXELS: 3,               // quanto ela sobe e desce enquanto paira
     BALANCO_POR_SEG: 0.8,
-    SAIDA_SEGUNDOS: 2                // tempo para sair voando com o bebê (indo para o berço)
+    SAIDA_SEGUNDOS: 2,               // tempo para sair voando com o bebê (indo para o berço)
+    DICA_Y: 156                      // altura do texto "Toque para receber seu bebê"
   },
 
   // ---------- QUARTO (Etapa 5) ----------
@@ -161,6 +161,7 @@ const CONFIG = {
     PISCAR_MAX: 6,
     PISCAR_DURACAO: 0.15,            // quanto tempo o olho fica fechado (segundos)
     PULINHO_PIXELS: 3,               // altura do pulinho quando o jogador toca no bebê
+    OLHOS_FECHADOS_TOQUE: 0.35,      // ao ser tocado, fecha os olhos (sorrindo) por este tempo (segundos)
     AVISO_Y: 40,                     // altura do aviso "Seu filho chegou!"
 
     // Abajur (no criado-mudo, à direita): será o botão de dormir.

@@ -5,8 +5,8 @@
 //    se o jogador fechar o jogo aqui, volta o MESMO bebê.
 // 2. A cegonha entra voando com a trouxinha no bico e fica pairando,
 //    segurando, até o jogador tocar na tela.
-//    Regra: ela NUNCA solta nem derruba o bebê. A trouxinha é desenhada
-//    presa ao bico em todo quadro (sem física, sem queda).
+//    Regra: ela NUNCA solta nem derruba o bebê. A trouxinha faz parte do
+//    desenho da cegonha (está no bico em todos os quadros): não tem como cair.
 // 3. Ao tocar: aparece o bebê, só com o sexo (e a origem, se for especial).
 // 4. "Levar para o berço": a cegonha sai voando com o bebê e o save marca
 //    o bebê como recebido e o jogo abre o quarto (o bebê já no berço).
@@ -46,16 +46,14 @@ class Cegonha extends Phaser.Scene {
     this.add.image(0, 286, 'moita_esquerda').setOrigin(0, 0);
     this.add.image(144, 274, 'moita_direita').setOrigin(0, 0);
 
-    // ---------- Cegonha + trouxinha (presa no bico) ----------
+    // ---------- Cegonha (com a trouxinha no bico) ----------
     this.cegonha = this.add.sprite(CONFIG.LARGURA + 10, K.PARADA_Y - 30, 'cegonha', 0)
       .setOrigin(0, 0).play('cegonha_voando');
-    this.trouxinha = this.add.image(0, 0, 'trouxinha').setOrigin(0.5, 0);
     this.cegonha.posX = this.cegonha.x;
     this.cegonha.posY = this.cegonha.y;
-    this.prenderTrouxinha();
 
     // Texto de dica (aparece quando ela para)
-    this.dica = escrever(this, CONFIG.LARGURA / 2, 150, 'Toque para receber\nseu bebê', {
+    this.dica = escrever(this, CONFIG.LARGURA / 2, K.DICA_Y, 'Toque para receber\nseu bebê', {
       fontFamily: 'monospace', fontSize: '9px', color: '#ffffff', align: 'center',
       stroke: '#2a1838', strokeThickness: 3
     }).setOrigin(0.5, 0).setAlpha(0);
@@ -80,13 +78,6 @@ class Cegonha extends Phaser.Scene {
     this.input.on('pointerup', () => { if (this.fase === 'pairando') this.receber(); });
   }
 
-  // A trouxinha acompanha o bico em todo quadro: nunca cai.
-  prenderTrouxinha() {
-    const K = CONFIG.CEGONHA;
-    this.trouxinha.x = this.cegonha.x + K.BICO_X;
-    this.trouxinha.y = this.cegonha.y + K.BICO_Y - 1; // o nó fica 1 px acima do bico
-  }
-
   update(time, delta) {
     const seg = delta / 1000;
     const K = CONFIG.CEGONHA;
@@ -103,7 +94,6 @@ class Cegonha extends Phaser.Scene {
       ? Math.sin(this.tempo * K.BALANCO_POR_SEG * 2 * Math.PI) * K.BALANCO_PIXELS : 0;
     this.cegonha.x = Math.round(this.cegonha.posX);
     this.cegonha.y = Math.round(this.cegonha.posY + balanco);
-    this.prenderTrouxinha();
   }
 
   // ---------- Toque: mostra o bebê ----------
@@ -139,13 +129,13 @@ class Cegonha extends Phaser.Scene {
     visual.setAlpha(0);
     this.tweens.addCounter({ from: 0, to: 1, duration: 300, onUpdate: t => visual.setAlpha(t.getValue()) });
 
-    const botao = criarOpcao(this, 30, 262, 120, 18, 'Levar para o berço', () => {
+    // Botão do autor (110×20), centralizado embaixo do painel
+    const botao = criarBotaoImg(this, Math.round((CONFIG.LARGURA - 110) / 2), 262, 'botao_levar_berco', () => {
       [fundo, painel, ...linhas].forEach(o => o.destroy());
       visual.destroy();
-      botao.caixa.destroy(); botao.rotulo.destroy();
+      botao.destroy();
       this.levarParaBerco();
-    }, 8);
-    botao.caixa.setDepth(22); botao.rotulo.setDepth(23);
+    }).setDepth(22);
   }
 
   // ---------- A cegonha leva o bebê (sem soltar) ----------

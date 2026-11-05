@@ -39,7 +39,7 @@ Tempo: 7 dias reais = 2 anos no jogo (1 ano = 3,5 dias reais; 0 a 18 anos ≈ 63
 
 ## Cegonha
 Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta nem derruba o bebê. Depois do toque, o bebê vai para o berço no quarto.
-- Implementação (Etapa 4): o bebê é sorteado e salvo quando a cegonha aparece (fechar o jogo traz o mesmo bebê). Ela entra voando, paira até o toque e a trouxinha fica presa ao bico o tempo todo. Ao tocar, mostra "É um menino!/É uma menina!", a origem só se for especial e o estado onde nasceu. "Levar para o berço": a cegonha sai voando com o bebê para o quarto.
+- Implementação (Etapa 4): o bebê é sorteado e salvo quando a cegonha aparece (fechar o jogo traz o mesmo bebê). Ela entra voando, paira até o toque e a trouxinha fica presa ao bico o tempo todo (no desenho do autor, a trouxinha faz parte da cegonha). Ao tocar, mostra "É um menino!/É uma menina!", a origem só se for especial e o estado onde nasceu. "Levar para o berço": a cegonha sai voando com o bebê para o quarto.
 
 ## Necessidades e emoções
 - Barras: fome, sede, energia, higiene, diversão.
@@ -48,7 +48,7 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
 
 ## Casa
 Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (cadeirinha). O jogador navega entre eles.
-- Quarto (Etapa 5): o bebê fica sentado no berço, respira, pisca e reage ao toque (pulinho e coração).
+- Quarto (Etapa 5): o bebê fica sentado no berço, respira, pisca e reage ao toque: fecha os olhos sorrindo, dá um pulinho e solta um coração.
 - Quarto de menina (rosa) e quarto de menino (azul), escolhido pelo sexo do bebê. O berço não tem grade na frente.
 - Janela viva: de dia, claridade, céu azul e nuvens passando; de noite, céu escuro e estrelas (e lua). O quarto escurece um pouco à noite.
 - Abajur (no criado-mudo) é o botão de dormir: abajur aceso = bebê dormindo; abajur apagado = bebê acordado. (Função na etapa do sono.)

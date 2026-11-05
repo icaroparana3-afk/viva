@@ -66,6 +66,11 @@
   - Abajur (criado-mudo à direita) reservado como botão de dormir: posição em `CONFIG.QUARTO.ABAJUR_*`; a função entra na etapa do sono.
   - Nuvens da janela (12×5 e 8×4) e lua (5×5) provisórias, feitas por código com as cores da nuvem do autor.
   - Originais do autor guardados em `assets/originais/` (berco_original, quarto_menina_original, quarto_menino_original).
+- **Botões do autor e aviso em caixa (v0.0.30):** `botao_levar_berco.png` 110×20 (centralizado em y 262 na cegonha) e `botao_menu.png` 34×14 (canto do quarto, em (4,4)). "Sua filha/Seu filho chegou!" agora aparece numa caixa roxa igual ao painel da cegonha (`mostrarAvisoCaixa` em js/botao.js), some depois de 2,5 s.
+- **Cegonha menor (v0.0.29):** `cegonha.png` reduzida de 110×119 para 80×87 por quadro (160×87 no total), pairando em (50,50). O original 220×119 está em `assets/originais/cegonha_220x119_original.png`.
+- **Cegonha do autor e olhinhos (v0.0.28):**
+  - Cegonha do autor: `assets/sprites/cegonha.png` 220×119 = 2 quadros de 110×119 (asas para baixo e para cima), com a trouxinha já no bico (faz parte do desenho: nunca cai). Pairando em (35,30); dica "Toque para receber" em y 156. Cegonha e trouxinha provisórias removidas do código.
+  - Ao tocar no bebê: ele fecha os olhos sorrindo (^ ^) durante o pulinho (`CONFIG.QUARTO.OLHOS_FECHADOS_TOQUE`). A piscada normal agora é uma curvinha (◡ ◡); a pálpebra cobre o olho inteiro.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -99,12 +104,13 @@
 | assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
 | assets/ui/quarto_menina.png / quarto_menino.png | 180×320 | quartos do autor (v0.0.27); vidro da janela transparente (x 69–110, y 76–120) para o céu vivo |
 | assets/sprites/berco_tras.png / berco_frente.png | 80×64 cada | berço do autor reduzido e limpo; frente = postes + painel |
+| assets/ui/botao_levar_berco.png / botao_menu.png | 110×20 / 34×14 | botões do autor (v0.0.30) |
+| assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.
-- **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele) e `bebe_olhos_fechados.png` 32×32.
-- **Cegonha (Etapa 4):** `assets/sprites/cegonha.png` 192×32 = 4 quadros de 48×32 lado a lado (asas para cima, no meio, para baixo, no meio), olhando para a ESQUERDA, com o bico na ponta esquerda. `assets/sprites/trouxinha.png` 14×16 com o nó em cima (onde o bico segura). Ao chegar: ligar `ARTES_PRONTAS.cegonha` e ajustar `CONFIG.CEGONHA.BICO_X/BICO_Y` ao bico do desenho.
+- **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele), `bebe_olhos_fechados.png` 32×32 (piscada) e `bebe_olhos_felizes.png` 32×32 (olhos fechados sorrindo, ao ser tocado).
 - **Desenhos da vida no menu (o autor está fazendo).** Ao chegar, colocar na pasta e ligar o item em `CONFIG.ARTES_PRONTAS`:
   - `assets/sprites/animal.png`: 128×16 (8 quadros de 16×16 lado a lado). Quadros 0–3 = parado (repete), 4–7 = ação. Olhando para a esquerda (para o casal).
   - `assets/sprites/folha.png`: 16×4 (4 quadros de 4×4, a folha girando).

@@ -52,14 +52,14 @@ class Quarto extends Phaser.Scene {
       .setOrigin(0, 0).setAlpha(0);
 
     // ---------- Topo: botão de voltar ao menu ----------
-    criarOpcao(this, 4, 4, 34, 14, 'Menu', () => this.scene.start('Menu'), 8);
+    criarBotaoImg(this, 4, 4, 'botao_menu', () => this.scene.start('Menu'));   // botão do autor (34×14)
 
     escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
 
     if (this.chegou) {
-      mostrarAviso(this, this.bebe.sexo === 'F' ? 'Sua filha chegou!' : 'Seu filho chegou!', Q.AVISO_Y);
+      mostrarAvisoCaixa(this, this.bebe.sexo === 'F' ? 'Sua filha chegou!' : 'Seu filho chegou!', Q.AVISO_Y);
     }
 
     // ---------- Dia ou noite ----------
@@ -175,19 +175,26 @@ class Quarto extends Phaser.Scene {
     const Q = CONFIG.QUARTO;
     const espera = Phaser.Math.FloatBetween(Q.PISCAR_MIN, Q.PISCAR_MAX) * 1000;
     this.time.delayedCall(espera, () => {
+      if (this.olhosDoToque) { this.agendarPiscada(); return; } // já está de olhos fechados pelo toque
       this.visual.piscar(true);
       this.time.delayedCall(Q.PISCAR_DURACAO * 1000, () => {
-        this.visual.piscar(false);
+        if (!this.olhosDoToque) this.visual.piscar(false);
         this.agendarPiscada();
       });
     });
   }
 
-  // Toque no bebê: pulinho + coração subindo
+  // Toque no bebê: fecha os olhos (sorrindo), dá um pulinho e solta um coração
   tocarBebe() {
     const Q = CONFIG.QUARTO;
     if (this.pulando) return;
     this.pulando = true;
+    this.olhosDoToque = true;
+    this.visual.piscar(true, true);     // olhos fechados sorrindo (^ ^)
+    this.time.delayedCall(Q.OLHOS_FECHADOS_TOQUE * 1000, () => {
+      this.olhosDoToque = false;
+      this.visual.piscar(false);
+    });
     this.tweens.add({
       targets: this, pulo: Q.PULINHO_PIXELS, duration: 120, yoyo: true, ease: 'Sine.easeOut',
       onComplete: () => { this.pulo = 0; this.pulando = false; }

@@ -7,7 +7,7 @@
 //
 //   const v = criarBebeVisual(cena, x, y, escala);
 //   v.mostrar(bebe);      // pinta as camadas para este bebê
-//   v.piscar(true);       // fecha os olhos (false abre)
+//   v.piscar(true);       // fecha os olhos (false abre); v.piscar(true, true) = olhos fechados sorrindo (^ ^)
 //   v.setVisible(false);  v.setDepth(10);  v.setAlpha(0.5);  v.destroy();
 // =============================================================
 
@@ -43,7 +43,8 @@ function criarBebeVisual(cena, x, y, escala = 1) {
       obj.bebe = b;
       return obj;
     },
-    piscar(fechado) {
+    piscar(fechado, feliz = false) {
+      camadas.olhos_fechados.setTexture(feliz ? 'bebe_olhos_felizes' : 'bebe_olhos_fechados');
       camadas.palpebras.setVisible(fechado);
       camadas.olhos_fechados.setVisible(fechado);
       return obj;
