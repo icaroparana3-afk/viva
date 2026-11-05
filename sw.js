@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.38';
+const VERSAO = '0.0.39';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -83,6 +83,7 @@ const ARQUIVOS = [
   './assets/ui/botao_som_off.png',
   './assets/ui/botao_voltar.png',
   './assets/ui/fundo_perfil.png',
+  './assets/ui/icone.png',
   './assets/ui/icone_180.png',
   './assets/ui/icone_192.png',
   './assets/ui/icone_512.png',

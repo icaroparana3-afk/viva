@@ -93,8 +93,8 @@
   - Saves antigos sem `chegadaReal`: o bebê passa a contar a partir de agora (recém-nascido).
   - Saiu o teste de tocar na janela. TESTE novo: tocar no relógio da parede adianta 1 hora do jogo (`CONFIG.TEMPO.TESTE_TOQUE_RELOGIO`, tirar antes de lançar).
 
-- **Etapa 7 — PWA (v0.0.38):**
-  - O jogo é instalável: `manifest.json` (nome "Viva", tela cheia, retrato, cores do jogo) e ícones `assets/ui/icone_192.png`, `icone_512.png` e `icone_180.png` (iPhone). Ícone PROVISÓRIO: o bebê do jogo sobre fundo roxo com estrelinhas, até chegar o desenho do autor.
+- **Etapa 7 — PWA (v0.0.38–0.0.39):**
+  - O jogo é instalável: `manifest.json` (nome "Viva", tela cheia, retrato, cores do jogo) e ícones `assets/ui/icone_192.png`, `icone_512.png` e `icone_180.png` (iPhone). Ícone do autor (v0.0.39): `assets/ui/icone.png` 48×48, cantos arredondados preenchidos pelo jogo; original em `assets/originais/icone_original_48.png`.
   - `sw.js` (service worker): na primeira visita guarda todos os arquivos do jogo e o Phaser. Com internet busca sempre a versão nova (o celular não fica preso numa versão velha); sem internet, ou com a internet demorando mais de 4 s, usa a cópia guardada. A versão do cache acompanha `CONFIG.VERSAO`.
   - Novo `js/app.js`: liga o service worker e guarda o pedido de instalação do navegador.
   - Configurações: botão "Instalar no celular". No Chrome/Android abre o pedido de instalação; no iPhone e quando o pedido não está disponível, explica o caminho pelo menu. Se já estiver instalado, mostra "Já instalado ✓".
@@ -137,7 +137,6 @@
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
-- **Ícone do app:** `icone.png` 48×48 (o jogo amplia para 192, 512 e 180). Fundo preenchido até a borda (sem transparência). O desenho principal deve caber num círculo de 38 px no centro: o Android corta as bordas em formato de círculo ou gota.
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.
 - **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele), `bebe_olhos_fechados.png` 32×32 (piscada) e `bebe_olhos_felizes.png` 32×32 (olhos fechados sorrindo, ao ser tocado).
