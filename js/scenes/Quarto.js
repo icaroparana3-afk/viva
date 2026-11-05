@@ -214,30 +214,42 @@ class Quarto extends Phaser.Scene {
     this.infoIdade = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 12, '', {
       fontFamily: 'monospace', fontSize: '7px', color: '#ffffff'
     }).setOrigin(1, 0);
-    this.textoIdade = null;
+    this.infoHora = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 21, '', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6'
+    }).setOrigin(1, 0);
+    this.textoInfo = null;
     this.atualizarInfo();
   }
 
   atualizarInfo() {
     const Q = CONFIG.QUARTO;
+    const t = TEMPO.agora();
     const idade = TEMPO.textoIdade(this.bebe.sexo);
     const nome = this.bebe.nome || '';
-    if (idade === this.textoIdade && nome === this.infoNome.text) return;
-    this.textoIdade = idade;
+    const hora = 'Dia ' + t.dia + ' · ' + t.hora + 'h';
+    const chave = nome + '|' + idade + '|' + hora;
+    if (chave === this.textoInfo) return;
+    this.textoInfo = chave;
     this.infoNome.setText(nome);
     this.infoIdade.setText(idade);
-    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width)) + 8;
-    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 22);
+    this.infoHora.setText(hora);
+    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width, this.infoHora.width)) + 8;
+    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 31);
   }
 
   // Aviso de quem volta depois de um tempo fora
   avisarVolta(ms) {
     const save = Estado.dados || Estado.carregar();
     const mamae = save && save.perfil && save.perfil.papel === 'mamae';
-    const texto = (mamae ? 'Bem-vinda de volta!' : 'Bem-vindo de volta!') + '\n' +
+    const T = CONFIG.TEMPO;
+    const horas = ms / 3600000;
+    let texto = (mamae ? 'Bem-vinda de volta!' : 'Bem-vindo de volta!') + '\n' +
       'Fora por ' + TEMPO.textoReal(ms) + '\n' +
       'No jogo: ' + TEMPO.textoJogo(ms / TEMPO.msPorMinuto());
-    mostrarAvisoCaixa(this, texto, CONFIG.QUARTO.AVISO_Y, 4);
+    // Perto do limite do abandono (ou além dele): avisa
+    if (horas >= T.ABANDONO_HORAS) texto += '\n' + (this.bebe.sexo === 'F' ? 'Ela' : 'Ele') + ' sentiu sua falta!';
+    else if (horas >= T.ABANDONO_ALERTA_HORAS) texto += '\nNão demore: 1 dia fora\né o limite!';
+    mostrarAvisoCaixa(this, texto, CONFIG.QUARTO.AVISO_Y, horas >= T.ABANDONO_ALERTA_HORAS ? 5 : 4);
   }
 
   // ---------- Relógio ----------

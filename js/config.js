@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.36',
+  VERSAO: '0.0.38',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -256,6 +256,8 @@ const CONFIG = {
                                     // → 1 dia do jogo ≈ 13,8 min reais; 1 hora ≈ 34,5 s
     HORA_CHEGADA: 8,                // hora do jogo em que o bebê chega (8h da manhã do 1º dia)
     AVISO_VOLTA_MINUTOS: 5,         // fora por pelo menos este tempo (real) → aviso "Você ficou fora..."
+    ABANDONO_HORAS: 24,             // fora por este tempo (REAL) = a regra do abandono entra em vigor (Etapa 17)
+    ABANDONO_ALERTA_HORAS: 18,      // a partir daqui o aviso de volta diz "não demore"
     MARCAR_VISITA_SEGUNDOS: 15,     // de quanto em quanto tempo o save guarda "última vez aqui"
     TESTE_TOQUE_RELOGIO: true       // TESTE: tocar no relógio da parede adianta 1 hora do jogo (tirar antes de lançar)
   },

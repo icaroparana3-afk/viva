@@ -1,0 +1,17 @@
+{
+  "name": "Viva — cuide de uma vida",
+  "short_name": "Viva",
+  "description": "Cuide de um bebê, do berço até os 18 anos.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#1a1c2c",
+  "icons": [
+    { "src": "./assets/ui/icone_192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./assets/ui/icone_512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./assets/ui/icone_512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

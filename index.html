@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <!-- Faz o jogo ocupar a tela do celular sem deixar dar zoom com os dedos -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Viva</title>
+  <!-- App instalável (PWA): nome, ícone e cores do app no celular -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#1a1c2c">
+  <link rel="icon" type="image/png" href="./assets/ui/icone_192.png">
+  <!-- iPhone: ícone e tela cheia quando adicionado à Tela de Início -->
+  <link rel="apple-touch-icon" href="./assets/ui/icone_180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Viva">
   <link rel="stylesheet" href="./css/style.css">
   <!-- Phaser 3 vindo da internet (CDN): não precisa instalar nada -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
@@ -17,6 +27,7 @@
   <script src="./js/config.js"></script>
   <script src="./js/state.js"></script>
   <script src="./js/tempo.js"></script>
+  <script src="./js/app.js"></script>
   <script src="./js/botao.js"></script>
   <script src="./js/mapa.js"></script>
   <script src="./js/provisorios.js"></script>

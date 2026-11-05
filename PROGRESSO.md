@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 6 — Relógio e save** (aguardando "aprovado")
+**Etapa 7 — PWA** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -82,15 +82,23 @@
   - Ao tocar no bebê: ele fecha os olhos sorrindo (^ ^) durante o pulinho (`CONFIG.QUARTO.OLHOS_FECHADOS_TOQUE`). A piscada normal agora é uma curvinha (◡ ◡); a pálpebra cobre o olho inteiro.
 
 - **Etapa 5, ajuste (v0.0.35):** o campo do nome mostra só "nome" (antes "nome dela/dele").
-- **Etapa 6 — Relógio e save (v0.0.36):**
+- **Etapa 6 — Relógio e save (aprovada em 2026-11-05, v0.0.36–0.0.37):**
   - O jogo tem o próprio relógio (escolha do autor: opção "a"). 1 ano do jogo = 3,5 dias reais → 1 dia do jogo ≈ 13,8 min reais, 1 hora ≈ 34,5 s. Números em `CONFIG.TEMPO`.
   - O relógio começa quando a cegonha entrega o bebê (`save.chegadaReal`), às 8h do 1º dia (`HORA_CHEGADA`). A hora do jogo é uma conta com o relógio do aparelho, então o tempo continua passando com o jogo fechado.
   - `js/tempo.js`: `TEMPO.agora()` → {dia, hora, minuto, segundo}; `TEMPO.ehNoite()`; `TEMPO.idade()` → {anos, meses, dias, totalDias}; `TEMPO.textoIdade()` ("recém-nascida", "3 dias", "5 meses", "1 ano e 2 meses").
   - Relógio da parede e janela (dia 6h–18h, noite 18h–6h) seguem a hora do jogo; o quarto confere a cada 1 s.
   - Caixinha roxa no canto superior direito do quarto: nome e idade do bebê (atualiza sozinha).
   - Save guarda a última vez aqui (`ultimaVez`) a cada 15 s com o jogo na tela e ao esconder/fechar a página (`VISITA` em tempo.js). Quem volta depois de 5 min ou mais (`AVISO_VOLTA_MINUTOS`) vê no quarto: "Bem-vinda/Bem-vindo de volta! / Fora por 2 h / No jogo: 8 dias" (também ao voltar de outro app sem recarregar).
+  - Ajuste (v0.0.37): a caixinha do canto agora tem 3 linhas: nome, idade e "Dia 41 · 17h" (dia e hora do jogo). O aviso de volta ganhou uma linha quando o jogador fica 18 h reais ou mais fora ("Não demore: 1 dia fora é o limite!") e outra ao passar de 24 h ("Ele/Ela sentiu sua falta!"). Limites em `CONFIG.TEMPO.ABANDONO_ALERTA_HORAS` e `ABANDONO_HORAS`. A regra do abandono em si (adoção etc.) entra na Etapa 17.
   - Saves antigos sem `chegadaReal`: o bebê passa a contar a partir de agora (recém-nascido).
   - Saiu o teste de tocar na janela. TESTE novo: tocar no relógio da parede adianta 1 hora do jogo (`CONFIG.TEMPO.TESTE_TOQUE_RELOGIO`, tirar antes de lançar).
+
+- **Etapa 7 — PWA (v0.0.38):**
+  - O jogo é instalável: `manifest.json` (nome "Viva", tela cheia, retrato, cores do jogo) e ícones `assets/ui/icone_192.png`, `icone_512.png` e `icone_180.png` (iPhone). Ícone PROVISÓRIO: o bebê do jogo sobre fundo roxo com estrelinhas, até chegar o desenho do autor.
+  - `sw.js` (service worker): na primeira visita guarda todos os arquivos do jogo e o Phaser. Com internet busca sempre a versão nova (o celular não fica preso numa versão velha); sem internet, ou com a internet demorando mais de 4 s, usa a cópia guardada. A versão do cache acompanha `CONFIG.VERSAO`.
+  - Novo `js/app.js`: liga o service worker e guarda o pedido de instalação do navegador.
+  - Configurações: botão "Instalar no celular". No Chrome/Android abre o pedido de instalação; no iPhone e quando o pedido não está disponível, explica o caminho pelo menu. Se já estiver instalado, mostra "Já instalado ✓".
+  - Testado: jogo abre sem internet depois da primeira visita.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -129,6 +137,7 @@
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
+- **Ícone do app:** `icone.png` 48×48 (o jogo amplia para 192, 512 e 180). Fundo preenchido até a borda (sem transparência). O desenho principal deve caber num círculo de 38 px no centro: o Android corta as bordas em formato de círculo ou gota.
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.
 - **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele), `bebe_olhos_fechados.png` 32×32 (piscada) e `bebe_olhos_felizes.png` 32×32 (olhos fechados sorrindo, ao ser tocado).
@@ -164,7 +173,7 @@
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
-Etapa 7 — PWA: o jogo instalável no celular (ícone na tela inicial, abre em tela cheia, funciona sem internet).
+Etapa 8 — começa a Fase 2 (bebê de 0 a 2 anos). Decidir primeiro: idades exatas de cada fase e como o bebê mata a fome e a sede de 0 a 1 ano (Decisões pendentes 1 e 6 do DESIGN), e como o relógio rápido do jogo afeta as necessidades.
 
 ## Decisões da Etapa 3 (padrões, ajustáveis no config.js)
 - Origens: Negro 26, Branco 26, Indígena 20, Cabo Verde 16, Miscigenado 10, Especial 2 (%).

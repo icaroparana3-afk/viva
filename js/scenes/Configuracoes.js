@@ -1,7 +1,8 @@
 // =============================================================
 // Configuracoes.js — tela de Configurações (vazia por enquanto).
 // Na Etapa 30 entram volume e "apagar save".
-// Por enquanto tem só o botão da tela de teste do gerador do bebê (Etapa 3).
+// Etapa 7: botão "Instalar no celular" (js/app.js).
+// E o botão da tela de teste do gerador do bebê (Etapa 3, sai antes da versão final).
 // =============================================================
 
 class Configuracoes extends Phaser.Scene {
@@ -20,8 +21,14 @@ class Configuracoes extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '14px', color: CONFIG.COR_TEXTO
     }).setOrigin(0.5);
 
+    // Instalar o jogo como app (ícone na tela inicial, tela cheia, funciona sem internet)
+    criarOpcao(this, 30, 80, 120, 18, APP.instalado() ? 'Já instalado ✓' : 'Instalar no celular', async () => {
+      const msg = await APP.instalar();
+      if (msg) mostrarAvisoCaixa(this, msg, 130, 4);
+    }, 8);
+
     // Ferramenta de teste da Etapa 3 (sai antes da versão final)
-    criarOpcao(this, 30, 90, 120, 18, 'Teste: gerador do bebê', () => irPara(this, 'TesteBebe'), 8);
+    criarOpcao(this, 30, 104, 120, 18, 'Teste: gerador do bebê', () => irPara(this, 'TesteBebe'), 8);
 
     // Botão Voltar: centralizado na horizontal, qualquer que seja a largura do desenho
     const larg = this.textures.get('botao_voltar').getSourceImage().width;
