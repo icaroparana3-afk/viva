@@ -20,3 +20,6 @@ const jogo = new Phaser.Game({
   },
   scene: [Boot, Carregando, Menu, Perfil, Regiao, Cegonha, Quarto, Configuracoes, TesteBebe] // lista de cenas (vai crescer a cada etapa)
 });
+
+// Guarda "a última vez que o jogador esteve aqui" e percebe quando ele volta (js/tempo.js)
+VISITA.iniciar();

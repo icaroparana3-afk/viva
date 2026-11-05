@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.35',
+  VERSAO: '0.0.36',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -175,6 +175,8 @@ const CONFIG = {
     PULINHO_PIXELS: 3,               // altura do pulinho quando o jogador toca no bebê
     OLHOS_FECHADOS_TOQUE: 0.35,      // ao ser tocado, fecha os olhos (sorrindo) por este tempo (segundos)
     AVISO_Y: 40,                     // altura do aviso "Seu filho chegou!"
+    INFO_X: 176, INFO_Y: 4,          // caixinha do nome e da idade (canto superior direito; x = borda direita)
+    TROCA_HORA_SEGUNDOS: 1,          // de quanto em quanto tempo (real) o quarto confere se virou dia/noite
 
     // Abajur (no criado-mudo, à direita): tocar acende e apaga a luz.
     // É só luz: NÃO tem ligação com o sono do bebê.
@@ -223,7 +225,7 @@ const CONFIG = {
 
   // ---------- JANELA DO QUARTO: o mundo lá fora ----------
   // Dia: céu claro e nuvens passando. Noite: céu escuro, estrelas e lua.
-  // Até a Etapa 6 (relógio do jogo), vale a hora do aparelho.
+  // Vale a hora DO JOGO (js/tempo.js e CONFIG.TEMPO).
   JANELA: {
     X: 69, Y: 76, LARGURA: 42, ALTURA: 45,   // retângulo do vidro (o céu é desenhado aqui, atrás do quarto)
     DIA_COMECA: 6,                   // hora em que amanhece
@@ -243,8 +245,19 @@ const CONFIG = {
     PASSARO_INTERVALO_MIN: 6, PASSARO_INTERVALO_MAX: 14,   // segundos entre um passarinho e outro
     PASSARO_VELOCIDADE: 14,                                 // pixels por segundo
     ESTRELA_INTERVALO_MIN: 5, ESTRELA_INTERVALO_MAX: 12,   // segundos entre uma estrela cadente e outra
-    ESTRELA_VELOCIDADE: 55,                                 // pixels por segundo
-    TESTE_TOQUE_JANELA: true         // TESTE: tocar na janela troca dia/noite (sai na Etapa 6)
+    ESTRELA_VELOCIDADE: 55                                  // pixels por segundo
+  },
+
+  // ---------- TEMPO DO JOGO (Etapa 6) ----------
+  // O jogo tem o próprio relógio e ele continua andando com o jogo fechado.
+  // Começa quando a cegonha entrega o bebê. Contas em js/tempo.js.
+  TEMPO: {
+    DIAS_REAIS_POR_ANO: 3.5,        // 1 ano do jogo = 3,5 dias reais (7 dias reais = 2 anos)
+                                    // → 1 dia do jogo ≈ 13,8 min reais; 1 hora ≈ 34,5 s
+    HORA_CHEGADA: 8,                // hora do jogo em que o bebê chega (8h da manhã do 1º dia)
+    AVISO_VOLTA_MINUTOS: 5,         // fora por pelo menos este tempo (real) → aviso "Você ficou fora..."
+    MARCAR_VISITA_SEGUNDOS: 15,     // de quanto em quanto tempo o save guarda "última vez aqui"
+    TESTE_TOQUE_RELOGIO: true       // TESTE: tocar no relógio da parede adianta 1 hora do jogo (tirar antes de lançar)
   },
 
   // ---------- BEBÊ (Etapa 3) ----------

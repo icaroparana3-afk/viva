@@ -11,6 +11,9 @@
 // O bebê: respira (sobe 1 px e desce), pisca de vez em quando e,
 // ao ser tocado, dá um pulinho e solta um coração.
 // Abajur (criado-mudo à direita): tocar acende e apaga. É só luz, sem ligação com o sono.
+// Etapa 6: tudo segue a hora DO JOGO (js/tempo.js): relógio, dia/noite,
+// e a caixinha do canto com o nome e a idade. Quem volta depois de um
+// tempo fora vê quanto tempo passou.
 // Necessidades (fome, sede, sono...) entram a partir da Etapa 8.
 // =============================================================
 
@@ -69,25 +72,40 @@ class Quarto extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
 
-    if (!this.bebe.nome) this.pedirNome();          // save antigo, de antes do nome: pergunta agora
-    else if (this.chegou) this.boasVindas();
+    // ---------- Topo direito: nome e idade do bebê ----------
+    this.criarInfo();
 
-    // ---------- Dia ou noite ----------
-    this.forcado = false;                 // true depois do toque de teste na janela
+    // ---------- Dia ou noite (hora do jogo) ----------
     this.noite = this.ehNoite();
     this.aplicarPeriodo(this.noite, 0);
-    // De tempos em tempos confere a hora (se virou noite enquanto o jogo está aberto)
+    // Confere a hora do jogo sempre (1 hora do jogo dura ~35 s reais)
     this.time.addEvent({
-      delay: 30000, loop: true,
-      callback: () => { if (!this.forcado && this.ehNoite() !== this.noite) this.aplicarPeriodo(!this.noite); }
+      delay: Q.TROCA_HORA_SEGUNDOS * 1000, loop: true,
+      callback: () => this.conferirHora()
     });
 
-    // TESTE (até a Etapa 6): tocar na janela troca dia/noite
-    if (CONFIG.JANELA.TESTE_TOQUE_JANELA) {
-      const J = CONFIG.JANELA;
-      this.add.zone(J.X, J.Y, J.LARGURA, J.ALTURA).setOrigin(0, 0).setInteractive()
-        .on('pointerup', () => { this.forcado = true; this.aplicarPeriodo(!this.noite); });
+    // TESTE: tocar no relógio da parede adianta 1 hora do jogo
+    if (CONFIG.TEMPO.TESTE_TOQUE_RELOGIO) {
+      const R = CONFIG.RELOGIO;
+      this.add.zone(R.CENTRO_X - 8, R.CENTRO_Y - 8, 17, 17).setOrigin(0, 0).setInteractive()
+        .on('pointerup', () => {
+          TEMPO.adiantar(60);
+          this.ultimoMinuto = -1;
+          this.desenharRelogio();
+          this.conferirHora();
+        });
     }
+
+    // ---------- Avisos ao entrar ----------
+    if (!this.bebe.nome) this.pedirNome();          // save antigo, de antes do nome: pergunta agora
+    else if (this.chegou) this.boasVindas();
+    else if (VISITA.valeAvisar(VISITA.foraAoAbrir)) this.avisarVolta(VISITA.foraAoAbrir);
+    VISITA.foraAoAbrir = 0;                         // o aviso de "ficou fora" aparece uma vez só
+
+    // Voltou para o jogo sem recarregar (trocou de app e voltou)
+    const aoVoltar = (ms) => { if (VISITA.valeAvisar(ms)) { this.conferirHora(); this.avisarVolta(ms); } };
+    jogo.events.on('voltou', aoVoltar);
+    this.events.once('shutdown', () => jogo.events.off('voltou', aoVoltar));
 
     // ---------- Vida do bebê ----------
     this.tempo = 0;
@@ -179,6 +197,49 @@ class Quarto extends Phaser.Scene {
     return TEMPO.ehNoite();   // hora do jogo (js/tempo.js)
   }
 
+  // Virou dia ou noite? A idade mudou? (chamado a cada TROCA_HORA_SEGUNDOS)
+  conferirHora() {
+    if (this.ehNoite() !== this.noite) this.aplicarPeriodo(!this.noite);
+    this.atualizarInfo();
+  }
+
+  // ---------- Nome e idade (canto superior direito) ----------
+  criarInfo() {
+    const Q = CONFIG.QUARTO, U = CONFIG.UI;
+    this.infoCaixa = this.add.rectangle(0, Q.INFO_Y, 10, 10, 0x2a1838, 0.85).setOrigin(0, 0)
+      .setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
+    this.infoNome = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 2, '', {
+      fontFamily: 'monospace', fontSize: '8px', color: U.TEXTO
+    }).setOrigin(1, 0);
+    this.infoIdade = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 12, '', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#ffffff'
+    }).setOrigin(1, 0);
+    this.textoIdade = null;
+    this.atualizarInfo();
+  }
+
+  atualizarInfo() {
+    const Q = CONFIG.QUARTO;
+    const idade = TEMPO.textoIdade(this.bebe.sexo);
+    const nome = this.bebe.nome || '';
+    if (idade === this.textoIdade && nome === this.infoNome.text) return;
+    this.textoIdade = idade;
+    this.infoNome.setText(nome);
+    this.infoIdade.setText(idade);
+    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width)) + 8;
+    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 22);
+  }
+
+  // Aviso de quem volta depois de um tempo fora
+  avisarVolta(ms) {
+    const save = Estado.dados || Estado.carregar();
+    const mamae = save && save.perfil && save.perfil.papel === 'mamae';
+    const texto = (mamae ? 'Bem-vinda de volta!' : 'Bem-vindo de volta!') + '\n' +
+      'Fora por ' + TEMPO.textoReal(ms) + '\n' +
+      'No jogo: ' + TEMPO.textoJogo(ms / TEMPO.msPorMinuto());
+    mostrarAvisoCaixa(this, texto, CONFIG.QUARTO.AVISO_Y, 4);
+  }
+
   // ---------- Relógio ----------
   // Desenha os dois ponteiros pixel a pixel, saindo do centro do mostrador.
   // Só redesenha quando o minuto muda.
@@ -243,6 +304,7 @@ class Quarto extends Phaser.Scene {
       dados.bebe.nome = nomeBonito(campo.input.value);
       Estado.salvar();
       this.bebe = dados.bebe;
+      this.atualizarInfo();
       campo.destroy();
       [fundo, painel, txt, ok.caixa, ok.rotulo].forEach(o => o.destroy());
       this.boasVindas();

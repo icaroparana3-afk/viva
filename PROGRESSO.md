@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 5 — Quarto e bebê** (aguardando "aprovado")
+**Etapa 6 — Relógio e save** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -53,7 +53,7 @@
   - `BEBE.ondeNasceu(bebe)` + `CONFIG.PERFIL.NASCEU_EM`: artigo certo de cada estado (no Paraná, na Bahia, em São Paulo).
   - Cegonha e trouxinha provisórias (feitas por código) até a arte do autor chegar. Números em `CONFIG.CEGONHA`.
 
-- **Etapa 5 (v0.0.26):**
+- **Etapa 5 (aprovada em 2026-11-05, v0.0.26–0.0.35):**
   - Cena `Quarto`: fundo do quarto, berço em duas camadas (trás e frente) e o bebê sentado no colchão entre elas (a grade da frente fica na frente dele).
   - Bebê vivo: respira (sobe 1 px e desce), pisca a cada 2,5–6 s (pálpebras com a cor da pele, feitas a partir dos olhos do desenho do autor) e, ao ser tocado, dá um pulinho e solta um coração.
   - Fluxo: a cegonha leva o bebê e o jogo abre o quarto com "Seu filho chegou!/Sua filha chegou!". "Continuar História" abre o quarto quando o bebê já foi recebido. Botão "Menu" no canto volta ao menu.
@@ -80,6 +80,17 @@
 - **Cegonha do autor e olhinhos (v0.0.28):**
   - Cegonha do autor: `assets/sprites/cegonha.png` 220×119 = 2 quadros de 110×119 (asas para baixo e para cima), com a trouxinha já no bico (faz parte do desenho: nunca cai). Pairando em (35,30); dica "Toque para receber" em y 156. Cegonha e trouxinha provisórias removidas do código.
   - Ao tocar no bebê: ele fecha os olhos sorrindo (^ ^) durante o pulinho (`CONFIG.QUARTO.OLHOS_FECHADOS_TOQUE`). A piscada normal agora é uma curvinha (◡ ◡); a pálpebra cobre o olho inteiro.
+
+- **Etapa 5, ajuste (v0.0.35):** o campo do nome mostra só "nome" (antes "nome dela/dele").
+- **Etapa 6 — Relógio e save (v0.0.36):**
+  - O jogo tem o próprio relógio (escolha do autor: opção "a"). 1 ano do jogo = 3,5 dias reais → 1 dia do jogo ≈ 13,8 min reais, 1 hora ≈ 34,5 s. Números em `CONFIG.TEMPO`.
+  - O relógio começa quando a cegonha entrega o bebê (`save.chegadaReal`), às 8h do 1º dia (`HORA_CHEGADA`). A hora do jogo é uma conta com o relógio do aparelho, então o tempo continua passando com o jogo fechado.
+  - `js/tempo.js`: `TEMPO.agora()` → {dia, hora, minuto, segundo}; `TEMPO.ehNoite()`; `TEMPO.idade()` → {anos, meses, dias, totalDias}; `TEMPO.textoIdade()` ("recém-nascida", "3 dias", "5 meses", "1 ano e 2 meses").
+  - Relógio da parede e janela (dia 6h–18h, noite 18h–6h) seguem a hora do jogo; o quarto confere a cada 1 s.
+  - Caixinha roxa no canto superior direito do quarto: nome e idade do bebê (atualiza sozinha).
+  - Save guarda a última vez aqui (`ultimaVez`) a cada 15 s com o jogo na tela e ao esconder/fechar a página (`VISITA` em tempo.js). Quem volta depois de 5 min ou mais (`AVISO_VOLTA_MINUTOS`) vê no quarto: "Bem-vinda/Bem-vindo de volta! / Fora por 2 h / No jogo: 8 dias" (também ao voltar de outro app sem recarregar).
+  - Saves antigos sem `chegadaReal`: o bebê passa a contar a partir de agora (recém-nascido).
+  - Saiu o teste de tocar na janela. TESTE novo: tocar no relógio da parede adianta 1 hora do jogo (`CONFIG.TEMPO.TESTE_TOQUE_RELOGIO`, tirar antes de lançar).
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -134,7 +145,7 @@
 - Versão aparece no rodapé para conferir se o celular pegou a atualização.
 - Backup: Git pelo VS Code ("Publish to GitHub" já feito).
 - Menu reaproveitado do jogo antigo, peças separadas pelo autor; posições idênticas ao original (botões em x=35, y=120/146/172).
-- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado, nome}, bebeRecebido, abajurAceso}`.
+- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, chegadaReal, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado, nome}, bebeRecebido, abajurAceso}`.
 - Nome do jogador: máximo 12 letras, mínimo 2 (em `CONFIG.PERFIL`).
 - Regiões salvas pelo id: norte, nordeste, centro-oeste, sudeste, sul.
 - Cada região em `CONFIG.PERFIL.REGIOES` guarda: cor principal no mapa, texto do clima e lista de estados.
@@ -153,7 +164,7 @@
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
-Etapa 6 — Relógio e save: o tempo do jogo (7 dias reais = 2 anos), a idade do bebê andando, a hora do dia (dia/noite na janela) e o save guardando a última vez que o jogador entrou.
+Etapa 7 — PWA: o jogo instalável no celular (ícone na tela inicial, abre em tela cheia, funciona sem internet).
 
 ## Decisões da Etapa 3 (padrões, ajustáveis no config.js)
 - Origens: Negro 26, Branco 26, Indígena 20, Cabo Verde 16, Miscigenado 10, Especial 2 (%).

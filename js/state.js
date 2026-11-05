@@ -19,7 +19,8 @@ const Estado = {
     this.dados = {
       versao: CONFIG.VERSAO,
       criadoEm: Date.now(),   // momento em que a história começou
-      ultimaVez: Date.now(),  // última vez que o jogador esteve aqui (usado na Etapa 6)
+      ultimaVez: Date.now(),  // última vez que o jogador esteve aqui (js/tempo.js → VISITA)
+      chegadaReal: null,      // momento REAL em que a cegonha entregou o bebê: o relógio do jogo começa aqui
       perfil: perfil,
       bebe: null,             // sorteado quando a cegonha chega (Etapa 4) — ver js/bebe.js
       bebeRecebido: false     // true depois que o jogador recebe o bebê da cegonha
@@ -46,10 +47,21 @@ const Estado = {
       const texto = localStorage.getItem(CONFIG.CHAVE_SAVE);
       if (!texto) return null;
       this.dados = JSON.parse(texto);
+      this.atualizarSaveAntigo();
       return this.dados;
     } catch (e) {
       console.warn('Não consegui ler o save:', e);
       return null;
+    }
+  },
+
+  // Saves de versões antigas: completa o que faltar.
+  atualizarSaveAntigo() {
+    const d = this.dados;
+    // Antes da Etapa 6 não havia relógio do jogo: o bebê "chega" agora (recém-nascido).
+    if (d.bebeRecebido && !d.chegadaReal) {
+      d.chegadaReal = Date.now();
+      this.salvar();
     }
   },
 

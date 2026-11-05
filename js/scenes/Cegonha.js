@@ -194,6 +194,7 @@ class Cegonha extends Phaser.Scene {
       onComplete: () => {
         const dados = Estado.carregar();
         dados.bebeRecebido = true;
+        dados.chegadaReal = Date.now();   // o relógio do jogo começa agora (8h do 1º dia)
         Estado.salvar();
         irPara(this, 'Quarto', { chegou: true });
       }

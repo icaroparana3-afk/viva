@@ -13,6 +13,9 @@
 ## Ideia
 Estilo Tamagotchi, pixel art, para celular. A cegonha traz um bebê aleatório e o jogador cuida dele até os 18 anos.
 Tempo: 7 dias reais = 2 anos no jogo (1 ano = 3,5 dias reais; 0 a 18 anos ≈ 63 dias reais).
+- O jogo tem relógio próprio (decisão do autor, 2026-11-05): 1 dia do jogo ≈ 13,8 min reais; 1 hora ≈ 34,5 s; 1 mês ≈ 7 h reais. O tempo continua passando com o jogo fechado.
+- O relógio começa quando a cegonha entrega o bebê, às 8h do 1º dia. Dia das 6h às 18h; noite das 18h às 6h.
+- O quarto mostra o nome e a idade do bebê. Quem volta depois de um tempo fora vê quanto tempo ficou fora e quanto passou no jogo.
 
 ## Menu e perfil
 - Menu: Nova História, Continuar História (só ativo se houver save), Configurações.
@@ -126,7 +129,7 @@ Interações inspiradas em "Meu Talking Tom" (só a ideia; nada de arte, nomes o
 ## Decisões pendentes (decidir na etapa em que importarem)
 1. Idades exatas de cada fase e alimentação entre 1 e 2 anos. (Etapa 8)
 2. Infância termina aos 10? (Etapa 18)
-3. Regra das 12 h: manter, aumentar, "modo noite", notificação? (Etapa 6/17)
+3. Regra das 12 h: manter, aumentar, "modo noite", notificação? (Etapa 17) — atenção: com o relógio do jogo, 12 h reais = ~52 dias do jogo; 8 h de sono real = ~35 dias do jogo. As necessidades (Etapa 8+) precisam levar isso em conta.
 4. ~~Chance exata de cada origem.~~ Decidido na Etapa 3 (ver Geração do bebê).
 5. "Nível médio" de fala e quanto cada atividade sobe as habilidades. (Etapa 14)
 6. Como o bebê mata a sede de 0 a 1 ano (a mamadeira enche fome e sede?). (Etapa 8)
