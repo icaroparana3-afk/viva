@@ -31,17 +31,8 @@ class TesteBebe extends Phaser.Scene {
 
     // ---------- Cartão do bebê ----------
     this.add.rectangle(6, 26, 168, 95, 0x2a1838, 0.6).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
-    // Camadas (todas 32×32, ampliadas 2×). Ordem: pele → contorno → olhos → cabelo → extra
-    const cx = 9, cy = 33;
-    // Ordem de baixo para cima: corpo → brilho → cabelo → olhos → contorno → extra
-    this.camadas = {
-      corpo: this.add.image(cx, cy, 'bebe_corpo').setOrigin(0, 0).setScale(2),
-      brilho: this.add.image(cx, cy, 'bebe_brilho').setOrigin(0, 0).setScale(2), // brilho da careca (fica embaixo do cabelo)
-      cabelo: this.add.image(cx, cy, 'bebe_cabelo').setOrigin(0, 0).setScale(2),
-      olhos: this.add.image(cx, cy, 'bebe_olhos').setOrigin(0, 0).setScale(2),
-      contorno: this.add.image(cx, cy, 'bebe_contorno').setOrigin(0, 0).setScale(2),
-      extra: this.add.image(cx, cy, 'bebe_extra_vampiro').setOrigin(0, 0).setScale(2).setVisible(false)
-    };
+    // Bebê em camadas (32×32, ampliado 2×) — ver js/bebe_visual.js
+    this.visual = criarBebeVisual(this, 9, 33, 2);
     this.txtBebe = escrever(this, 76, 29, '', Object.assign(fonte(7), { lineSpacing: 1 }));
     // Largura de uma letra (a fonte é monoespaçada) e espaço disponível no cartão
     const medida = escrever(this, 0, 0, '0000000000', fonte(7));
@@ -86,17 +77,7 @@ class TesteBebe extends Phaser.Scene {
   // ---------- 1 bebê ----------
   novoBebe() {
     const b = BEBE.gerar(this.regiao);
-    const C = CONFIG.BEBE.CORES;
-    const hex = (h) => parseInt(h.slice(1), 16);
-
-    this.camadas.corpo.setTint(hex(C.pele[b.pele]));
-    this.camadas.olhos.setTint(hex(C.olhos[b.olhos]));
-    this.camadas.cabelo.setTint(hex(C.cabeloCor[b.cabeloCor]));
-    this.camadas.extra.setVisible(!!b.especial);
-    if (b.especial) this.camadas.extra.setTexture('bebe_extra_' + b.especial);
-    // As antenas do alienígena são cinzas como o corpo: recebem a cor da pele.
-    if (b.especial === 'alienigena') this.camadas.extra.setTint(hex(C.pele[b.pele]));
-    else this.camadas.extra.clearTint();
+    this.visual.mostrar(b);
 
     const n = (v) => BEBE.nome(v);
     const origem = b.especial ? n(b.especial) : n(b.origem);

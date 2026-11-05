@@ -79,6 +79,11 @@ const BEBE = {
     return bebe.origem === 'especial';
   },
 
+  // "no Paraná", "na Bahia", "em São Paulo"...
+  ondeNasceu(bebe) {
+    return (CONFIG.PERFIL.NASCEU_EM[bebe.estado] || 'em') + ' ' + bebe.estado;
+  },
+
   // Nome bonito de um valor (ex.: 'castanho_claro' → 'Castanho claro').
   nome(valor) {
     return CONFIG.BEBE.NOMES[valor] || valor;

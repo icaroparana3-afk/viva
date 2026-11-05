@@ -71,6 +71,11 @@ class Carregando extends Phaser.Scene {
     }
     if (P.folha) this.load.spritesheet('folha', './assets/sprites/folha.png', { frameWidth: 4, frameHeight: 4 });
     if (P.vento) this.load.image('vento', './assets/sprites/vento.png');
+    if (P.cegonha) {
+      this.load.spritesheet('cegonha', './assets/sprites/cegonha.png',
+        { frameWidth: CONFIG.CEGONHA.LARGURA, frameHeight: CONFIG.CEGONHA.ALTURA });
+      this.load.image('trouxinha', './assets/sprites/trouxinha.png');
+    }
 
     // Bebê (camadas: a cor é aplicada pelo código)
     ['bebe_corpo', 'bebe_brilho', 'bebe_cabelo', 'bebe_olhos', 'bebe_contorno',
@@ -109,6 +114,7 @@ class Carregando extends Phaser.Scene {
     if (!P.animal) criarAnimalProvisorio(this);
     if (!P.folha) criarFolhaProvisoria(this);
     if (!P.vento) criarVentoProvisorio(this);
+    if (!P.cegonha) criarCegonhaProvisoria(this);
 
     // Animações do animal e da folha
     const A = CONFIG.ANIMAL;
@@ -128,6 +134,14 @@ class Carregando extends Phaser.Scene {
       key: 'folha_girando',
       frames: this.anims.generateFrameNumbers('folha', { frames: [0, 1, 2, 3] }),
       frameRate: CONFIG.VENTO.FOLHA_QUADROS_POR_SEG,
+      repeat: -1
+    });
+
+    // Cegonha batendo asas (quadros 0, 1, 2, 3)
+    this.anims.create({
+      key: 'cegonha_voando',
+      frames: this.anims.generateFrameNumbers('cegonha', { frames: [0, 1, 2, 3] }),
+      frameRate: CONFIG.CEGONHA.QUADROS_POR_SEG,
       repeat: -1
     });
 

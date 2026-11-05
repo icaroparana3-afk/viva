@@ -20,7 +20,9 @@ const Estado = {
       versao: CONFIG.VERSAO,
       criadoEm: Date.now(),   // momento em que a história começou
       ultimaVez: Date.now(),  // última vez que o jogador esteve aqui (usado na Etapa 6)
-      perfil: perfil
+      perfil: perfil,
+      bebe: null,             // sorteado quando a cegonha chega (Etapa 4) — ver js/bebe.js
+      bebeRecebido: false     // true depois que o jogador recebe o bebê da cegonha
     };
     this.salvar();
     return this.dados;

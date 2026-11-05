@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.21',
+  VERSAO: '0.0.25',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -51,6 +51,10 @@ const CONFIG = {
     ESTRELA_ALTURA_MAX: 45,        // nasce entre y=0 e este valor (parte alta do céu)
 
 
+    // Botões de música e efeitos sonoros (16×16 cada): canto superior esquerdo de cada um.
+    BOTAO_MUSICA_X: 141, BOTAO_MUSICA_Y: 4,
+    BOTAO_SOM_X: 159,    BOTAO_SOM_Y: 4,
+
     // Quanto o botão "Continuar" fica apagado quando não há save (0 = invisível, 1 = normal).
     BOTAO_DESATIVADO_OPACIDADE: 0.45
   },
@@ -60,11 +64,13 @@ const CONFIG = {
   // por código (no mesmo tamanho). Quando o seu desenho chegar, ele vai para
   // a pasta indicada e o item vira true. Nada mais precisa mudar.
   ARTES_PRONTAS: {
-    botoes_som: false, // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada
+    botoes_som: true,  // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada (do autor)
     animal: false,     // assets/sprites/animal.png — 8 quadros de 16×16 lado a lado (128×16)
     folha: false,      // assets/sprites/folha.png — 4 quadros de 4×4 lado a lado (16×4)
     vento: false,      // assets/sprites/vento.png — risco de vento, 24×3
-    sombras: false     // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
+    sombras: false,    // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
+    cegonha: false     // assets/sprites/cegonha.png — 4 quadros de 48×32 (192×32), olhando para a esquerda
+                       // e assets/sprites/trouxinha.png — 14×16 (a trouxinha que ela segura no bico)
   },
 
   // ---------- TELA DE CARREGAMENTO ----------
@@ -125,6 +131,20 @@ const CONFIG = {
     ACAO_INTERVALO_MIN: 4,     // espera mínima entre uma ação e outra (segundos)
     ACAO_INTERVALO_MAX: 9,
     VIRAR: false               // true = espelha o desenho (olhar para o outro lado)
+  },
+
+  // ---------- CEGONHA (Etapa 4) ----------
+  // A cegonha entra voando com o bebê, fica segurando até o jogador tocar
+  // e NUNCA solta nem derruba o bebê: a trouxinha fica presa no bico o tempo todo.
+  CEGONHA: {
+    LARGURA: 48, ALTURA: 32,         // tamanho de cada quadro do desenho
+    BICO_X: 3, BICO_Y: 13,           // ponto do bico (dentro do quadro) onde a trouxinha fica presa
+    QUADROS_POR_SEG: 8,              // velocidade do bater de asas
+    ENTRADA_SEGUNDOS: 2.5,           // tempo para chegar voando até o meio da tela
+    PARADA_X: 70, PARADA_Y: 92,      // onde ela fica pairando (canto superior esquerdo do quadro)
+    BALANCO_PIXELS: 3,               // quanto ela sobe e desce enquanto paira
+    BALANCO_POR_SEG: 0.8,
+    SAIDA_SEGUNDOS: 2                // tempo para sair voando com o bebê (indo para o berço)
   },
 
   // ---------- BEBÊ (Etapa 3) ----------
@@ -243,6 +263,16 @@ const CONFIG = {
         clima: 'A região mais fria do Brasil. Inverno com geada, que pede casaco de verdade.',
         estados: ['Paraná', 'Rio Grande do Sul', 'Santa Catarina'] }
     ],
+
+    // Como se diz "nasceu ___ <estado>" (no, na ou em), para frases como "Nasceu no Paraná".
+    NASCEU_EM: {
+      'Acre': 'no', 'Amapá': 'no', 'Amazonas': 'no', 'Pará': 'no', 'Rondônia': 'em', 'Roraima': 'em', 'Tocantins': 'no',
+      'Alagoas': 'em', 'Bahia': 'na', 'Ceará': 'no', 'Maranhão': 'no', 'Paraíba': 'na', 'Pernambuco': 'em', 'Piauí': 'no',
+      'Rio Grande do Norte': 'no', 'Sergipe': 'em',
+      'Goiás': 'em', 'Mato Grosso': 'em', 'Mato Grosso do Sul': 'em', 'Distrito Federal': 'no',
+      'Espírito Santo': 'no', 'Minas Gerais': 'em', 'Rio de Janeiro': 'no', 'São Paulo': 'em',
+      'Paraná': 'no', 'Rio Grande do Sul': 'no', 'Santa Catarina': 'em'
+    },
 
     // Quanto o resto do mapa escurece quando uma região está escolhida
     // (0x000000 = preto, 0xffffff = sem escurecer).

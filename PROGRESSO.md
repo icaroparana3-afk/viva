@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 3 — Gerador do bebê** (aguardando "aprovado")
+**Etapa 4 — Cegonha** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -32,7 +32,7 @@
   - Piquenique (v0.0.14): toalha xadrez (vermelho #e53a29, rosa #ebaba2, branco #f7f7f9, cores escolhidas pelo autor; desenho feito por código a pedido dele) embaixo do casal, e cesta de piquenique ao lado da menina (reduzida da imagem do autor para 22×20). O animal foi para a direita, fora da toalha.
   - Textos de clima (v0.0.9): nome + subtítulo + texto curto (até 3 linhas) ao tocar na região. Textos completos do autor guardados no DESIGN.md.
 
-- **Etapa 3 (v0.0.15):**
+- **Etapa 3 (aprovada em 2026-11-04, v0.0.15–0.0.21):**
   - `js/bebe.js`: `BEBE.gerar(regiao)` sorteia sexo, origem (e especial), pele, tipo e cor do cabelo, olhos e estado; `BEBE.confere(bebe)` checa as regras; `BEBE.revelaOrigem(bebe)` = só especiais.
   - Regras e chances em `CONFIG.BEBE` (config.js): pesos das origens, listas permitidas por origem, especiais, cores provisórias (tint) e nomes na tela.
   - Tela de teste `TesteBebe` (Configurações → "Teste: gerador do bebê"): mostra 1 bebê em camadas provisórias coloridas por tint, gera 1000 e mostra as porcentagens em 8 páginas (origem com o alvo, sexo, especiais, pele, tipo e cor do cabelo, olhos, estado). Toque em "Região" troca a região.
@@ -42,6 +42,16 @@
 - O teste ainda mostra o tipo de cabelo no texto (ele só aparece no desenho a partir de 1 ano).
 
 - **Tela de carregamento (v0.0.21):** `Boot` carrega só o cenário e a mamadeira; a cena nova `Carregando` mostra o menu parado (sem botões, crianças, animal, estrela e pássaro) com a mamadeira do autor enchendo de 0% a 100% e a porcentagem embaixo, depois abre o Menu. Fica pelo menos `CONFIG.CARREGAMENTO.TEMPO_MINIMO` (1,5 s) para dar tempo de ver a mamadeira encher. Números em `CONFIG.CARREGAMENTO`.
+
+- **Etapa 4 (v0.0.22):**
+  - Cena `Cegonha`: cenário do menu (sem piquenique), a cegonha entra voando da direita com a trouxinha no bico, para e fica pairando (sobe e desce) com "Toque para receber seu bebê".
+  - Regra: a trouxinha é reposicionada no bico a cada quadro (sem física): nunca cai. Conferido no teste (distância bico↔trouxinha sempre igual).
+  - Toque: aparece o bebê (camadas do autor, 2×), "É um menino!/É uma menina!", a origem só se for especial ("E ela é uma vampira!") e "Nasceu no/na/em <estado>". Botão "Levar para o berço": a cegonha sai voando com o bebê, o save marca `bebeRecebido: true` e volta ao Menu com "O bebê está no berço!".
+  - Save: `bebe` (o bebê sorteado) e `bebeRecebido`. O bebê é sorteado e salvo assim que a cegonha aparece: fechar o jogo no meio traz o MESMO bebê de volta.
+  - Fluxo: Região → "Começar" abre a cegonha. "Continuar História" abre a cegonha se o bebê ainda não foi recebido; se já foi, mostra "Em breve: o quarto" (Etapa 5).
+  - `js/bebe_visual.js`: `criarBebeVisual(cena, x, y, escala)` desenha o bebê em camadas (usado no teste e na cegonha).
+  - `BEBE.ondeNasceu(bebe)` + `CONFIG.PERFIL.NASCEU_EM`: artigo certo de cada estado (no Paraná, na Bahia, em São Paulo).
+  - Cegonha e trouxinha provisórias (feitas por código) até a arte do autor chegar. Números em `CONFIG.CEGONHA`.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -71,15 +81,16 @@
 | assets/sprites/bebe_extra_vampiro / _lobisomem .png | 32×32 cada | detalhes dos especiais (provisórios, feitos por Claude) |
 | assets/ui/mamadeira.png | 16×32 | mamadeira do autor (original) |
 | assets/ui/mamadeira_carregando.png | 288×32 | 18 quadros de 16×32 (0 = vazia, 17 = cheia), feitos a partir da mamadeira do autor |
+| assets/ui/botao_musica(_off).png / botao_som(_off).png | 16×16 cada | botões de música e efeitos do autor (v0.0.25, roxos, combinando com os botões do menu), lado a lado no canto direito: música (141,4), efeitos (159,4) — `CONFIG.MENU.BOTAO_*`. Versões anteriores (hexágono 32×28 e 16×16) guardadas em assets/originais |
 | assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
 
 ## Falta desenhar (pode ser depois)
+- **Cegonha (Etapa 4):** `assets/sprites/cegonha.png` 192×32 = 4 quadros de 48×32 lado a lado (asas para cima, no meio, para baixo, no meio), olhando para a ESQUERDA, com o bico na ponta esquerda. `assets/sprites/trouxinha.png` 14×16 com o nó em cima (onde o bico segura). Ao chegar: ligar `ARTES_PRONTAS.cegonha` e ajustar `CONFIG.CEGONHA.BICO_X/BICO_Y` ao bico do desenho.
 - **Desenhos da vida no menu (o autor está fazendo).** Ao chegar, colocar na pasta e ligar o item em `CONFIG.ARTES_PRONTAS`:
   - `assets/sprites/animal.png`: 128×16 (8 quadros de 16×16 lado a lado). Quadros 0–3 = parado (repete), 4–7 = ação. Olhando para a esquerda (para o casal).
   - `assets/sprites/folha.png`: 16×4 (4 quadros de 4×4, a folha girando).
   - `assets/sprites/vento.png`: 24×3 (um risco de vento, pode ter transparência).
   - `assets/sprites/sombra_grande.png` 52×6 (casal), `sombra_media.png` 28×5 (árvores e moitas), `sombra_pequena.png` 14×3 (animal). Cor cheia; a transparência é aplicada pelo jogo (`CONFIG.SOMBRAS`).
-- **Botões de som (o autor está fazendo):** 16×16 cada, 4 arquivos: `botao_musica.png`, `botao_musica_off.png`, `botao_som.png`, `botao_som_off.png`. Posição: música (141,4), efeitos (159,4). Quando chegarem: colocar em assets/ui e mudar `ARTES_PRONTAS.botoes_som` para true no config.js.
 - Telas de Perfil e confirmação: as caixas são retângulos provisórios. Para desenhá-las, o melhor é antes termos uma fonte pixel (bitmap font), senão cada texto vira um desenho separado. Sugestão: deixar para uma etapa de acabamento.
 - Nada obrigatório.
 
@@ -88,7 +99,7 @@
 - Versão aparece no rodapé para conferir se o celular pegou a atualização.
 - Backup: Git pelo VS Code ("Publish to GitHub" já feito).
 - Menu reaproveitado do jogo antigo, peças separadas pelo autor; posições idênticas ao original (botões em x=35, y=120/146/172).
-- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}}`.
+- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado}, bebeRecebido}`.
 - Nome do jogador: máximo 12 letras, mínimo 2 (em `CONFIG.PERFIL`).
 - Regiões salvas pelo id: norte, nordeste, centro-oeste, sudeste, sul.
 - Cada região em `CONFIG.PERFIL.REGIOES` guarda: cor principal no mapa, texto do clima e lista de estados.
@@ -107,7 +118,7 @@
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
-Etapa 4 — Cegonha: entra voando com o bebê, fica segurando até o jogador tocar (nunca solta nem derruba), mostra só o sexo (e a origem, se especial) e guarda o bebê no save.
+Etapa 5 — Quarto e bebê: o quarto com o berço, o bebê aparecendo nele (camadas do autor) e "Continuar História" abrindo o quarto.
 
 ## Decisões da Etapa 3 (padrões, ajustáveis no config.js)
 - Origens: Negro 26, Branco 26, Indígena 20, Cabo Verde 16, Miscigenado 10, Especial 2 (%).

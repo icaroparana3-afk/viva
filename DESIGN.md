@@ -39,6 +39,7 @@ Tempo: 7 dias reais = 2 anos no jogo (1 ano = 3,5 dias reais; 0 a 18 anos ≈ 63
 
 ## Cegonha
 Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta nem derruba o bebê. Depois do toque, o bebê vai para o berço no quarto.
+- Implementação (Etapa 4): o bebê é sorteado e salvo quando a cegonha aparece (fechar o jogo traz o mesmo bebê). Ela entra voando, paira até o toque e a trouxinha fica presa ao bico o tempo todo. Ao tocar, mostra "É um menino!/É uma menina!", a origem só se for especial e o estado onde nasceu. "Levar para o berço": a cegonha sai voando com o bebê para o quarto.
 
 ## Necessidades e emoções
 - Barras: fome, sede, energia, higiene, diversão.

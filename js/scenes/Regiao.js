@@ -94,7 +94,7 @@ class Regiao extends Phaser.Scene {
   comecar() {
     if (!this.escolhida) return;
     Estado.criarNovo({ nome: this.nome, papel: this.papel, regiao: this.escolhida });
-    // A Etapa 4 (Cegonha) vai começar aqui. Por enquanto, volta ao menu.
-    this.scene.start('Menu', { avisar: 'Perfil salvo!' });
+    // A cegonha traz o bebê (Etapa 4)
+    this.scene.start('Cegonha');
   }
 }

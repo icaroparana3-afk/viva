@@ -89,11 +89,12 @@ class Menu extends Phaser.Scene {
     this.add.image(53, 15, 'texto_titulo').setOrigin(0, 0);
 
     // ---------- Música e efeitos sonoros (canto superior direito) ----------
+    const M = CONFIG.MENU;
     // Por enquanto só guardam a escolha; os sons entram na Etapa 30.
-    criarBotaoAlternar(this, 141, 4, 'botao_musica', 'botao_musica_off', Opcoes.musica, v => {
+    criarBotaoAlternar(this, M.BOTAO_MUSICA_X, M.BOTAO_MUSICA_Y, 'botao_musica', 'botao_musica_off', Opcoes.musica, v => {
       Opcoes.musica = v; Opcoes.salvar();
     });
-    criarBotaoAlternar(this, 159, 4, 'botao_som', 'botao_som_off', Opcoes.som, v => {
+    criarBotaoAlternar(this, M.BOTAO_SOM_X, M.BOTAO_SOM_Y, 'botao_som', 'botao_som_off', Opcoes.som, v => {
       Opcoes.som = v; Opcoes.salvar();
     });
 
@@ -315,7 +316,9 @@ class Menu extends Phaser.Scene {
   continuarHistoria() {
     const save = Estado.carregar();
     if (!save) return;
-    // A Etapa 5/6 vai abrir o quarto aqui.
-    mostrarAviso(this, 'Em breve: ' + save.perfil.nome);
+    // Se a cegonha ainda não entregou o bebê, ela volta (com o MESMO bebê, que já está salvo).
+    if (!save.bebe || !save.bebeRecebido) { this.scene.start('Cegonha'); return; }
+    // A Etapa 5 vai abrir o quarto aqui.
+    mostrarAviso(this, 'Em breve: o quarto');
   }
 }
