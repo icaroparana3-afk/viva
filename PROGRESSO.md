@@ -57,7 +57,15 @@
   - Cena `Quarto`: fundo do quarto, berço em duas camadas (trás e frente) e o bebê sentado no colchão entre elas (a grade da frente fica na frente dele).
   - Bebê vivo: respira (sobe 1 px e desce), pisca a cada 2,5–6 s (pálpebras com a cor da pele, feitas a partir dos olhos do desenho do autor) e, ao ser tocado, dá um pulinho e solta um coração.
   - Fluxo: a cegonha leva o bebê e o jogo abre o quarto com "Seu filho chegou!/Sua filha chegou!". "Continuar História" abre o quarto quando o bebê já foi recebido. Botão "Menu" no canto volta ao menu.
-  - Quarto, berço e coração provisórios (feitos por código); números em `CONFIG.QUARTO`.
+  - Coração provisório (feito por código); números em `CONFIG.QUARTO`.
+- **Etapa 5, visual (v0.0.27):**
+  - Quartos do autor: `quarto_menina.png` (rosa) e `quarto_menino.png` (azul), 180×320; o jogo escolhe pelo sexo do bebê.
+  - Berço do autor (sem grade da frente) reduzido para 80×64 e limpo em pixel art: posição (50,187), encostado no rodapé. `berco_frente` = postes + painel de baixo. Bebê em (74,199).
+  - Janela viva: o vidro do desenho virou transparente e o jogo desenha o céu atrás. Dia (6h–18h): céu claro com as cores do autor e nuvens passando. Noite: céu escuro, estrelas piscando, lua, e o quarto escurece um pouco (`NOITE_ESCURECER`). Por enquanto vale a hora do aparelho; na Etapa 6 passa a ser o relógio do jogo. Números em `CONFIG.JANELA`.
+  - TESTE: tocar na janela troca dia/noite (`CONFIG.JANELA.TESTE_TOQUE_JANELA`, sai na Etapa 6).
+  - Abajur (criado-mudo à direita) reservado como botão de dormir: posição em `CONFIG.QUARTO.ABAJUR_*`; a função entra na etapa do sono.
+  - Nuvens da janela (12×5 e 8×4) e lua (5×5) provisórias, feitas por código com as cores da nuvem do autor.
+  - Originais do autor guardados em `assets/originais/` (berco_original, quarto_menina_original, quarto_menino_original).
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -89,9 +97,13 @@
 | assets/ui/mamadeira_carregando.png | 288×32 | 18 quadros de 16×32 (0 = vazia, 17 = cheia), feitos a partir da mamadeira do autor |
 | assets/ui/botao_musica(_off).png / botao_som(_off).png | 16×16 cada | botões de música e efeitos do autor (v0.0.25, roxos, combinando com os botões do menu), lado a lado no canto direito: música (141,4), efeitos (159,4) — `CONFIG.MENU.BOTAO_*`. Versões anteriores (hexágono 32×28 e 16×16) guardadas em assets/originais |
 | assets/ui/texto_titulo.png | 71×44 | "VIVA" + coração + "CUIDE DE UMA VIDA", posição (53,15) no Menu |
+| assets/ui/quarto_menina.png / quarto_menino.png | 180×320 | quartos do autor (v0.0.27); vidro da janela transparente (x 69–110, y 76–120) para o céu vivo |
+| assets/sprites/berco_tras.png / berco_frente.png | 80×64 cada | berço do autor reduzido e limpo; frente = postes + painel |
 
 ## Falta desenhar (pode ser depois)
-- **Quarto (Etapa 5):** `assets/ui/quarto_fundo.png` 180×320 (parede, janela, chão; o berço fica em (50,186)). `assets/sprites/berco_tras.png` e `berco_frente.png`, 80×64 cada, no mesmo quadro: a de trás tem cabeceira, grade de trás e colchão; a da frente tem só a grade da frente (o resto transparente). O bebê (32×32) fica sentado em (74,200), com o bumbum na altura do colchão. Ao chegar: ligar `ARTES_PRONTAS.quarto`.
+- **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
+- **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.
+- **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele) e `bebe_olhos_fechados.png` 32×32.
 - **Cegonha (Etapa 4):** `assets/sprites/cegonha.png` 192×32 = 4 quadros de 48×32 lado a lado (asas para cima, no meio, para baixo, no meio), olhando para a ESQUERDA, com o bico na ponta esquerda. `assets/sprites/trouxinha.png` 14×16 com o nó em cima (onde o bico segura). Ao chegar: ligar `ARTES_PRONTAS.cegonha` e ajustar `CONFIG.CEGONHA.BICO_X/BICO_Y` ao bico do desenho.
 - **Desenhos da vida no menu (o autor está fazendo).** Ao chegar, colocar na pasta e ligar o item em `CONFIG.ARTES_PRONTAS`:
   - `assets/sprites/animal.png`: 128×16 (8 quadros de 16×16 lado a lado). Quadros 0–3 = parado (repete), 4–7 = ação. Olhando para a esquerda (para o casal).

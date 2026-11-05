@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.26',
+  VERSAO: '0.0.27',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -71,8 +71,9 @@ const CONFIG = {
     sombras: false,    // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
     cegonha: false,    // assets/sprites/cegonha.png — 4 quadros de 48×32 (192×32), olhando para a esquerda
                        // e assets/sprites/trouxinha.png — 14×16 (a trouxinha que ela segura no bico)
-    quarto: false      // assets/ui/quarto_fundo.png 180×320 (parede, janela, chão)
-                       // e assets/sprites/berco_tras.png + berco_frente.png — 80×64 cada (mesmo tamanho, um por cima do outro)
+    janela: false,     // assets/sprites/nuvem_janela1.png 12×5, nuvem_janela2.png 8×4 e lua.png 5×5
+    coracao: false     // assets/sprites/coracao.png 7×6
+    // O quarto (menina e menino) e o berço já são os desenhos do autor (v0.0.27).
   },
 
   // ---------- TELA DE CARREGAMENTO ----------
@@ -150,14 +151,42 @@ const CONFIG = {
   },
 
   // ---------- QUARTO (Etapa 5) ----------
+  // Fundo: assets/ui/quarto_menina.png ou quarto_menino.png (180×320), conforme o bebê.
+  // O vidro da janela é transparente no desenho: atrás dele o jogo desenha o céu.
   QUARTO: {
-    BERCO_X: 50, BERCO_Y: 186,       // canto superior esquerdo do berço (80×64)
-    BEBE_X: 74,  BEBE_Y: 200,        // canto superior esquerdo do bebê (32×32), sentado no colchão
+    BERCO_X: 50, BERCO_Y: 187,       // canto superior esquerdo do berço (80×64), encostado no rodapé
+    BEBE_X: 74,  BEBE_Y: 199,        // canto superior esquerdo do bebê (32×32), sentado no colchão
     RESPIRAR_SEGUNDOS: 1.4,          // tempo de uma respiração (sobe 1 px e desce)
     PISCAR_MIN: 2.5,                 // espera mínima entre uma piscada e outra (segundos)
     PISCAR_MAX: 6,
     PISCAR_DURACAO: 0.15,            // quanto tempo o olho fica fechado (segundos)
-    PULINHO_PIXELS: 3                // altura do pulinho quando o jogador toca no bebê
+    PULINHO_PIXELS: 3,               // altura do pulinho quando o jogador toca no bebê
+    AVISO_Y: 40,                     // altura do aviso "Seu filho chegou!"
+
+    // Abajur (no criado-mudo, à direita): será o botão de dormir.
+    // Aceso = bebê dormindo; apagado = acordado. (A função entra na etapa do sono.)
+    ABAJUR_X: 153, ABAJUR_Y: 237, ABAJUR_LARGURA: 21, ABAJUR_ALTURA: 27
+  },
+
+  // ---------- JANELA DO QUARTO: o mundo lá fora ----------
+  // Dia: céu claro e nuvens passando. Noite: céu escuro, estrelas e lua.
+  // Até a Etapa 6 (relógio do jogo), vale a hora do aparelho.
+  JANELA: {
+    X: 69, Y: 76, LARGURA: 42, ALTURA: 45,   // retângulo do vidro (o céu é desenhado aqui, atrás do quarto)
+    DIA_COMECA: 6,                   // hora em que amanhece
+    NOITE_COMECA: 18,                // hora em que anoitece
+    // Céu em duas faixas (as mesmas cores do desenho do autor de dia)
+    CEU_DIA_ALTO: '#a8dcea',  CEU_DIA_BAIXO: '#7ac3d7',
+    CEU_NOITE_ALTO: '#151a3d', CEU_NOITE_BAIXO: '#232a5c',
+    FAIXA_ALTURA: 14,                // altura da faixa de cima
+    NUVEM_VELOCIDADE_MIN: 1.5,       // pixels por segundo (calmo)
+    NUVEM_VELOCIDADE_MAX: 3,
+    NUVENS: 3,                       // quantas nuvens passam ao mesmo tempo
+    ESTRELAS: 14,                    // quantas estrelas aparecem à noite
+    LUA_X: 96, LUA_Y: 79,            // onde fica a lua (canto superior esquerdo)
+    TROCA_SEGUNDOS: 1.5,             // tempo da passagem dia ↔ noite
+    NOITE_ESCURECER: 0.28,           // quanto o quarto escurece à noite (0 = nada, 1 = preto)
+    TESTE_TOQUE_JANELA: true         // TESTE: tocar na janela troca dia/noite (sai na Etapa 6)
   },
 
   // ---------- BEBÊ (Etapa 3) ----------
