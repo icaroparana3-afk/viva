@@ -73,6 +73,11 @@ class Carregando extends Phaser.Scene {
     }
     if (P.folha) this.load.spritesheet('folha', './assets/sprites/folha.png', { frameWidth: 4, frameHeight: 4 });
     if (P.vento) this.load.image('vento', './assets/sprites/vento.png');
+    if (P.necessidades) {
+      this.load.spritesheet('icones_necessidades', './assets/sprites/icones_necessidades.png', { frameWidth: 9, frameHeight: 9 });
+      this.load.image('mamadeira_bebe', './assets/sprites/mamadeira_bebe.png');
+      this.load.image('balao', './assets/sprites/balao.png');
+    }
     // Quarto (desenhos do autor): um para menina, outro para menino, e o berço
     this.load.image('quarto_menina', './assets/ui/quarto_menina.png');
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
@@ -131,6 +136,7 @@ class Carregando extends Phaser.Scene {
     if (!P.vento) criarVentoProvisorio(this);
     if (!P.janela) criarJanelaProvisoria(this);
     if (!P.coracao) criarCoracaoProvisorio(this);
+    if (!P.necessidades) criarNecessidadesProvisorias(this);
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarEstrelinha(this);      // estrelinha da festa de chegada
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)

@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 7 — PWA** (aguardando "aprovado")
+**Etapa 8 — Necessidades e mamadeira** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -93,12 +93,23 @@
   - Saves antigos sem `chegadaReal`: o bebê passa a contar a partir de agora (recém-nascido).
   - Saiu o teste de tocar na janela. TESTE novo: tocar no relógio da parede adianta 1 hora do jogo (`CONFIG.TEMPO.TESTE_TOQUE_RELOGIO`, tirar antes de lançar).
 
-- **Etapa 7 — PWA (v0.0.38–0.0.40):**
+- **Etapa 7 — PWA (aprovada em 2026-11-05, v0.0.38–0.0.40):**
   - O jogo é instalável: `manifest.json` (nome "Viva", tela cheia, retrato, cores do jogo) e ícones `assets/ui/icone_192.png`, `icone_512.png` e `icone_180.png` (iPhone). Ícone do autor: original em `assets/originais/icone_original_48.png`. Na v0.0.40 o jogo corta o contorno escuro de 1 px (e a linha clara ao lado) e usa o miolo 44×44 como `assets/ui/icone.png`, porque o iPhone enchia o quadrado e o contorno aparecia como moldura roxa. Para o Android existe `icone_512_maskable.png` (arte a 76% com céu e grama espelhados até a borda), para o corte em círculo não cortar o sol.
   - `sw.js` (service worker): na primeira visita guarda todos os arquivos do jogo e o Phaser. Com internet busca sempre a versão nova (o celular não fica preso numa versão velha); sem internet, ou com a internet demorando mais de 4 s, usa a cópia guardada. A versão do cache acompanha `CONFIG.VERSAO`.
   - Novo `js/app.js`: liga o service worker e guarda o pedido de instalação do navegador.
   - Configurações: botão "Instalar no celular". No Chrome/Android abre o pedido de instalação; no iPhone e quando o pedido não está disponível, explica o caminho pelo menu. Se já estiver instalado, mostra "Já instalado ✓".
   - Testado: jogo abre sem internet depois da primeira visita.
+
+- **Etapa 8 — Necessidades e mamadeira (v0.0.41):**
+  - Novo `js/necessidades.js` (`NEC`): cinco barras de 0 a 100 no save (`necessidades`, `necessidadesEm`): fome, sede, energia, higiene, diversão.
+  - As barras caem pelo TEMPO REAL (decisão do autor): fome e sede esvaziam em 5 h, diversão em 4 h. Com o jogo fechado caem na metade da velocidade. Energia e higiene ficam paradas (barra mais apagada) até as etapas do sono e do banho. Números em `CONFIG.NECESSIDADES`.
+  - O bebê chega com fome (40), sede (40) e entediado (diversão 30). Saves antigos começam assim também.
+  - Painel embaixo do quarto com os 5 ícones e as barras (verde > 50, amarelo 25–50, vermelho < 25). A versão subiu para cima do painel.
+  - Botão da mamadeira na parede da esquerda (usa a mamadeira cheia do desenho do autor). Ao tocar, a mamadeira vai à boca do bebê, ele fecha os olhos contente e a fome e a sede enchem juntas (decisão do autor) até ficarem cheias; no fim sai um coração. Cheio: "Não quero!".
+  - Balão de pedido em cima do berço com o ícone da barra mais baixa (abaixo de 30).
+  - Humor na caixinha do canto: Feliz, Entediado(a) (diversão < 40) ou Triste (alguma barra ativa < 20).
+  - Tocar no bebê sobe a diversão (+3); tocar num brinquedo, +1.
+  - Arte provisória feita por código: ícones das necessidades, mamadeira na boca e balão (`CONFIG.ARTES_PRONTAS.necessidades`).
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -137,6 +148,7 @@
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
+- **Necessidades (Etapa 8):** `icones_necessidades.png` 45×9 (cinco ícones de 9×9 lado a lado: fome, sede, energia, higiene, diversão), `mamadeira_bebe.png` 12×7 (mamadeira deitada, bico à esquerda) e `balao.png` 15×14 (balão de pensamento; o ícone de 9×9 entra no canto 3,1). Em assets/sprites. Depois, `CONFIG.ARTES_PRONTAS.necessidades = true`.
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.
 - **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele), `bebe_olhos_fechados.png` 32×32 (piscada) e `bebe_olhos_felizes.png` 32×32 (olhos fechados sorrindo, ao ser tocado).
@@ -172,7 +184,7 @@
 - Opções de música/efeitos ficam na gaveta `viva_opcoes` (separada do save, não acende o "Continuar"). Objeto `Opcoes` em state.js.
 
 ## Próximo passo
-Etapa 8 — começa a Fase 2 (bebê de 0 a 2 anos). Decidir primeiro: idades exatas de cada fase e como o bebê mata a fome e a sede de 0 a 1 ano (Decisões pendentes 1 e 6 do DESIGN), e como o relógio rápido do jogo afeta as necessidades.
+Etapa 9 — próxima etapa da fase do bebê (0 a 2 anos), a combinar depois da aprovação da Etapa 8.
 
 ## Decisões da Etapa 3 (padrões, ajustáveis no config.js)
 - Origens: Negro 26, Branco 26, Indígena 20, Cabo Verde 16, Miscigenado 10, Especial 2 (%).

@@ -51,6 +51,10 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
 - Barras: fome, sede, energia, higiene, diversão.
 - Emoções (estilo The Sims): feliz, entediado, triste, focado (lista pode crescer).
 - O bebê chega com fome, sede e entediado.
+- Barras de 0 a 100 que caem pelo TEMPO REAL, não pelo relógio rápido do jogo (decisão do autor, 2026-11-05). A fome vai de cheia a vazia em 5 h reais.
+- Com o jogo fechado, as barras continuam caindo, mas na metade da velocidade.
+- O bebê pede o que mais precisa com um balão. Humor (Etapa 8): feliz, entediado (diversão baixa) ou triste (alguma barra muito baixa).
+- Energia e higiene só começam a cair nas etapas do sono e do banho.
 
 ## Casa
 Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (cadeirinha). O jogador navega entre eles.
@@ -63,7 +67,7 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 - Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
 
 ## Bebê
-- Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome. Depois, na cozinha.
+- Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome. A mamadeira enche a fome e a sede juntas (decisão do autor, 2026-11-05). Depois, na cozinha.
 - Banho: banheira; sabonete faz espuma, chuveiro tira. Brincar suja.
 - Roupa e clima: frio pede roupa quente, calor pede roupa fresca. Frio + roupa errada = resfriado (cuidados e remédio). Calor + roupa errada = chora mais, sem dizer por quê.
 - Brincar: sala (assistir) ou varanda (brinquedos). Muda com a idade.
@@ -130,12 +134,12 @@ Assumir a vida (profissão, relacionamentos, casamento, filhos, morte — "ir pa
 Interações inspiradas em "Meu Talking Tom" (só a ideia; nada de arte, nomes ou sons).
 
 ## Decisões pendentes (decidir na etapa em que importarem)
-1. Idades exatas de cada fase e alimentação entre 1 e 2 anos. (Etapa 8)
+1. Idades exatas de cada fase e alimentação entre 1 e 2 anos. (decidir quando o bebê chegar perto de 1 ano: etapa da cozinha)
 2. Infância termina aos 10? (Etapa 18)
 3. Regra do abandono: decidido pelo autor em 2026-11-05 — 1 dia real sem entrar = a regra entra em vigor (antes era 12 h). Falta decidir só o que acontece com aviso, adoção e "modo noite". (Etapa 17)
 4. ~~Chance exata de cada origem.~~ Decidido na Etapa 3 (ver Geração do bebê).
 5. "Nível médio" de fala e quanto cada atividade sobe as habilidades. (Etapa 14)
-6. Como o bebê mata a sede de 0 a 1 ano (a mamadeira enche fome e sede?). (Etapa 8)
+6. ~~Sede de 0 a 1 ano.~~ Decidido: a mamadeira enche fome e sede.
 7. ~~Cabo Verde "pele escura".~~ Decidido: tom negro (provisório).
 8. Especiais: atributos próprios decididos na Etapa 3; cada um tem uma camada extra de desenho (antenas, dentes, orelhas). Visual final na Etapa 5.
 9. Fala: vale o nível (nível médio) ou a idade (fim do 1º/3º ano)? Provável: o nível, com velocidade de subida que leva a essas idades. (Etapa 14)

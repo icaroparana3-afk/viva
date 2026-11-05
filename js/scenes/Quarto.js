@@ -58,6 +58,10 @@ class Quarto extends Phaser.Scene {
 
     this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_frente').setOrigin(0, 0);
 
+    // Mamadeira na boca do bebê (aparece enquanto mama; atrás do escuro da noite)
+    const N = CONFIG.NECESSIDADES;
+    this.mamadeira = this.add.image(N.MAMADEIRA_BOCA_X, N.MAMADEIRA_BOCA_Y, 'mamadeira_bebe').setOrigin(0, 0).setVisible(false);
+
     // ---------- Escuro da noite (por cima do quarto, abaixo dos botões) ----------
     this.escuro = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x0b0d2a, 1)
       .setOrigin(0, 0).setAlpha(0);
@@ -65,10 +69,13 @@ class Quarto extends Phaser.Scene {
     // ---------- Abajur: acende e apaga (só luz, sem ligação com o sono) ----------
     this.criarAbajur(save);
 
+    // ---------- Necessidades (Etapa 8): painel das barras, mamadeira e balão ----------
+    this.criarNecessidades();
+
     // ---------- Topo: botão de voltar ao menu ----------
     criarBotaoImg(this, 4, 4, 'botao_menu', () => irPara(this, 'Menu'));   // botão do autor (34×14)
 
-    escrever(this, CONFIG.LARGURA - 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
+    escrever(this, CONFIG.LARGURA - 3, CONFIG.NECESSIDADES.PAINEL_Y - 1, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
     }).setOrigin(1, 1).setAlpha(0.6);
 
@@ -201,6 +208,7 @@ class Quarto extends Phaser.Scene {
   conferirHora() {
     if (this.ehNoite() !== this.noite) this.aplicarPeriodo(!this.noite);
     this.atualizarInfo();
+    this.atualizarNecessidades();
   }
 
   // ---------- Nome e idade (canto superior direito) ----------
@@ -217,24 +225,32 @@ class Quarto extends Phaser.Scene {
     this.infoHora = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 21, '', {
       fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6'
     }).setOrigin(1, 0);
+    this.infoHumor = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 30, '', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#ffffff'
+    }).setOrigin(1, 0);
     this.textoInfo = null;
     this.atualizarInfo();
   }
 
   atualizarInfo() {
+    if (!this.infoNome) return;        // a caixinha ainda não foi criada
     const Q = CONFIG.QUARTO;
     const t = TEMPO.agora();
     const idade = TEMPO.textoIdade(this.bebe.sexo);
     const nome = this.bebe.nome || '';
     const hora = 'Dia ' + t.dia + ' · ' + t.hora + 'h';
-    const chave = nome + '|' + idade + '|' + hora;
+    const humor = NEC.humor();
+    const chave = nome + '|' + idade + '|' + hora + '|' + humor;
     if (chave === this.textoInfo) return;
     this.textoInfo = chave;
     this.infoNome.setText(nome);
     this.infoIdade.setText(idade);
     this.infoHora.setText(hora);
-    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width, this.infoHora.width)) + 8;
-    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 31);
+    const H = { feliz: ['Feliz', '#8ee06a'], entediado: ['Entediad' + (this.bebe.sexo === 'F' ? 'a' : 'o'), '#ffd860'],
+      triste: ['Triste', '#ff7a7a'] }[humor];
+    this.infoHumor.setText(H[0]).setColor(H[1]);
+    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width, this.infoHora.width, this.infoHumor.width)) + 8;
+    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 40);
   }
 
   // Aviso de quem volta depois de um tempo fora
@@ -342,6 +358,8 @@ class Quarto extends Phaser.Scene {
   mexerBrinquedo(b) {
     if (b.ocupado) return;
     b.ocupado = true;
+    NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BRINQUEDO);   // o bebê acha graça
+    this.atualizarNecessidades();
     const B = CONFIG.BRINQUEDOS;
     const posicionar = () => b.img.setPosition(b.x + Math.round(b.dx), b.y + Math.round(b.dy));
     const fim = () => { b.dx = 0; b.dy = 0; posicionar(); b.ocupado = false; };
@@ -434,6 +452,10 @@ class Quarto extends Phaser.Scene {
     // Respirar: metade do tempo 1 px para cima, metade no lugar
     const respira = (this.tempo % Q.RESPIRAR_SEGUNDOS) < Q.RESPIRAR_SEGUNDOS / 2 ? 0 : -1;
     this.visual.setPosition(Q.BEBE_X, Q.BEBE_Y + respira - Math.round(this.pulo));
+    if (this.mamadeira.visible) {
+      const N = CONFIG.NECESSIDADES;
+      this.mamadeira.setPosition(N.MAMADEIRA_BOCA_X, N.MAMADEIRA_BOCA_Y + respira);
+    }
   }
 
   agendarPiscada() {
@@ -452,8 +474,10 @@ class Quarto extends Phaser.Scene {
   // Toque no bebê: fecha os olhos (sorrindo), dá um pulinho e solta um coração
   tocarBebe() {
     const Q = CONFIG.QUARTO;
-    if (this.pulando) return;
+    if (this.pulando || this.mamando) return;
     this.pulando = true;
+    NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BEBE);
+    this.atualizarNecessidades();
     this.olhosDoToque = true;
     this.visual.piscar(true, true);     // olhos fechados sorrindo (^ ^)
     this.time.delayedCall(Q.OLHOS_FECHADOS_TOQUE * 1000, () => {
@@ -470,6 +494,115 @@ class Quarto extends Phaser.Scene {
       targets: c, posY: c.y - 18, alpha: 0, duration: 900, ease: 'Sine.easeOut',
       onUpdate: () => { c.y = Math.round(c.posY); },
       onComplete: () => c.destroy()
+    });
+  }
+
+  // ---------- Necessidades (Etapa 8) ----------
+  // Painel embaixo com as 5 barras, botão da mamadeira na parede e o balão de pedido.
+  criarNecessidades() {
+    const N = CONFIG.NECESSIDADES, U = CONFIG.UI;
+    // Painel das barras
+    const py = N.PAINEL_Y;
+    this.add.rectangle(0, py, CONFIG.LARGURA, CONFIG.ALTURA - py, 0x2a1838, 0.9).setOrigin(0, 0);
+    this.add.rectangle(0, py, CONFIG.LARGURA, 1, U.CAIXA_ESCOLHIDA).setOrigin(0, 0);
+    this.barras = {};
+    NEC.LISTA.forEach((k, i) => {
+      const x = 2 + i * 36;
+      this.add.image(x, py + 6, 'icones_necessidades', i).setOrigin(0, 0);
+      this.add.rectangle(x + 11, py + 8, 23, 5, 0x120a18).setOrigin(0, 0).setStrokeStyle(1, 0x4a3060);
+      const parada = CONFIG.NECESSIDADES.QUEDA_POR_HORA[k] === 0;
+      const cheio = this.add.rectangle(x + 11, py + 8, 23, 5, N.COR_BOA).setOrigin(0, 0).setAlpha(parada ? 0.45 : 1);
+      this.barras[k] = cheio;
+    });
+
+    // Botão da mamadeira (0 a 1 ano): a mamadeira cheia do desenho do autor dentro de uma caixa roxa
+    const bx = N.BOTAO_MAMADEIRA_X, by = N.BOTAO_MAMADEIRA_Y;
+    const caixa = this.add.rectangle(bx, by, 22, 38, 0x2a1838, 0.85).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
+    this.add.image(bx + 3, by + 3, 'mamadeira', 17).setOrigin(0, 0);
+    this.add.zone(bx - 2, by - 2, 26, 42).setOrigin(0, 0).setInteractive()
+      .on('pointerdown', () => caixa.setFillStyle(0x5e3487, 0.95))
+      .on('pointerout', () => caixa.setFillStyle(0x2a1838, 0.85))
+      .on('pointerup', () => { caixa.setFillStyle(0x2a1838, 0.85); this.darMamadeira(); });
+
+    // Balão de pedido (ícone do que ele quer)
+    this.balao = this.add.container(N.BALAO_X, N.BALAO_Y, [
+      this.add.image(0, 0, 'balao').setOrigin(0, 0),
+      this.add.image(3, 1, 'icones_necessidades', 0).setOrigin(0, 0)
+    ]).setVisible(false);
+    this.tweens.add({ targets: this.balao, y: N.BALAO_Y - 2, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+    this.atualizarNecessidades();
+  }
+
+  // Redesenha as barras, o balão e o humor (chamado a cada segundo e após cada cuidado)
+  atualizarNecessidades() {
+    const N = CONFIG.NECESSIDADES;
+    const n = NEC.atuais();
+    if (!n || !this.barras) return;
+    for (const k of NEC.LISTA) {
+      const v = n[k];
+      const larg = Math.max(0, Math.round(23 * v / 100));
+      this.barras[k].setSize(larg, 5).setVisible(larg > 0)
+        .setFillStyle(v > 50 ? N.COR_BOA : v >= 25 ? N.COR_MEDIA : N.COR_RUIM);
+    }
+    const pedido = this.mamando ? null : NEC.pedido(n);
+    this.balao.setVisible(!!pedido);
+    if (pedido) this.balao.list[1].setFrame(NEC.LISTA.indexOf(pedido));
+    this.atualizarInfo();
+  }
+
+  // Mamadeira: o bebê mama até encher a fome (a sede enche junto)
+  darMamadeira() {
+    const N = CONFIG.NECESSIDADES;
+    if (this.mamando || this.pulando) return;
+    const n = NEC.atualizar();
+    if (!n) return;
+    if (n.fome >= N.MAMADEIRA_RECUSA && n.sede >= N.MAMADEIRA_RECUSA) { this.falar('Não quero!'); return; }
+    this.mamando = true;
+    this.olhosDoToque = true;
+    this.visual.piscar(true, true);       // olhos fechados, contente
+    this.mamadeira.setVisible(true);
+    this.balao.setVisible(false);
+    const passo = 0.25;                   // segundos
+    this.mamarEvento = this.time.addEvent({
+      delay: passo * 1000, loop: true,
+      callback: () => {
+        NEC.mudar('fome', N.MAMADEIRA_POR_SEG * passo);
+        const m = NEC.mudar('sede', N.MAMADEIRA_POR_SEG * passo);
+        this.atualizarNecessidades();
+        if (m.fome >= 100 && m.sede >= 100) this.pararMamadeira();
+        else if (m.fome >= 100 && m.sede >= N.MAMADEIRA_RECUSA) this.pararMamadeira();
+      }
+    });
+  }
+
+  pararMamadeira() {
+    if (this.mamarEvento) this.mamarEvento.remove();
+    this.mamarEvento = null;
+    this.mamando = false;
+    this.olhosDoToque = false;
+    this.mamadeira.setVisible(false);
+    this.visual.piscar(false);
+    const Q = CONFIG.QUARTO;
+    const c = this.add.image(Q.BEBE_X + 16, Q.BEBE_Y - 2, 'coracao').setOrigin(0.5, 1);
+    c.posY = c.y;
+    this.tweens.add({
+      targets: c, posY: c.y - 18, alpha: 0, duration: 900, ease: 'Sine.easeOut',
+      onUpdate: () => { c.y = Math.round(c.posY); }, onComplete: () => c.destroy()
+    });
+    this.atualizarNecessidades();
+  }
+
+  // Um textinho que sobe em cima do bebê ("Não quero!")
+  falar(texto) {
+    const Q = CONFIG.QUARTO;
+    const t = escrever(this, Q.BEBE_X + 16, Q.BEBE_Y - 4, texto, {
+      fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', stroke: '#2a1838', strokeThickness: 3
+    }).setOrigin(0.5, 1);
+    t.posY = t.y;
+    this.tweens.add({
+      targets: t, posY: t.y - 12, alpha: { from: 1, to: 0 }, delay: 500, duration: 900,
+      onUpdate: () => { t.y = Math.round(t.posY); }, onComplete: () => t.destroy()
     });
   }
 }

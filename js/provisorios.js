@@ -223,3 +223,56 @@ function criarPalpebrasBebe(cena) {
   desenho('bebe_olhos_fechados', ['o..o', '.oo.']);
   desenho('bebe_olhos_felizes', ['.oo.', 'o..o']);
 }
+
+// ---------- Necessidades do bebê (Etapa 8) ----------
+//   icones_necessidades  45×9  cinco ícones de 9×9 lado a lado, nesta ordem:
+//                              fome (maçã), sede (gota), energia (raio),
+//                              higiene (bolhas), diversão (bola)
+//   mamadeira_bebe       12×7  a mamadeira deitada, bico à esquerda (vai na boca do bebê)
+//   balao                15×14 balão de pensamento (o ícone do pedido vai dentro)
+function criarNecessidadesProvisorias(cena) {
+  const o = '#2a1838';
+  const icones = [
+    ['.....g...', '....g....', '.oo.o.oo.', 'orrrrrrro', 'orwrrrrro', 'orrrrrrro', 'orrrrrrro', '.orrrrro.', '..oo.oo..'],
+    ['....o....', '...obo...', '...obo...', '..obbbo..', '.obwbbbo.', '.obwbbbo.', '.obbbbbo.', '..obbbo..', '...ooo...'],
+    ['.....ooo.', '....oyyo.', '...oyyo..', '..oyyyyo.', '.oyyyyo..', '..oyyo...', '..oyo....', '.oyo.....', '.oo......'],
+    ['...ooo...', '..occco..', '.ocwccco.', '.occccco.', '.occccco.', '..occco..', '...ooo.o.', '......oco', '.......o.'],
+    ['...ooo...', '..oyyro..', '.oyyrrro.', '.orrbbbo.', '.orbbbyo.', '.obbyyyo.', '..oyyyo..', '...ooo...', '.........']
+  ];
+  const pal = { o, r: '#e04848', w: '#ffffff', g: '#4fa84a', b: '#4aa8f0', y: '#ffd860', c: '#bfe8ff' };
+  let t = cena.textures.createCanvas('icones_necessidades', 45, 9);
+  icones.forEach((mapa, i) => pintarPixels(t.getContext(), mapa, pal, i * 9, 0));
+  registrarQuadros(t, 9, 9, 5);
+  t.refresh();
+
+  t = cena.textures.createCanvas('mamadeira_bebe', 12, 7);
+  pintarPixels(t.getContext(), [
+    '.....ooooooo',
+    '...oowmmmmmo',
+    '.ootowmmmmmo',
+    'ottttwmmmmmo',
+    '.ootowmmmmmo',
+    '...oowmmmmmo',
+    '.....ooooooo'
+  ], { o, t: '#e8b48a', w: '#8fd0ff', m: '#fffbe8' });
+  t.refresh();
+
+  t = cena.textures.createCanvas('balao', 15, 14);
+  pintarPixels(t.getContext(), [
+    '.ooooooooooooo.',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    'owwwwwwwwwwwwwo',
+    '.oowwoooooooo..',
+    '.owwo..........',
+    'oowo...........',
+    'oo.............'
+  ], { o, w: '#ffffff' });
+  t.refresh();
+}

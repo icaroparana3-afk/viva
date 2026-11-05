@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.40',
+  VERSAO: '0.0.41',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -73,7 +73,8 @@ const CONFIG = {
     vento: false,      // assets/sprites/vento.png — risco de vento, 24×3
     sombras: false,    // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
     janela: false,     // assets/sprites/nuvem_janela1.png 12×5, nuvem_janela2.png 8×4 e lua.png 5×5
-    coracao: false     // assets/sprites/coracao.png 7×6
+    coracao: false,    // assets/sprites/coracao.png 7×6
+    necessidades: false // Etapa 8: icones_necessidades.png 45×9 (5 ícones de 9×9), mamadeira_bebe.png 7×12, balao.png 15×14
     // O quarto (menina e menino), o berço e a cegonha já são desenhos do autor.
   },
 
@@ -260,6 +261,40 @@ const CONFIG = {
     ABANDONO_ALERTA_HORAS: 18,      // a partir daqui o aviso de volta diz "não demore"
     MARCAR_VISITA_SEGUNDOS: 15,     // de quanto em quanto tempo o save guarda "última vez aqui"
     TESTE_TOQUE_RELOGIO: true       // TESTE: tocar no relógio da parede adianta 1 hora do jogo (tirar antes de lançar)
+  },
+
+  // ---------- NECESSIDADES DO BEBÊ (Etapa 8) ----------
+  // Barras de 0 a 100 (100 = tudo bem). Caem pelo tempo REAL. Contas em js/necessidades.js.
+  NECESSIDADES: {
+    // Quanto cada barra cai por HORA REAL com o jogo aberto (100 / horas para esvaziar)
+    QUEDA_POR_HORA: {
+      fome: 20,          // 5 h reais de cheia a vazia (decisão do autor)
+      sede: 20,          // 5 h
+      diversao: 25,      // 4 h
+      energia: 0,        // parada até a etapa do sono   (quando ligar: 12.5 = 8 h)
+      higiene: 0         // parada até a etapa do banho  (quando ligar: 10 = 10 h)
+    },
+    FATOR_FECHADO: 0.5,           // com o jogo fechado cai na metade da velocidade (decisão do autor)
+    LIMITE_ABERTO_SEGUNDOS: 60,   // mais que isso sem atualizar = o jogo estava fechado
+    // Como o bebê chega: com fome, com sede e entediado (DESIGN)
+    CHEGADA: { fome: 40, sede: 40, energia: 80, higiene: 90, diversao: 30 },
+    LIMITE_PEDIR: 30,             // abaixo disso o bebê pede (balão em cima dele)
+    LIMITE_TRISTE: 20,            // abaixo disso fica triste
+    LIMITE_ENTEDIADO: 40,         // diversão abaixo disso = entediado
+    COR_BOA: 0x6cc24a, COR_MEDIA: 0xf0c020, COR_RUIM: 0xe04848,   // cores da barra (>50, 25–50, <25)
+
+    // Mamadeira (0 a 1 ano): enche fome e sede juntas
+    MAMADEIRA_POR_SEG: 18,        // quanto sobe por segundo enquanto mama
+    MAMADEIRA_RECUSA: 95,         // fome e sede acima disso = "não quero"
+    // Brincar um pouquinho com o toque
+    DIVERSAO_TOQUE_BEBE: 3,       // tocar no bebê
+    DIVERSAO_TOQUE_BRINQUEDO: 1,  // tocar num brinquedo do chão (o bebê acha graça)
+
+    // Onde ficam as coisas na tela do quarto
+    PAINEL_Y: 299,                // painel das barras, embaixo (altura 21)
+    BOTAO_MAMADEIRA_X: 4, BOTAO_MAMADEIRA_Y: 140,   // botão da mamadeira (22×38), na parede da esquerda
+    BALAO_X: 101, BALAO_Y: 181,   // balão de pedido, ao lado da cabeça do bebê
+    MAMADEIRA_BOCA_X: 91, MAMADEIRA_BOCA_Y: 212     // mamadeira na boca (canto superior esquerdo, sobe e desce com o bebê)
   },
 
   // ---------- BEBÊ (Etapa 3) ----------
