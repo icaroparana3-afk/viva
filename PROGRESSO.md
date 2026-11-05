@@ -93,8 +93,8 @@
   - Saves antigos sem `chegadaReal`: o bebê passa a contar a partir de agora (recém-nascido).
   - Saiu o teste de tocar na janela. TESTE novo: tocar no relógio da parede adianta 1 hora do jogo (`CONFIG.TEMPO.TESTE_TOQUE_RELOGIO`, tirar antes de lançar).
 
-- **Etapa 7 — PWA (v0.0.38–0.0.39):**
-  - O jogo é instalável: `manifest.json` (nome "Viva", tela cheia, retrato, cores do jogo) e ícones `assets/ui/icone_192.png`, `icone_512.png` e `icone_180.png` (iPhone). Ícone do autor (v0.0.39): `assets/ui/icone.png` 48×48, cantos arredondados preenchidos pelo jogo; original em `assets/originais/icone_original_48.png`.
+- **Etapa 7 — PWA (v0.0.38–0.0.40):**
+  - O jogo é instalável: `manifest.json` (nome "Viva", tela cheia, retrato, cores do jogo) e ícones `assets/ui/icone_192.png`, `icone_512.png` e `icone_180.png` (iPhone). Ícone do autor: original em `assets/originais/icone_original_48.png`. Na v0.0.40 o jogo corta o contorno escuro de 1 px (e a linha clara ao lado) e usa o miolo 44×44 como `assets/ui/icone.png`, porque o iPhone enchia o quadrado e o contorno aparecia como moldura roxa. Para o Android existe `icone_512_maskable.png` (arte a 76% com céu e grama espelhados até a borda), para o corte em círculo não cortar o sol.
   - `sw.js` (service worker): na primeira visita guarda todos os arquivos do jogo e o Phaser. Com internet busca sempre a versão nova (o celular não fica preso numa versão velha); sem internet, ou com a internet demorando mais de 4 s, usa a cópia guardada. A versão do cache acompanha `CONFIG.VERSAO`.
   - Novo `js/app.js`: liga o service worker e guarda o pedido de instalação do navegador.
   - Configurações: botão "Instalar no celular". No Chrome/Android abre o pedido de instalação; no iPhone e quando o pedido não está disponível, explica o caminho pelo menu. Se já estiver instalado, mostra "Já instalado ✓".
