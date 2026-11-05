@@ -10,7 +10,7 @@
 //
 // O bebê: respira (sobe 1 px e desce), pisca de vez em quando e,
 // ao ser tocado, dá um pulinho e solta um coração.
-// Abajur (criado-mudo à direita) será o botão de dormir — etapa do sono.
+// Abajur (criado-mudo à direita): tocar acende e apaga. É só luz, sem ligação com o sono.
 // Necessidades (fome, sede, sono...) entram a partir da Etapa 8.
 // =============================================================
 
@@ -55,6 +55,9 @@ class Quarto extends Phaser.Scene {
     // ---------- Escuro da noite (por cima do quarto, abaixo dos botões) ----------
     this.escuro = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x0b0d2a, 1)
       .setOrigin(0, 0).setAlpha(0);
+
+    // ---------- Abajur: acende e apaga (só luz, sem ligação com o sono) ----------
+    this.criarAbajur(save);
 
     // ---------- Topo: botão de voltar ao menu ----------
     criarBotaoImg(this, 4, 4, 'botao_menu', () => this.scene.start('Menu'));   // botão do autor (34×14)
@@ -177,14 +180,39 @@ class Quarto extends Phaser.Scene {
     g.fillRect(R.CENTRO_X, R.CENTRO_Y, 1, 1);   // pino do centro
   }
 
-  // Passa para dia ou noite (segundos = duração da passagem; 0 = na hora)
+  // ---------- Abajur ----------
+  // Por cima do escuro da noite: a cúpula acesa e o brilho em volta.
+  criarAbajur(save) {
+    const Q = CONFIG.QUARTO;
+    const menina = this.bebe.sexo === 'F';
+    this.cupula = this.add.image(Q.ABAJUR_CUPULA_X, Q.ABAJUR_CUPULA_Y, menina ? 'abajur_aceso_menina' : 'abajur_aceso_menino')
+      .setOrigin(0, 0).setAlpha(0);
+    this.luz = this.add.image(Q.LUZ_CENTRO_X, Q.LUZ_CENTRO_Y, 'luz_abajur')
+      .setTint(Phaser.Display.Color.HexStringToColor(Q.LUZ_COR).color).setAlpha(0);
+    this.abajurAceso = !!save.abajurAceso;   // lembra se estava aceso
+    this.add.zone(Q.ABAJUR_X, Q.ABAJUR_Y, Q.ABAJUR_LARGURA, Q.ABAJUR_ALTURA).setOrigin(0, 0).setInteractive()
+      .on('pointerup', () => this.trocarAbajur());
+  }
+
+  trocarAbajur() {
+    this.abajurAceso = !this.abajurAceso;
+    const dados = Estado.carregar();
+    if (dados) { dados.abajurAceso = this.abajurAceso; Estado.salvar(); }
+    this.aplicarPeriodo(this.noite, CONFIG.QUARTO.LUZ_TROCA_SEGUNDOS);
+  }
+
+  // Passa para dia ou noite (segundos = duração da passagem; 0 = na hora).
+  // Também acerta a luz do abajur, que depende de ser dia ou noite.
   aplicarPeriodo(noite, segundos = CONFIG.JANELA.TROCA_SEGUNDOS) {
     this.noite = noite;
-    const J = CONFIG.JANELA;
+    const J = CONFIG.JANELA, Q = CONFIG.QUARTO;
+    const aceso = this.abajurAceso;
     const alvo = [
       [this.dia, noite ? 0 : 1],
       [this.noiteCeu, noite ? 1 : 0],
-      [this.escuro, noite ? J.NOITE_ESCURECER : 0]
+      [this.escuro, noite ? (aceso ? Q.NOITE_ESCURECER_ABAJUR : J.NOITE_ESCURECER) : 0],
+      [this.cupula, aceso ? 1 : 0],
+      [this.luz, aceso ? (noite ? Q.LUZ_FORCA_NOITE : Q.LUZ_FORCA_DIA) : 0]
     ];
     for (const [obj, a] of alvo) {
       this.tweens.killTweensOf(obj);

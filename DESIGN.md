@@ -52,7 +52,7 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 - Quarto de menina (rosa) e quarto de menino (azul), escolhido pelo sexo do bebê. O berço não tem grade na frente.
 - Janela viva: de dia, claridade, céu azul e nuvens passando; de noite, céu escuro e estrelas (e lua). O quarto escurece um pouco à noite.
 - Relógio da parede do quarto funciona: os ponteiros mostram a hora do jogo.
-- Abajur (no criado-mudo) é o botão de dormir: abajur aceso = bebê dormindo; abajur apagado = bebê acordado. (Função na etapa do sono.)
+- Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
 
 ## Bebê
 - Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome. Depois, na cozinha.
@@ -62,7 +62,7 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
   - YohTub (fictício): besteira diverte mas não ensina; educativo aumenta inteligência e acelera a fala.
   - 0 a 2 anos: assistir mais do que brincar = vício em tela, passa a gostar menos de brincar.
   - Varanda: habilidade motora, anda mais cedo.
-- Dormir: no quarto, acendendo o abajur (aceso = dormindo, apagado = acordado); dorme até encher a energia. 0 a 2 anos sem dormir: chora ao brincar e não aprende nada.
+- Dormir: no quarto (como iniciar o sono: a decidir na etapa do sono; NÃO é o abajur); dorme até encher a energia. 0 a 2 anos sem dormir: chora ao brincar e não aprende nada.
 - Fala: em nível médio, chama "papai" ou "mamãe" conforme o perfil.
 
 ## Doenças (todas as idades)

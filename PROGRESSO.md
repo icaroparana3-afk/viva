@@ -63,9 +63,9 @@
   - Berço do autor (sem grade da frente) reduzido para 80×64 e limpo em pixel art: posição (50,187), encostado no rodapé. `berco_frente` = postes + painel de baixo. Bebê em (74,199).
   - Janela viva: o vidro do desenho virou transparente e o jogo desenha o céu atrás. Dia (6h–18h): céu claro com as cores do autor e nuvens passando. Noite: céu escuro, estrelas piscando, lua, e o quarto escurece um pouco (`NOITE_ESCURECER`). Por enquanto vale a hora do aparelho; na Etapa 6 passa a ser o relógio do jogo. Números em `CONFIG.JANELA`.
   - TESTE: tocar na janela troca dia/noite (`CONFIG.JANELA.TESTE_TOQUE_JANELA`, sai na Etapa 6).
-  - Abajur (criado-mudo à direita) reservado como botão de dormir: posição em `CONFIG.QUARTO.ABAJUR_*`; a função entra na etapa do sono.
   - Nuvens da janela (12×5 e 8×4) e lua (5×5) provisórias, feitas por código com as cores da nuvem do autor.
   - Originais do autor guardados em `assets/originais/` (berco_original, quarto_menina_original, quarto_menino_original).
+- **Abajur acende e apaga (v0.0.33):** tocar no abajur acende/apaga. Aceso: a cúpula brilha (`abajur_aceso_menina/menino.png`, 28×10, feitas a partir da cúpula do desenho do autor) e um brilho amarelo em anéis (`luz_abajur`, por código) clareia o canto; à noite o quarto fica bem menos escuro. O estado fica salvo (`abajurAceso` no save). Sem ligação com o sono. Ajustes em `CONFIG.QUARTO` (ABAJUR_*, LUZ_*).
 - **Relógio do quarto funcionando (v0.0.32):** os ponteiros do desenho foram apagados (nos dois quartos) e o jogo desenha os ponteiros pixel a pixel, com as cores do autor, conforme a hora do jogo. Ajustes em `CONFIG.RELOGIO`.
   - Novo `js/tempo.js`: `TEMPO.agora()` e `TEMPO.ehNoite()` são o único lugar que diz a hora do jogo. Hoje é a hora do aparelho; na Etapa 6 só esse arquivo muda e o relógio e a janela acompanham.
 - **Borda da cegonha limpa (v0.0.31):** a redução tinha deixado pixels brancos/cinzas na borda; agora toda a borda tem o contorno escuro, como no desenho original.
@@ -127,7 +127,7 @@
 - Versão aparece no rodapé para conferir se o celular pegou a atualização.
 - Backup: Git pelo VS Code ("Publish to GitHub" já feito).
 - Menu reaproveitado do jogo antigo, peças separadas pelo autor; posições idênticas ao original (botões em x=35, y=120/146/172).
-- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado}, bebeRecebido}`.
+- Save guardado em `localStorage`, na chave `viva_save`, em formato JSON: `{versao, criadoEm, ultimaVez, perfil:{nome, papel, regiao}, bebe:{sexo, origem, especial, pele, cabeloTipo, cabeloCor, olhos, regiao, estado}, bebeRecebido, abajurAceso}`.
 - Nome do jogador: máximo 12 letras, mínimo 2 (em `CONFIG.PERFIL`).
 - Regiões salvas pelo id: norte, nordeste, centro-oeste, sudeste, sul.
 - Cada região em `CONFIG.PERFIL.REGIOES` guarda: cor principal no mapa, texto do clima e lista de estados.

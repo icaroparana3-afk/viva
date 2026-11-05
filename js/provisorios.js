@@ -169,6 +169,31 @@ function criarJanelaProvisoria(cena) {
   t.refresh();
 }
 
+// ---------- Luz do abajur (Etapa 5) ----------
+//   luz_abajur  120×96  brilho em anéis (estilo pixel), mais forte no meio
+// A cor é aplicada pelo jogo (CONFIG.QUARTO.LUZ_COR); aqui é branco com transparência.
+function criarLuzAbajur(cena) {
+  const L = 120, A = 96;
+  const t = cena.textures.createCanvas('luz_abajur', L, A);
+  const c = t.getContext();
+  // Anéis: [raio, opacidade]. Na divisa entre dois anéis, xadrez (dithering) para ficar com cara de pixel art.
+  const aneis = [[16, 0.4], [28, 0.26], [42, 0.15], [58, 0.07]];
+  for (let y = 0; y < A; y++) for (let x = 0; x < L; x++) {
+    const dx = (x + 0.5 - L / 2), dy = (y + 0.5 - A / 2) * 1.25;   // um pouco mais larga que alta
+    const d = Math.sqrt(dx * dx + dy * dy);
+    let alfa = 0;
+    for (let i = 0; i < aneis.length; i++) {
+      const [r, a] = aneis[i];
+      if (d < r - 1.5) { alfa = a; break; }
+      if (d < r + 1.5) { alfa = ((x + y) % 2) ? a : (aneis[i + 1] ? aneis[i + 1][1] : 0); break; }
+    }
+    if (!alfa) continue;
+    c.fillStyle = 'rgba(255,255,255,' + alfa + ')';
+    c.fillRect(x, y, 1, 1);
+  }
+  t.refresh();
+}
+
 // ---------- Pálpebras do bebê (piscar) ----------
 // Feitas a partir das posições dos olhos no desenho do autor (olhos em x 11–12 e 19–20, linhas 11–13).
 //   bebe_palpebras       cobre os olhos com a cor da pele (branco: o jogo pinta com a cor da pele)

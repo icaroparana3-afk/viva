@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.32',
+  VERSAO: '0.0.33',
 
   // Nome da "gaveta" do navegador onde o jogo vai guardar o save.
   // Se existir algo salvo aqui, o botão "Continuar História" acende.
@@ -164,9 +164,16 @@ const CONFIG = {
     OLHOS_FECHADOS_TOQUE: 0.35,      // ao ser tocado, fecha os olhos (sorrindo) por este tempo (segundos)
     AVISO_Y: 40,                     // altura do aviso "Seu filho chegou!"
 
-    // Abajur (no criado-mudo, à direita): será o botão de dormir.
-    // Aceso = bebê dormindo; apagado = acordado. (A função entra na etapa do sono.)
-    ABAJUR_X: 153, ABAJUR_Y: 237, ABAJUR_LARGURA: 21, ABAJUR_ALTURA: 27
+    // Abajur (no criado-mudo, à direita): tocar acende e apaga a luz.
+    // É só luz: NÃO tem ligação com o sono do bebê.
+    ABAJUR_X: 152, ABAJUR_Y: 236, ABAJUR_LARGURA: 23, ABAJUR_ALTURA: 26, // área de toque
+    ABAJUR_CUPULA_X: 150, ABAJUR_CUPULA_Y: 237,  // onde fica a cúpula acesa (abajur_aceso_*.png, 28×10)
+    LUZ_CENTRO_X: 163, LUZ_CENTRO_Y: 243,        // centro do brilho
+    LUZ_COR: '#ffd88a',                          // cor da luz
+    LUZ_FORCA_NOITE: 1,                          // brilho à noite (0 a 1)
+    LUZ_FORCA_DIA: 0.45,                         // brilho de dia (mais fraco: já está claro)
+    NOITE_ESCURECER_ABAJUR: 0.12,                // escuro da noite com o abajur aceso (sem ele: CONFIG.JANELA.NOITE_ESCURECER)
+    LUZ_TROCA_SEGUNDOS: 0.25                     // tempo para acender/apagar
   },
 
   // ---------- RELÓGIO DA PAREDE DO QUARTO ----------

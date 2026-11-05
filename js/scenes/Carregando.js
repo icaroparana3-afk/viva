@@ -78,6 +78,8 @@ class Carregando extends Phaser.Scene {
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
     this.load.image('berco_tras', './assets/sprites/berco_tras.png');
     this.load.image('berco_frente', './assets/sprites/berco_frente.png');
+    this.load.image('abajur_aceso_menina', './assets/sprites/abajur_aceso_menina.png');
+    this.load.image('abajur_aceso_menino', './assets/sprites/abajur_aceso_menino.png');
     if (P.janela) {
       ['nuvem_janela1', 'nuvem_janela2', 'lua'].forEach(nome => this.load.image(nome, './assets/sprites/' + nome + '.png'));
     }
@@ -125,6 +127,7 @@ class Carregando extends Phaser.Scene {
     if (!P.vento) criarVentoProvisorio(this);
     if (!P.janela) criarJanelaProvisoria(this);
     if (!P.coracao) criarCoracaoProvisorio(this);
+    criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)
 
     // Animações do animal e da folha
