@@ -13,6 +13,8 @@ function prepararCamera(cena) {
   cam.setRoundPixels(true);
   // Transição: toda tela aparece clareando a partir do escuro
   cena._saindo = false;
+  cena._trocou = false;
+  cena._idTroca = (cena._idTroca || 0) + 1;   // invalida trocas antigas ainda esperando
   cam.fadeIn(CONFIG.TRANSICAO_SEGUNDOS * 1000, 0, 0, 0);
 }
 
@@ -23,8 +25,19 @@ function irPara(cena, chave, dados) {
   if (cena._saindo) return;          // evita dois toques seguidos trocarem duas vezes
   cena._saindo = true;
   const cam = cena.cameras.main;
-  cam.once('camerafadeoutcomplete', () => cena.scene.start(chave, dados));
-  cam.fadeOut(CONFIG.TRANSICAO_SEGUNDOS * 1000, 0, 0, 0);
+  const id = cena._idTroca = (cena._idTroca || 0) + 1;
+  const trocar = () => {
+    if (cena._trocou || cena._idTroca !== id) return;
+    cena._trocou = true;
+    cena.scene.start(chave, dados);
+    SEGURANCA.vigiarTroca(chave, dados);    // confere se a tela nova abriu e clareou (js/seguranca.js)
+  };
+  cam.once('camerafadeoutcomplete', trocar);
+  // Escurece. O "true" força mesmo se o clarear da tela ainda estiver rodando
+  // (sem ele, o escurecer não começava e a troca não acontecia).
+  cam.fade(CONFIG.TRANSICAO_SEGUNDOS * 1000, 0, 0, 0, true);
+  // Plano B: se o escurecer não avisar que terminou, troca mesmo assim
+  setTimeout(trocar, CONFIG.TRANSICAO_SEGUNDOS * 1000 + 600);
 }
 
 // ---------- Texto nítido ----------
@@ -190,7 +203,8 @@ function criarCampoTexto(cena, x, y, max, dica, aoMudar) {
   );
   const input = el.node.querySelector('input');
   if (aoMudar) input.addEventListener('input', () => aoMudar(input.value));
-  return { el, input, destroy() { input.blur(); el.destroy(); } };
+  // Ao destruir: tira o foco, some com o campo e põe a página no lugar enquanto o teclado fecha
+  return { el, input, destroy() { input.blur(); el.destroy(); SEGURANCA.depoisDoTeclado(); } };
 }
 
 // Arruma um nome digitado: tira espaços sobrando e põe a primeira letra

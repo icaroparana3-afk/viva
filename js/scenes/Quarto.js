@@ -236,9 +236,9 @@ class Quarto extends Phaser.Scene {
     this.infoHora = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 21, '', {
       fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6'
     }).setOrigin(1, 0);
-    // Carinha de humor (Etapa 8.2): no lugar do texto; tocar mostra o nome por 2 s
-    this.infoHumor = this.add.image(Q.INFO_X - 16, Q.INFO_Y + 30, 'humor', 0).setOrigin(0, 0);
-    this.add.zone(Q.INFO_X - 19, Q.INFO_Y + 27, 18, 18).setOrigin(0, 0).setInteractive()
+    // Carinha de humor (Etapa 8.2), fora da caixinha, logo abaixo dela; tocar mostra o nome por 2 s
+    this.infoHumor = this.add.image(0, Q.HUMOR_Y, 'humor', 0).setOrigin(0, 0);
+    this.humorToque = this.add.zone(0, Q.HUMOR_Y - 3, 18, 18).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => this.mostrarNomeHumor());
     this.textoInfo = null;
     this.atualizarInfo();
@@ -260,7 +260,12 @@ class Quarto extends Phaser.Scene {
     this.infoHora.setText(hora);
     this.infoHumor.setFrame(CONFIG.SINAIS.HUMOR_QUADROS[humor] || 0);
     const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width, this.infoHora.width, 12)) + 8;
-    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 45);
+    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, Q.INFO_ALTURA);
+    // A carinha acompanha a borda esquerda da caixinha (que muda de largura com o texto)
+    const hx = Q.INFO_X - larg - Q.HUMOR_ESPACO - 12;
+    this.infoHumor.setX(hx);
+    this.humorToque.setX(hx - 3);
+    this.humorX = hx;
   }
 
   // Tocar na carinha: mostra o nome do humor por alguns segundos
@@ -269,9 +274,9 @@ class Quarto extends Phaser.Scene {
     const Q = CONFIG.QUARTO, S = CONFIG.SINAIS;
     const nomes = S.HUMOR_NOMES[NEC.humor()] || ['', ''];
     if (this.textoHumor) this.textoHumor.destroy();
-    this.textoHumor = escrever(this, Q.INFO_X - 1, Q.INFO_Y + 48, nomes[this.bebe.sexo === 'F' ? 1 : 0], {
+    this.textoHumor = escrever(this, this.humorX + 6, Q.HUMOR_Y + 14, nomes[this.bebe.sexo === 'F' ? 1 : 0], {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', stroke: '#2a1838', strokeThickness: 3
-    }).setOrigin(1, 0);
+    }).setOrigin(0.5, 0);   // centralizado embaixo da carinha
     const t = this.textoHumor;
     this.time.delayedCall(S.HUMOR_TEXTO_SEGUNDOS * 1000, () => {
       this.tweens.add({ targets: t, alpha: 0, duration: 250, onComplete: () => t.destroy() });

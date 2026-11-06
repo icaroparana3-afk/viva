@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.46',
+  VERSAO: '0.0.49',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -189,6 +189,8 @@ const CONFIG = {
     OLHOS_FECHADOS_TOQUE: 0.35,      // ao ser tocado, fecha os olhos (sorrindo) por este tempo (segundos)
     AVISO_Y: 40,                     // altura do aviso "Seu filho chegou!"
     INFO_X: 176, INFO_Y: 4,          // caixinha do nome e da idade (canto superior direito; x = borda direita)
+    INFO_ALTURA: 31,                 // altura da caixinha (3 linhas: nome, idade, dia e hora)
+    HUMOR_ESPACO: 18, HUMOR_Y: 4,   // carinha de humor 12×12, FORA da caixinha, à ESQUERDA dela; y = topo da caixinha; 18 px de folga para o nome do humor (centralizado embaixo dela) não encostar na caixinha
     TROCA_HORA_SEGUNDOS: 1,          // de quanto em quanto tempo (real) o quarto confere se virou dia/noite
 
     // Abajur (no criado-mudo, à direita): tocar acende e apaga a luz.
@@ -299,7 +301,7 @@ const CONFIG = {
     MAMADEIRA_RECUSA: 95,         // fome e sede acima disso = "não quero"
     // Brincar um pouquinho com o toque
     DIVERSAO_TOQUE_BEBE: 3,       // tocar no bebê
-    DIVERSAO_TOQUE_BRINQUEDO: 1,  // tocar num brinquedo do chão (o bebê acha graça)
+    DIVERSAO_TOQUE_BRINQUEDO: 5,  // tocar num brinquedo do chão (o bebê acha graça) — 5 a pedido do autor (v0.0.47)
 
     // Onde ficam as coisas na tela do quarto
     BOTAO: { X: 150, Y: 288 },    // botão de necessidades (26×26), canto inferior direito (Etapa 8.1)

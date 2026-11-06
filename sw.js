@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.46';
+const VERSAO = '0.0.49';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -31,6 +31,7 @@ const ARQUIVOS = [
   './js/mapa.js',
   './js/necessidades.js',
   './js/provisorios.js',
+  './js/seguranca.js',
   './js/sinais.js',
   './js/state.js',
   './js/tempo.js',

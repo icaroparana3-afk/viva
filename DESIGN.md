@@ -54,7 +54,7 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
 - Barras de 0 a 100 que caem pelo TEMPO REAL, não pelo relógio rápido do jogo (decisão do autor, 2026-11-05). A fome vai de cheia a vazia em 5 h reais.
 - Com o jogo fechado, as barras continuam caindo, mas na metade da velocidade.
 - O bebê pede o que mais precisa com um balão. Humor (Etapa 8): feliz, entediado (diversão baixa) ou triste (alguma barra muito baixa).
-- Sinais de cuidado (Etapa 8.2), sem texto porque o bebê não fala: o bebê mostra que algo está errado, o balão diz o que ele quer e a carinha na caixinha mostra o humor geral.
+- Sinais de cuidado (Etapa 8.2), sem texto porque o bebê não fala: o bebê mostra que algo está errado, o balão diz o que ele quer e a carinha à esquerda da caixinha do nome mostra o humor geral.
   - Faixas de cada barra: acima de 70 nada; 70–51 tristinho; 50–26 chora (som a cada ~20 s); 25–1 chora forte (som a cada ~10 s, balão treme, botão pulsa com "!"); 0 esgotado, deitado e em silêncio.
   - O balão mostra a mais urgente; se duas estiverem na mesma faixa, alterna. O choro segue a pior.
   - Recusa da mamadeira: X vermelho no balão e o bebê vira o rosto. Nenhum texto.
@@ -69,7 +69,7 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 - Quarto de menina (rosa) e quarto de menino (azul), escolhido pelo sexo do bebê. O berço não tem grade na frente.
 - Janela viva: de dia, claridade, céu azul e nuvens passando; de noite, céu escuro e estrelas (e lua). O quarto escurece um pouco à noite.
 - Nome do bebê: o jogador escolhe quando a cegonha entrega (2 a 12 letras). Aparece nas boas-vindas do quarto.
-- Brinquedos do chão do quarto reagem ao toque (pulam, balançam, o carrinho anda). Janela: passarinho de dia, estrela cadente à noite.
+- Brinquedos do chão do quarto reagem ao toque (pulam, balançam, o carrinho anda). Cada toque dá 5 de diversão. Janela: passarinho de dia, estrela cadente à noite.
 - Relógio da parede do quarto funciona: os ponteiros mostram a hora do jogo.
 - Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
 

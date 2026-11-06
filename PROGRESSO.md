@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.46 com desenhos do autor, botão novo e painel novo; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.49: tela preta tratada, brinquedo +5, carinha à esquerda da caixinha alinhada ao topo; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -139,6 +139,14 @@
   - Entraram os desenhos do autor: ícones 16×16 (fome maçã, sede gota, energia raio, higiene bolhas, diversão bola), carinhas de humor (feliz, entediado, triste), mãozinha (agora 18×18, 2 quadros) e X vermelho. `ARTES_PRONTAS` ganhou `humor`, `x_nao` e `maozinha` separados; `sinais` (selos, balão, bebê chorando e esgotado) continua provisório por decisão do autor.
   - Botão de necessidades: no lugar do coração aparece o ícone da necessidade ativa mais baixa. Embaixo, 5 quadradinhos (v0.0.45): tudo 100% = carinha feliz e 5 verdes; acima de 50 = 4 verdes e 1 vazio; 1 a 50 = 3 amarelos e 2 vazios; 0 = 5 vermelhos. O "!" e o pulso abaixo de 25 continuam. Posições em `CONFIG.SINAIS` (BOTAO_ICONE, BOTAO_FELIZ, QUADRADOS_*). O coração (`coracao_necessidades`) saiu do jogo.
   - O X da recusa foi para o canto do balão (onde fica o selo), porque em cima da maçã vermelha não aparecia.
+- **v0.0.49:** a carinha de humor fica à ESQUERDA da caixinha, alinhada ao topo dela (`HUMOR_ESPACO` 18 e `HUMOR_Y` 4 em `CONFIG.QUARTO`), e o nome do humor aparece centralizado embaixo dela.
+- **v0.0.47 — tela preta, brinquedos e caixinha:**
+  - Tela preta depois de "Levar para o berço" (às vezes, no celular). Não apareceu nos testes, mas o código tinha dois pontos fracos que causam exatamente isso, e os dois foram tratados em `js/seguranca.js`:
+    1. Teclado: ao destruir o campo do nome com o teclado aberto, o celular (iPhone, principalmente) pode deixar a página empurrada para cima, com o jogo fora da tela. Agora o campo, ao sumir, devolve a página para o lugar e o Phaser mede a tela de novo (várias vezes enquanto o teclado fecha). O mesmo vale a qualquer mudança de tamanho da tela sem campo em uso.
+    2. Transição: o escurecer agora é forçado (antes não começava se outro efeito ainda rodasse), tem plano B (troca mesmo se o aviso de "terminou" não vier) e um vigia confere, 2,5 s depois, se a tela nova abriu e clareou; se não, destrava.
+    3. Se o jogo parar de desenhar por um erro no código (confirmado em teste: um erro durante o jogo congela a tela, e se for na entrada do quarto, que ainda está escuro, fica preto), aparece "O jogo travou :( Toque para continuar" com o erro escrito. O toque recarrega; o save não se perde. Se aparecer, mandar foto do erro.
+  - Brinquedos: cada toque dá 5 de diversão (antes 1). `CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BRINQUEDO`.
+  - Carinha de humor fora da caixinha (na v0.0.48 passou para a esquerda). A caixinha ficou só com nome, idade e dia (31 px de altura em vez de 45, `INFO_ALTURA`). Tocar na carinha mostra o humor ao lado dela.
 - **v0.0.46 — painel de necessidades novo (modelo do autor):** o modelo (assets/originais/painel_necessidades_modelo.png, 844×1024) foi redesenhado pixel a pixel no tamanho do painel do jogo (164×196), com as cores dele: moldura dourada com cantinhos, faixa do título com linha dourada, linhas com borda roxa clara, moldura lilás do ícone, botão X prateado e vermelho (agora 16×16, em cima do canto) e barra com trilho escuro e divisões a cada 10%. "EM BREVE" em cinza-lilás. `ARTES_PRONTAS.painel_necessidades = true`; o botão de necessidades ganhou flag própria (`botao_necessidades`, ainda provisório). Números em `CONFIG.NECESSIDADES` (FECHAR_X/Y, BARRA_FUNDO, BARRA_BORDA, BARRA_DIVISAO, COR_EM_BREVE).
 
 ## Arquivos de arte no projeto
