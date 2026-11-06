@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8 — Necessidades e mamadeira** (aguardando "aprovado")
+**Etapa 8.1 — Painel de necessidades** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -100,7 +100,7 @@
   - Configurações: botão "Instalar no celular". No Chrome/Android abre o pedido de instalação; no iPhone e quando o pedido não está disponível, explica o caminho pelo menu. Se já estiver instalado, mostra "Já instalado ✓".
   - Testado: jogo abre sem internet depois da primeira visita.
 
-- **Etapa 8 — Necessidades e mamadeira (v0.0.41):**
+- **Etapa 8 — Necessidades e mamadeira (aprovada em 2026-11-06, v0.0.41):**
   - Novo `js/necessidades.js` (`NEC`): cinco barras de 0 a 100 no save (`necessidades`, `necessidadesEm`): fome, sede, energia, higiene, diversão.
   - As barras caem pelo TEMPO REAL (decisão do autor): fome e sede esvaziam em 5 h, diversão em 4 h. Com o jogo fechado caem na metade da velocidade. Energia e higiene ficam paradas (barra mais apagada) até as etapas do sono e do banho. Números em `CONFIG.NECESSIDADES`.
   - O bebê chega com fome (40), sede (40) e entediado (diversão 30). Saves antigos começam assim também.
@@ -110,6 +110,19 @@
   - Humor na caixinha do canto: Feliz, Entediado(a) (diversão < 40) ou Triste (alguma barra ativa < 20).
   - Tocar no bebê sobe a diversão (+3); tocar num brinquedo, +1.
   - Arte provisória feita por código: ícones das necessidades, mamadeira na boca e balão (`CONFIG.ARTES_PRONTAS.necessidades`).
+
+- **Etapa 8.1 — Painel de necessidades (v0.0.42):** só muda a forma de mostrar; a lógica das barras é a mesma.
+  - Saiu a faixa fixa de barras. A versão voltou para o rodapé, no canto esquerdo (no direito fica o botão novo).
+  - Botão de necessidades 26×26 em (150, 288), `CONFIG.NECESSIDADES.BOTAO`: coração branco pintado com a cor da barra ATIVA mais baixa (verde > 50, amarelo 25–50, vermelho < 25) e 5 pontinhos, um por barra (cinza = parada). Com alguma barra ativa no vermelho, o botão sobe e desce 1 pixel; a área de toque não se mexe.
+  - Tocar no botão: o quarto escurece (`PAINEL_ESCURO` 0,55) e o painel 164×196 sobe de baixo em 200 ms, em (8, 116). Título "NECESSIDADES" e X. Tocar fora do painel também fecha.
+  - Uma linha por necessidade: ícone 16×16 numa moldura 22×22, nome, porcentagem na cor da barra, barra 98×7 com divisões a cada 10% e "!" piscando abaixo de 25. Energia e higiene: barra cinza e "EM BREVE".
+  - Tocar numa linha destaca e mostra a dica (`CONFIG.NECESSIDADES.DICAS`: > MAMADEIRA, > DORMIR, > BANHO, > BRINCAR). Tocar de novo tira o destaque.
+  - O painel se atualiza sozinho. Com ele aberto, bebê, brinquedos, mamadeira, abajur, relógio e Menu não respondem.
+  - Balão de pedido agora 22×24, com o ícone de 16×16 no ponto (3,2).
+  - Sons "abrir" e "clique" prontos no código (`tocarSom`): tocam só com os efeitos ligados e os arquivos em assets/audio (`ARTES_PRONTAS.sons`). Sem os arquivos, nada acontece.
+  - Texto ainda na fonte provisória (monospace do navegador): não existe fonte pixel (bitmap) no projeto.
+  - TESTE: tocar no relógio da parede agora também faz as barras caírem como se passassem 30 min reais (`TESTE_MINUTOS_RELOGIO`).
+  - Arte provisória feita por código, com os mesmos nomes e tamanhos dos arquivos do autor.
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -148,7 +161,8 @@
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
-- **Necessidades (Etapa 8):** `icones_necessidades.png` 45×9 (cinco ícones de 9×9 lado a lado: fome, sede, energia, higiene, diversão), `mamadeira_bebe.png` 12×7 (mamadeira deitada, bico à esquerda) e `balao.png` 15×14 (balão de pensamento; o ícone de 9×9 entra no canto 3,1). Em assets/sprites. Depois, `CONFIG.ARTES_PRONTAS.necessidades = true`.
+- **Necessidades (Etapas 8 e 8.1):** em assets/ui: `icones_necessidades16.png` 80×16 (fome, sede, energia, higiene, diversão), `botao_necessidades.png` 26×26 (sem o coração), `coracao_necessidades.png` 9×8 (BRANCO), `painel_necessidades.png` 164×196, `linha_necessidade.png` e `linha_necessidade_sel.png` 156×32, `moldura_icone.png` 22×22, `botao_fechar.png` 12×12. Em assets/sprites: `balao.png` 22×24 (ícone no ponto 3,2) e `mamadeira_bebe.png` 12×7. Flags em `CONFIG.ARTES_PRONTAS`.
+- **Fonte pixel (opcional):** hoje os textos usam a fonte do navegador.
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.
 - **Piscar (opcional):** `bebe_palpebras.png` 32×32 (branco sobre os olhos; o jogo pinta com a cor da pele), `bebe_olhos_fechados.png` 32×32 (piscada) e `bebe_olhos_felizes.png` 32×32 (olhos fechados sorrindo, ao ser tocado).

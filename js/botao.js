@@ -255,3 +255,11 @@ function criarBotaoAlternar(cena, x, y, imgLigado, imgDesligado, ligado, aoMudar
 function temSave() {
   return Estado.existe();
 }
+
+// Toca um efeito sonoro se os efeitos estiverem ligados e o arquivo existir.
+// Sem o arquivo (os sons chegam na Etapa 30): não toca e não dá erro.
+function tocarSom(cena, chave) {
+  if (!Opcoes.som) return;
+  if (!cena.cache.audio.exists(chave)) return;
+  cena.sound.play(chave);
+}

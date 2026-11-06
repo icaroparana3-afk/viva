@@ -69,15 +69,16 @@ class Quarto extends Phaser.Scene {
     // ---------- Abajur: acende e apaga (só luz, sem ligação com o sono) ----------
     this.criarAbajur(save);
 
-    // ---------- Necessidades (Etapa 8): painel das barras, mamadeira e balão ----------
+    // ---------- Necessidades (Etapas 8 e 8.1): botão do coração, mamadeira e balão ----------
     this.criarNecessidades();
 
     // ---------- Topo: botão de voltar ao menu ----------
     criarBotaoImg(this, 4, 4, 'botao_menu', () => irPara(this, 'Menu'));   // botão do autor (34×14)
 
-    escrever(this, CONFIG.LARGURA - 3, CONFIG.NECESSIDADES.PAINEL_Y - 1, 'v' + CONFIG.VERSAO, {
+    // Versão no rodapé (à esquerda: no canto direito fica o botão de necessidades)
+    escrever(this, 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffffff'
-    }).setOrigin(1, 1).setAlpha(0.6);
+    }).setOrigin(0, 1).setAlpha(0.6);
 
     // ---------- Topo direito: nome e idade do bebê ----------
     this.criarInfo();
@@ -96,7 +97,9 @@ class Quarto extends Phaser.Scene {
       const R = CONFIG.RELOGIO;
       this.add.zone(R.CENTRO_X - 8, R.CENTRO_Y - 8, 17, 17).setOrigin(0, 0).setInteractive()
         .on('pointerup', () => {
+          if (this.painelAberto) return;
           TEMPO.adiantar(60);
+          NEC.adiantar(CONFIG.NECESSIDADES.TESTE_MINUTOS_RELOGIO);   // e as barras caem 30 min reais
           this.ultimoMinuto = -1;
           this.desenharRelogio();
           this.conferirHora();
@@ -356,7 +359,7 @@ class Quarto extends Phaser.Scene {
   }
 
   mexerBrinquedo(b) {
-    if (b.ocupado) return;
+    if (b.ocupado || this.painelAberto) return;
     b.ocupado = true;
     NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BRINQUEDO);   // o bebê acha graça
     this.atualizarNecessidades();
@@ -391,6 +394,7 @@ class Quarto extends Phaser.Scene {
   }
 
   trocarAbajur() {
+    if (this.painelAberto) return;
     this.abajurAceso = !this.abajurAceso;
     const dados = Estado.carregar();
     if (dados) { dados.abajurAceso = this.abajurAceso; Estado.salvar(); }
@@ -452,6 +456,11 @@ class Quarto extends Phaser.Scene {
     // Respirar: metade do tempo 1 px para cima, metade no lugar
     const respira = (this.tempo % Q.RESPIRAR_SEGUNDOS) < Q.RESPIRAR_SEGUNDOS / 2 ? 0 : -1;
     this.visual.setPosition(Q.BEBE_X, Q.BEBE_Y + respira - Math.round(this.pulo));
+    if (this.botaoNec) {
+      const N = CONFIG.NECESSIDADES;
+      const sobe = this.pulsando && Math.floor(this.tempo / N.PULSO_SEGUNDOS) % 2 === 1 ? N.PULSO_PIXELS : 0;
+      this.botaoNec.y = N.BOTAO.Y - sobe;
+    }
     if (this.mamadeira.visible) {
       const N = CONFIG.NECESSIDADES;
       this.mamadeira.setPosition(N.MAMADEIRA_BOCA_X, N.MAMADEIRA_BOCA_Y + respira);
@@ -474,7 +483,7 @@ class Quarto extends Phaser.Scene {
   // Toque no bebê: fecha os olhos (sorrindo), dá um pulinho e solta um coração
   tocarBebe() {
     const Q = CONFIG.QUARTO;
-    if (this.pulando || this.mamando) return;
+    if (this.pulando || this.mamando || this.painelAberto) return;
     this.pulando = true;
     NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BEBE);
     this.atualizarNecessidades();
@@ -497,23 +506,24 @@ class Quarto extends Phaser.Scene {
     });
   }
 
-  // ---------- Necessidades (Etapa 8) ----------
-  // Painel embaixo com as 5 barras, botão da mamadeira na parede e o balão de pedido.
+  // ---------- Necessidades (Etapas 8 e 8.1) ----------
+  // No quarto: botão do coração (canto inferior direito), botão da mamadeira na parede
+  // e o balão de pedido. Tocar no coração abre o painel com as 5 barras.
   criarNecessidades() {
     const N = CONFIG.NECESSIDADES, U = CONFIG.UI;
-    // Painel das barras
-    const py = N.PAINEL_Y;
-    this.add.rectangle(0, py, CONFIG.LARGURA, CONFIG.ALTURA - py, 0x2a1838, 0.9).setOrigin(0, 0);
-    this.add.rectangle(0, py, CONFIG.LARGURA, 1, U.CAIXA_ESCOLHIDA).setOrigin(0, 0);
-    this.barras = {};
-    NEC.LISTA.forEach((k, i) => {
-      const x = 2 + i * 36;
-      this.add.image(x, py + 6, 'icones_necessidades', i).setOrigin(0, 0);
-      this.add.rectangle(x + 11, py + 8, 23, 5, 0x120a18).setOrigin(0, 0).setStrokeStyle(1, 0x4a3060);
-      const parada = CONFIG.NECESSIDADES.QUEDA_POR_HORA[k] === 0;
-      const cheio = this.add.rectangle(x + 11, py + 8, 23, 5, N.COR_BOA).setOrigin(0, 0).setAlpha(parada ? 0.45 : 1);
-      this.barras[k] = cheio;
-    });
+
+    // Botão de necessidades: coração com a cor da barra ativa mais baixa e 5 pontinhos
+    const B = N.BOTAO;
+    this.coracaoNec = this.add.image(8, 6, 'coracao_necessidades').setOrigin(0, 0);
+    this.pontosNec = NEC.LISTA.map((k, i) => this.add.rectangle(4 + i * 4, 19, 2, 2, N.COR_BOA).setOrigin(0, 0));
+    this.botaoNec = this.add.container(B.X, B.Y, [
+      this.add.image(0, 0, 'botao_necessidades').setOrigin(0, 0), this.coracaoNec, ...this.pontosNec
+    ]);
+    // A área de toque fica parada (o botão pulsa, o toque não muda de lugar)
+    this.add.zone(B.X - 2, B.Y - 2, 30, 30).setOrigin(0, 0).setInteractive()
+      .on('pointerdown', () => this.botaoNec.list[0].setTint(0xc8a8e8))
+      .on('pointerout', () => this.botaoNec.list[0].clearTint())
+      .on('pointerup', () => { this.botaoNec.list[0].clearTint(); this.abrirPainel(); });
 
     // Botão da mamadeira (0 a 1 ano): a mamadeira cheia do desenho do autor dentro de uma caixa roxa
     const bx = N.BOTAO_MAMADEIRA_X, by = N.BOTAO_MAMADEIRA_Y;
@@ -524,37 +534,150 @@ class Quarto extends Phaser.Scene {
       .on('pointerout', () => caixa.setFillStyle(0x2a1838, 0.85))
       .on('pointerup', () => { caixa.setFillStyle(0x2a1838, 0.85); this.darMamadeira(); });
 
-    // Balão de pedido (ícone do que ele quer)
+    // Balão de pedido (ícone 16×16 do que ele quer)
     this.balao = this.add.container(N.BALAO_X, N.BALAO_Y, [
       this.add.image(0, 0, 'balao').setOrigin(0, 0),
-      this.add.image(3, 1, 'icones_necessidades', 0).setOrigin(0, 0)
+      this.add.image(3, 2, 'icones_necessidades16', 0).setOrigin(0, 0)
     ]).setVisible(false);
     this.tweens.add({ targets: this.balao, y: N.BALAO_Y - 2, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     this.atualizarNecessidades();
   }
 
-  // Redesenha as barras, o balão e o humor (chamado a cada segundo e após cada cuidado)
+  // Cor de uma barra: verde > 50, amarelo 25–50, vermelho < 25 (cinza se parada)
+  corDaBarra(k, v) {
+    const N = CONFIG.NECESSIDADES;
+    if (N.QUEDA_POR_HORA[k] === 0) return N.COR_PARADA;
+    return v > 50 ? N.COR_BOA : v >= 25 ? N.COR_MEDIA : N.COR_RUIM;
+  }
+
+  // Atualiza o botão, o balão, o humor e o painel aberto (a cada segundo e após cada cuidado)
   atualizarNecessidades() {
     const N = CONFIG.NECESSIDADES;
     const n = NEC.atuais();
-    if (!n || !this.barras) return;
-    for (const k of NEC.LISTA) {
-      const v = n[k];
-      const larg = Math.max(0, Math.round(23 * v / 100));
-      this.barras[k].setSize(larg, 5).setVisible(larg > 0)
-        .setFillStyle(v > 50 ? N.COR_BOA : v >= 25 ? N.COR_MEDIA : N.COR_RUIM);
-    }
+    if (!n || !this.botaoNec) return;
+    // Coração: cor da barra ATIVA mais baixa
+    const ativas = NEC.ativas();
+    const pior = ativas.reduce((a, k) => (a === null || n[k] < n[a] ? k : a), null);
+    this.coracaoNec.setTint(pior ? this.corDaBarra(pior, n[pior]) : N.COR_BOA);
+    NEC.LISTA.forEach((k, i) => this.pontosNec[i].setFillStyle(this.corDaBarra(k, n[k])));
+    this.pulsando = ativas.some(k => n[k] < 25);
+
     const pedido = this.mamando ? null : NEC.pedido(n);
     this.balao.setVisible(!!pedido);
     if (pedido) this.balao.list[1].setFrame(NEC.LISTA.indexOf(pedido));
     this.atualizarInfo();
+    if (this.painelAberto) this.atualizarPainel();
+  }
+
+  // ---------- Painel de necessidades (Etapa 8.1) ----------
+  abrirPainel() {
+    if (this.painelAberto || this.mamando) return;
+    const N = CONFIG.NECESSIDADES, P = N.PAINEL;
+    this.painelAberto = true;
+    this.linhaSel = null;
+    tocarSom(this, 'abrir');
+
+    // Quarto escurece; tocar fora do painel fecha
+    this.painelFundo = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x000000, N.PAINEL_ESCURO)
+      .setOrigin(0, 0).setDepth(90).setInteractive().setAlpha(0);
+    this.painelFundo.on('pointerup', () => this.fecharPainel());
+    this.tweens.add({ targets: this.painelFundo, alpha: 1, duration: N.PAINEL_SUBIR_MS });
+
+    const fonte = (tam, cor) => ({ fontFamily: 'monospace', fontSize: tam + 'px', color: cor });
+    const itens = [];
+    const fundo = this.add.image(0, 0, 'painel_necessidades').setOrigin(0, 0).setInteractive();  // segura os toques
+    itens.push(fundo);
+    itens.push(escrever(this, P.LARGURA / 2, 4, 'NECESSIDADES', fonte(9, '#ffd860')).setOrigin(0.5, 0));
+    const fechar = this.add.image(P.LARGURA - 15, 3, 'botao_fechar').setOrigin(0, 0);
+    itens.push(fechar);
+    itens.push(this.add.zone(P.LARGURA - 20, 0, 20, 18).setOrigin(0, 0).setInteractive()
+      .on('pointerup', () => this.fecharPainel()));
+
+    this.linhas = {};
+    NEC.LISTA.forEach((k, i) => {
+      const x = 4, y = N.LINHA_Y0 + i * N.LINHA_ESPACO;
+      const L = {};
+      L.fundo = this.add.image(x, y, 'linha_necessidade').setOrigin(0, 0);
+      L.toque = this.add.zone(x, y, 156, 32).setOrigin(0, 0).setInteractive()
+        .on('pointerup', () => this.escolherLinha(k));
+      const moldura = this.add.image(x + 5, y + 5, 'moldura_icone').setOrigin(0, 0);
+      const icone = this.add.image(x + 8, y + 8, 'icones_necessidades16', i).setOrigin(0, 0);
+      L.nome = escrever(this, x + 32, y + 4, N.NOMES[k], fonte(8, '#ffffff'));
+      L.dica = escrever(this, x + 72, y + 5, N.DICAS[k], fonte(7, '#ffd860')).setVisible(false);
+      L.pct = escrever(this, x + 151, y + 4, '', fonte(8, '#ffffff')).setOrigin(1, 0);
+      L.barraFundo = this.add.rectangle(x + 32, y + 18, 98, 7, 0x120a18).setOrigin(0, 0).setStrokeStyle(1, 0x6a4a88);
+      L.barra = this.add.rectangle(x + 33, y + 19, 96, 5, N.COR_BOA).setOrigin(0, 0);
+      // Divisões a cada 10%
+      const marcas = [];
+      for (let j = 1; j < 10; j++) {
+        marcas.push(this.add.rectangle(x + 33 + Math.round(9.6 * j), y + 19, 1, 5, 0x000000, 0.35).setOrigin(0, 0));
+      }
+      L.alerta = escrever(this, x + 140, y + 14, '!', Object.assign(fonte(11, '#ff5050'), { fontStyle: 'bold' })).setVisible(false);
+      this.tweens.add({ targets: L.alerta, alpha: 0.15, duration: 350, yoyo: true, repeat: -1 });
+      this.linhas[k] = L;
+      itens.push(L.fundo, L.toque, moldura, icone, L.nome, L.dica, L.pct, L.barraFundo, L.barra, ...marcas, L.alerta);
+    });
+
+    // O painel sobe de baixo
+    this.painel = this.add.container(P.X, CONFIG.ALTURA, itens).setDepth(91);
+    this.tweens.add({ targets: this.painel, y: P.Y, duration: N.PAINEL_SUBIR_MS, ease: 'Cubic.easeOut',
+      onUpdate: () => { this.painel.y = Math.round(this.painel.y); } });
+    this.atualizarPainel();
+  }
+
+  atualizarPainel() {
+    const N = CONFIG.NECESSIDADES;
+    const n = NEC.atuais();
+    if (!n || !this.linhas) return;
+    for (const k of NEC.LISTA) {
+      const L = this.linhas[k], v = n[k];
+      const parada = N.QUEDA_POR_HORA[k] === 0;
+      if (parada) {
+        L.barra.setSize(96, 5).setFillStyle(0x5a5a5a).setVisible(true);
+        L.pct.setText('EM BREVE').setColor('#9a9a9a').setFontSize(7);
+        L.alerta.setVisible(false);
+      } else {
+        const larg = Math.round(96 * v / 100);
+        const cor = this.corDaBarra(k, v);
+        L.barra.setSize(larg, 5).setFillStyle(cor).setVisible(larg > 0);
+        L.pct.setText(Math.round(v) + '%').setColor('#' + cor.toString(16).padStart(6, '0'));
+        L.alerta.setVisible(v < N.LIMITE_ALERTA);
+      }
+    }
+  }
+
+  // Tocar numa linha: destaca e mostra a dica do que fazer
+  escolherLinha(k) {
+    tocarSom(this, 'clique');
+    this.linhaSel = this.linhaSel === k ? null : k;
+    for (const j of NEC.LISTA) {
+      const L = this.linhas[j], sel = j === this.linhaSel;
+      L.fundo.setTexture(sel ? 'linha_necessidade_sel' : 'linha_necessidade');
+      L.dica.setVisible(sel);
+    }
+  }
+
+  fecharPainel() {
+    if (!this.painelAberto || this.fechandoPainel) return;
+    this.fechandoPainel = true;
+    const N = CONFIG.NECESSIDADES;
+    this.tweens.add({ targets: this.painelFundo, alpha: 0, duration: N.PAINEL_SUBIR_MS });
+    this.tweens.add({
+      targets: this.painel, y: CONFIG.ALTURA, duration: N.PAINEL_SUBIR_MS, ease: 'Cubic.easeIn',
+      onComplete: () => {
+        this.painel.destroy(); this.painelFundo.destroy();
+        this.painel = this.painelFundo = this.linhas = null;
+        this.painelAberto = false;
+        this.fechandoPainel = false;
+      }
+    });
   }
 
   // Mamadeira: o bebê mama até encher a fome (a sede enche junto)
   darMamadeira() {
     const N = CONFIG.NECESSIDADES;
-    if (this.mamando || this.pulando) return;
+    if (this.mamando || this.pulando || this.painelAberto) return;
     const n = NEC.atualizar();
     if (!n) return;
     if (n.fome >= N.MAMADEIRA_RECUSA && n.sede >= N.MAMADEIRA_RECUSA) { this.falar('Não quero!'); return; }

@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.41',
+  VERSAO: '0.0.42',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -74,7 +74,12 @@ const CONFIG = {
     sombras: false,    // assets/sprites/sombra_grande.png 52×6, sombra_media.png 28×5, sombra_pequena.png 14×3
     janela: false,     // assets/sprites/nuvem_janela1.png 12×5, nuvem_janela2.png 8×4 e lua.png 5×5
     coracao: false,    // assets/sprites/coracao.png 7×6
-    necessidades: false // Etapa 8: icones_necessidades.png 45×9 (5 ícones de 9×9), mamadeira_bebe.png 7×12, balao.png 15×14
+    mamadeira_bebe: false,        // assets/sprites/mamadeira_bebe.png 12×7 (deitada, bico à esquerda)
+    icones_necessidades16: false, // assets/ui/icones_necessidades16.png 80×16 (5 ícones de 16×16: fome, sede, energia, higiene, diversão)
+    balao: false,                 // assets/sprites/balao.png 22×24 (o ícone de 16×16 entra no ponto 3,2)
+    painel_necessidades: false,   // assets/ui: botao_necessidades 26×26, coracao_necessidades 9×8 (branco),
+                                  //   painel_necessidades 164×196, linha_necessidade(_sel) 156×32, moldura_icone 22×22, botao_fechar 12×12
+    sons: false                   // assets/audio: abrir.mp3 e clique.mp3 (Etapa 30)
     // O quarto (menina e menino), o berço e a cegonha já são desenhos do autor.
   },
 
@@ -291,9 +296,21 @@ const CONFIG = {
     DIVERSAO_TOQUE_BRINQUEDO: 1,  // tocar num brinquedo do chão (o bebê acha graça)
 
     // Onde ficam as coisas na tela do quarto
-    PAINEL_Y: 299,                // painel das barras, embaixo (altura 21)
+    BOTAO: { X: 150, Y: 288 },    // botão de necessidades (26×26), canto inferior direito (Etapa 8.1)
+    COR_PARADA: 0x8a8a8a,         // pontinho das barras paradas (energia e higiene, por enquanto)
+    PULSO_PIXELS: 1,              // o botão sobe e desce isso quando alguma barra está vermelha
+    PULSO_SEGUNDOS: 0.5,
+    // Painel aberto
+    PAINEL: { X: 8, Y: 116, LARGURA: 164, ALTURA: 196 },
+    PAINEL_ESCURO: 0.55,          // quanto o quarto escurece atrás do painel (0 a 1)
+    PAINEL_SUBIR_MS: 200,         // animação do painel subindo
+    LINHA_Y0: 21, LINHA_ESPACO: 34,   // primeira linha e distância entre linhas (dentro do painel)
+    LIMITE_ALERTA: 25,            // abaixo disso aparece o "!" piscando
+    NOMES: { fome: 'Fome', sede: 'Sede', energia: 'Energia', higiene: 'Higiene', diversao: 'Diversão' },
+    DICAS: { fome: '> MAMADEIRA', sede: '> MAMADEIRA', energia: '> DORMIR', higiene: '> BANHO', diversao: '> BRINCAR' },
+    TESTE_MINUTOS_RELOGIO: 30,    // TESTE: tocar no relógio também faz as barras caírem como se passassem 30 min reais
+    BALAO_X: 100, BALAO_Y: 172,   // balão de pedido (22×24), ao lado da cabeça do bebê
     BOTAO_MAMADEIRA_X: 4, BOTAO_MAMADEIRA_Y: 140,   // botão da mamadeira (22×38), na parede da esquerda
-    BALAO_X: 101, BALAO_Y: 181,   // balão de pedido, ao lado da cabeça do bebê
     MAMADEIRA_BOCA_X: 91, MAMADEIRA_BOCA_Y: 212     // mamadeira na boca (canto superior esquerdo, sobe e desce com o bebê)
   },
 

@@ -224,28 +224,10 @@ function criarPalpebrasBebe(cena) {
   desenho('bebe_olhos_felizes', ['.oo.', 'o..o']);
 }
 
-// ---------- Necessidades do bebê (Etapa 8) ----------
-//   icones_necessidades  45×9  cinco ícones de 9×9 lado a lado, nesta ordem:
-//                              fome (maçã), sede (gota), energia (raio),
-//                              higiene (bolhas), diversão (bola)
-//   mamadeira_bebe       12×7  a mamadeira deitada, bico à esquerda (vai na boca do bebê)
-//   balao                15×14 balão de pensamento (o ícone do pedido vai dentro)
-function criarNecessidadesProvisorias(cena) {
-  const o = '#2a1838';
-  const icones = [
-    ['.....g...', '....g....', '.oo.o.oo.', 'orrrrrrro', 'orwrrrrro', 'orrrrrrro', 'orrrrrrro', '.orrrrro.', '..oo.oo..'],
-    ['....o....', '...obo...', '...obo...', '..obbbo..', '.obwbbbo.', '.obwbbbo.', '.obbbbbo.', '..obbbo..', '...ooo...'],
-    ['.....ooo.', '....oyyo.', '...oyyo..', '..oyyyyo.', '.oyyyyo..', '..oyyo...', '..oyo....', '.oyo.....', '.oo......'],
-    ['...ooo...', '..occco..', '.ocwccco.', '.occccco.', '.occccco.', '..occco..', '...ooo.o.', '......oco', '.......o.'],
-    ['...ooo...', '..oyyro..', '.oyyrrro.', '.orrbbbo.', '.orbbbyo.', '.obbyyyo.', '..oyyyo..', '...ooo...', '.........']
-  ];
-  const pal = { o, r: '#e04848', w: '#ffffff', g: '#4fa84a', b: '#4aa8f0', y: '#ffd860', c: '#bfe8ff' };
-  let t = cena.textures.createCanvas('icones_necessidades', 45, 9);
-  icones.forEach((mapa, i) => pintarPixels(t.getContext(), mapa, pal, i * 9, 0));
-  registrarQuadros(t, 9, 9, 5);
-  t.refresh();
-
-  t = cena.textures.createCanvas('mamadeira_bebe', 12, 7);
+// ---------- Necessidades do bebê (Etapas 8 e 8.1) ----------
+//   mamadeira_bebe        12×7   a mamadeira deitada, bico à esquerda (vai na boca do bebê)
+function criarMamadeiraBebeProvisoria(cena) {
+  const t = cena.textures.createCanvas('mamadeira_bebe', 12, 7);
   pintarPixels(t.getContext(), [
     '.....ooooooo',
     '...oowmmmmmo',
@@ -254,25 +236,158 @@ function criarNecessidadesProvisorias(cena) {
     '.ootowmmmmmo',
     '...oowmmmmmo',
     '.....ooooooo'
-  ], { o, t: '#e8b48a', w: '#8fd0ff', m: '#fffbe8' });
+  ], { o: '#2a1838', t: '#e8b48a', w: '#8fd0ff', m: '#fffbe8' });
   t.refresh();
+}
 
-  t = cena.textures.createCanvas('balao', 15, 14);
-  pintarPixels(t.getContext(), [
-    '.ooooooooooooo.',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    'owwwwwwwwwwwwwo',
-    '.oowwoooooooo..',
-    '.owwo..........',
-    'oowo...........',
-    'oo.............'
-  ], { o, w: '#ffffff' });
+//   icones_necessidades16  80×16  cinco ícones de 16×16 lado a lado:
+//                                 fome (maçã), sede (gota), energia (raio), higiene (bolhas), diversão (bola)
+function criarIcones16Provisorios(cena) {
+  const mapas = [
+    [
+      '............o...',
+      '.......oo..ogo..',
+      '......ommoogggo.',
+      '....ooommgggoo..',
+      '...orrrmmrgro...',
+      '..orrrrmmrrrro..',
+      '..orrwrrrrrrro..',
+      '..orwrrrrrrrro..',
+      '.orrwrrrrrrrrro.',
+      '.orrrrrrrrrrrro.',
+      '.orrrrrrrrrrrro.',
+      '.orrrrrrrrrrrro.',
+      '..orrrrrrrrrro..',
+      '..orrrrrrrrrro..',
+      '...orRrrrrrro...',
+      '....ooRRRRRo....'
+    ],
+    [
+      '.......oo.......',
+      '......obbo......',
+      '......obbo......',
+      '.....obbbbo.....',
+      '.....obbbbo.....',
+      '....obbbbbbo....',
+      '....obbbbbbo....',
+      '...obbbbbbbbo...',
+      '...obbwbbbbbo...',
+      '..obbwbbbbbbbo..',
+      '..obbwbbbbbbbo..',
+      '..obbwbbbbbbbo..',
+      '..obbbbbbbbbbo..',
+      '...obbbbbbbBo...',
+      '....obbbbbBo....',
+      '.....oBBBBo.....'
+    ],
+    [
+      '.........ooo....',
+      '........oyyyo...',
+      '.......oywyo....',
+      '.......owyyo....',
+      '......oywyo.....',
+      '.....oywyyooo...',
+      '....oywyyyyyyo..',
+      '....oywyyyyyo...',
+      '...oywyyyyyo....',
+      '..oyyyyyyyyo....',
+      '...ooooyyyo.....',
+      '.....oyyyo......',
+      '.....oyyo.......',
+      '.....oyyo.......',
+      '....oyyo........',
+      '....oyo.........'
+    ],
+    [
+      '...........oo...',
+      '..........occo..',
+      '....oooooocccco.',
+      '...occcccocccco.',
+      '..occcccccocco..',
+      '.occwwcccccoo...',
+      'occwcccccccco...',
+      'occwcccccccco...',
+      'occccccccccco...',
+      'occcccccccccoo..',
+      'occccccccccCcco.',
+      '.occccccccCwccco',
+      '..occccccCccccco',
+      '...oCCCCCoccccco',
+      '....ooooo.occco.',
+      '...........ooo..'
+    ],
+    [
+      '......oooo......',
+      '....oorrrroo....',
+      '...orrrrrrrro...',
+      '..orrwrrrrrrro..',
+      '.orrwrrrrrrrrro.',
+      '.orrwrrrrrrrrro.',
+      'oyyyyyyyyyyyyyyo',
+      'oyyyyyyyyyyyyyyo',
+      'oyyyyyyyyyyyyyyo',
+      'oyyyyyyyyyyyyyyo',
+      '.obbbbbbbbbbbbo.',
+      '.obbbbbbbbbbbbo.',
+      '..obbbbbbbbbbo..',
+      '...obbbbbbbbo...',
+      '....oobbbboo....',
+      '......oooo......'
+    ]
+  ];
+  const pal = { o: '#2a1838', r: '#e04848', R: '#a02838', w: '#ffffff', g: '#4fa84a', m: '#7a4a2a',
+    b: '#4aa8f0', B: '#2a70c0', y: '#ffd860', c: '#bfe8ff', C: '#7ab8e0' };
+  const t = cena.textures.createCanvas('icones_necessidades16', 80, 16);
+  mapas.forEach((m, i) => pintarPixels(t.getContext(), m, pal, i * 16, 0));
+  registrarQuadros(t, 16, 16, 5);
   t.refresh();
+}
+
+//   balao  22×24  balão de pensamento; o ícone de 16×16 entra no ponto (3,2)
+function criarBalaoProvisorio(cena) {
+  const t = cena.textures.createCanvas('balao', 22, 24);
+  const c = t.getContext();
+  const o = '#2a1838', w = '#ffffff';
+  c.fillStyle = o; c.fillRect(1, 0, 20, 20); c.fillRect(0, 1, 22, 18);
+  c.fillStyle = w; c.fillRect(1, 1, 20, 18);
+  // rabinho para baixo e para a esquerda (aponta para a cabeça do bebê)
+  c.fillStyle = o; c.fillRect(2, 19, 5, 3); c.fillRect(0, 21, 3, 3);
+  c.fillStyle = w; c.fillRect(3, 19, 3, 2); c.fillRect(1, 22, 1, 1);
+  t.refresh();
+}
+
+// Painel de necessidades (Etapa 8.1), todos em assets/ui:
+//   botao_necessidades  26×26   botão sem o coração
+//   coracao_necessidades 9×8    coração BRANCO (o jogo pinta a cor)
+//   painel_necessidades 164×196 fundo do painel com faixa do título
+//   linha_necessidade   156×32  fundo de uma linha (e linha_necessidade_sel, a selecionada)
+//   moldura_icone       22×22   moldura clara do ícone
+//   botao_fechar        12×12   X
+function criarPainelNecessidadesProvisorio(cena) {
+  const caixa = (nome, l, a, fundo, borda, extra) => {
+    const t = cena.textures.createCanvas(nome, l, a);
+    const c = t.getContext();
+    c.fillStyle = borda; c.fillRect(0, 0, l, a);
+    c.fillStyle = fundo; c.fillRect(1, 1, l - 2, a - 2);
+    if (extra) extra(c);
+    t.refresh();
+  };
+  caixa('botao_necessidades', 26, 26, '#2a1838', '#7b4aa6', c => {
+    c.fillStyle = '#120a18'; c.fillRect(0, 0, 1, 1); c.fillRect(25, 0, 1, 1); c.fillRect(0, 25, 1, 1); c.fillRect(25, 25, 1, 1);
+    c.fillStyle = '#3d2452'; c.fillRect(2, 2, 22, 22);
+  });
+  let t = cena.textures.createCanvas('coracao_necessidades', 9, 8);
+  pintarPixels(t.getContext(), ['.ww...ww.', 'wwww.wwww', 'wwwwwwwww', 'wwwwwwwww', '.wwwwwww.', '..wwwww..', '...www...', '....w....'], { w: '#ffffff' });
+  t.refresh();
+  caixa('painel_necessidades', 164, 196, '#2a1838', '#7b4aa6', c => {
+    c.fillStyle = '#4a2a66'; c.fillRect(1, 1, 162, 16);     // faixa do título
+    c.fillStyle = '#7b4aa6'; c.fillRect(1, 17, 162, 1);
+  });
+  caixa('linha_necessidade', 156, 32, '#3a2150', '#4a3060');
+  caixa('linha_necessidade_sel', 156, 32, '#5e3487', '#ffd860');
+  caixa('moldura_icone', 22, 22, '#e8d8f0', '#9a7ab8');
+  caixa('botao_fechar', 12, 12, '#a03048', '#ffffff', c => {
+    c.fillStyle = '#ffffff';
+    for (let i = 0; i < 6; i++) { c.fillRect(3 + i, 3 + i, 1, 1); c.fillRect(8 - i, 3 + i, 1, 1); }
+  });
 }

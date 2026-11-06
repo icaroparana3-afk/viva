@@ -55,6 +55,7 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
 - Com o jogo fechado, as barras continuam caindo, mas na metade da velocidade.
 - O bebê pede o que mais precisa com um balão. Humor (Etapa 8): feliz, entediado (diversão baixa) ou triste (alguma barra muito baixa).
 - Energia e higiene só começam a cair nas etapas do sono e do banho.
+- No quarto as barras ficam escondidas num botão de coração (canto inferior direito). A cor do coração é a da barra mais baixa, e ele pulsa quando alguma está no vermelho. Tocar abre o painel com as 5 barras grandes e a dica do que fazer em cada uma (Etapa 8.1).
 
 ## Casa
 Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (cadeirinha). O jogador navega entre eles.

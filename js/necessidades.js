@@ -58,6 +58,14 @@ const NEC = {
     return n;
   },
 
+  // TESTE: faz as barras caírem como se passassem estes minutos reais (com o jogo aberto)
+  adiantar(minutos) {
+    const n = NEC.atualizar();
+    if (!n) return;
+    for (const k of NEC.LISTA) n[k] = NEC.limitar(n[k] - CONFIG.NECESSIDADES.QUEDA_POR_HORA[k] * minutos / 60);
+    Estado.salvar();
+  },
+
   limitar(v) { return Math.max(0, Math.min(100, v)); },
 
   // As barras atuais (sem atualizar)

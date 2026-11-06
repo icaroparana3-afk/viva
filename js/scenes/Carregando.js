@@ -73,11 +73,18 @@ class Carregando extends Phaser.Scene {
     }
     if (P.folha) this.load.spritesheet('folha', './assets/sprites/folha.png', { frameWidth: 4, frameHeight: 4 });
     if (P.vento) this.load.image('vento', './assets/sprites/vento.png');
-    if (P.necessidades) {
-      this.load.spritesheet('icones_necessidades', './assets/sprites/icones_necessidades.png', { frameWidth: 9, frameHeight: 9 });
-      this.load.image('mamadeira_bebe', './assets/sprites/mamadeira_bebe.png');
-      this.load.image('balao', './assets/sprites/balao.png');
+    if (P.mamadeira_bebe) this.load.image('mamadeira_bebe', './assets/sprites/mamadeira_bebe.png');
+    if (P.icones_necessidades16) {
+      this.load.spritesheet('icones_necessidades16', './assets/ui/icones_necessidades16.png', { frameWidth: 16, frameHeight: 16 });
     }
+    if (P.balao) this.load.image('balao', './assets/sprites/balao.png');
+    if (P.painel_necessidades) {
+      ['botao_necessidades', 'coracao_necessidades', 'painel_necessidades', 'linha_necessidade',
+        'linha_necessidade_sel', 'moldura_icone', 'botao_fechar']
+        .forEach(nome => this.load.image(nome, './assets/ui/' + nome + '.png'));
+    }
+    // Sons (Etapa 30): só carregam quando os arquivos existirem
+    if (P.sons) ['abrir', 'clique'].forEach(nome => this.load.audio(nome, './assets/audio/' + nome + '.mp3'));
     // Quarto (desenhos do autor): um para menina, outro para menino, e o berço
     this.load.image('quarto_menina', './assets/ui/quarto_menina.png');
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
@@ -136,7 +143,10 @@ class Carregando extends Phaser.Scene {
     if (!P.vento) criarVentoProvisorio(this);
     if (!P.janela) criarJanelaProvisoria(this);
     if (!P.coracao) criarCoracaoProvisorio(this);
-    if (!P.necessidades) criarNecessidadesProvisorias(this);
+    if (!P.mamadeira_bebe) criarMamadeiraBebeProvisoria(this);
+    if (!P.icones_necessidades16) criarIcones16Provisorios(this);
+    if (!P.balao) criarBalaoProvisorio(this);
+    if (!P.painel_necessidades) criarPainelNecessidadesProvisorio(this);
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarEstrelinha(this);      // estrelinha da festa de chegada
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)
