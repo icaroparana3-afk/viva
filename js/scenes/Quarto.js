@@ -537,14 +537,18 @@ class Quarto extends Phaser.Scene {
   criarNecessidades() {
     const N = CONFIG.NECESSIDADES, U = CONFIG.UI;
 
-    // Botão de necessidades: coração com a cor da barra ativa mais baixa e 5 pontinhos
+    // Botão de necessidades: ícone da necessidade ativa mais baixa (ou carinha feliz com tudo 100%)
+    // e 5 quadradinhos que mostram o nível dela
     const B = N.BOTAO;
-    this.coracaoNec = this.add.image(8, 6, 'coracao_necessidades').setOrigin(0, 0);
-    this.pontosNec = NEC.LISTA.map((k, i) => this.add.rectangle(4 + i * 4, 19, 2, 2, N.COR_BOA).setOrigin(0, 0));
     const S = CONFIG.SINAIS;
+    this.iconeNec = this.add.image(S.BOTAO_ICONE_X, S.BOTAO_ICONE_Y, 'icones_necessidades16', 0).setOrigin(0, 0);
+    this.felizNec = this.add.image(S.BOTAO_FELIZ_X, S.BOTAO_FELIZ_Y, 'humor', S.HUMOR_QUADROS.feliz).setOrigin(0, 0).setVisible(false);
+    this.quadradosNec = [0, 1, 2, 3, 4].map(i => this.add.rectangle(
+      S.QUADRADOS_X + i * (S.QUADRADO_TAMANHO + S.QUADRADO_ESPACO), S.QUADRADOS_Y,
+      S.QUADRADO_TAMANHO, S.QUADRADO_TAMANHO, N.COR_BOA).setOrigin(0, 0));
     this.alertaNec = this.add.image(S.ALERTA_BOTAO_X, S.ALERTA_BOTAO_Y, 'alerta_mini').setOrigin(0, 0).setVisible(false);
     this.botaoNec = this.add.container(B.X, B.Y, [
-      this.add.image(0, 0, 'botao_necessidades').setOrigin(0, 0), this.coracaoNec, ...this.pontosNec, this.alertaNec
+      this.add.image(0, 0, 'botao_necessidades').setOrigin(0, 0), this.iconeNec, this.felizNec, ...this.quadradosNec, this.alertaNec
     ]);
     // A área de toque fica parada (o botão pulsa, o toque não muda de lugar)
     this.add.zone(B.X - 2, B.Y - 2, 30, 30).setOrigin(0, 0).setInteractive()
@@ -564,7 +568,7 @@ class Quarto extends Phaser.Scene {
     // Balão de pedido (Etapa 8.2): ícone 16×16 do que ele quer + selo 8×8 de como ele está
     this.balaoIcone = this.add.image(S.BALAO_ICONE_X, S.BALAO_ICONE_Y, 'icones_necessidades16', 0).setOrigin(0, 0);
     this.balaoSelo = this.add.image(S.BALAO_SELO_X, S.BALAO_SELO_Y, 'selos', 0).setOrigin(0, 0);
-    this.balaoX = this.add.image(S.BALAO_ICONE_X + 3, S.BALAO_ICONE_Y + 3, 'x_nao').setOrigin(0, 0).setVisible(false);
+    this.balaoX = this.add.image(S.RECUSA_X_X, S.RECUSA_X_Y, 'x_nao').setOrigin(0, 0).setVisible(false);
     this.balao = this.add.container(N.BALAO_X, N.BALAO_Y, [
       this.add.image(0, 0, 'balao_pedido').setOrigin(0, 0), this.balaoIcone, this.balaoSelo, this.balaoX
     ]).setVisible(false);
@@ -584,16 +588,32 @@ class Quarto extends Phaser.Scene {
     return v > 50 ? N.COR_BOA : v >= 25 ? N.COR_MEDIA : N.COR_RUIM;
   }
 
+  // Botão de necessidades (v0.0.45): ícone da barra ATIVA mais baixa + 5 quadradinhos
+  //   tudo 100% → carinha feliz e 5 verdes | acima de 50 → 4 verdes e 1 vazio
+  //   1 a 50 → 3 amarelos e 2 vazios       | 0 → 5 vermelhos
+  atualizarBotaoNec(n) {
+    const N = CONFIG.NECESSIDADES, S = CONFIG.SINAIS;
+    const ativas = NEC.ativas();
+    const pior = ativas.reduce((a, k) => (a === null || n[k] < n[a] ? k : a), null);
+    const p = pior ? Math.round(n[pior]) : 100;   // mesma porcentagem do painel
+    const tudoCheio = p >= 100;
+    this.felizNec.setVisible(tudoCheio);
+    this.iconeNec.setVisible(!tudoCheio);
+    if (!tudoCheio) this.iconeNec.setFrame(NEC.LISTA.indexOf(pior));
+    let cor, quantos;
+    if (tudoCheio) { cor = N.COR_BOA; quantos = 5; }
+    else if (p > 50) { cor = N.COR_BOA; quantos = 4; }
+    else if (p > 0) { cor = N.COR_MEDIA; quantos = 3; }
+    else { cor = N.COR_RUIM; quantos = 5; }
+    this.quadradosNec.forEach((q, i) => q.setFillStyle(i < quantos ? cor : S.COR_QUADRADO_APAGADO));
+  }
+
   // Atualiza o botão, o balão, o humor e o painel aberto (a cada segundo e após cada cuidado)
   atualizarNecessidades() {
     const N = CONFIG.NECESSIDADES;
     const n = NEC.atuais();
     if (!n || !this.botaoNec) return;
-    // Coração: cor da barra ATIVA mais baixa
-    const ativas = NEC.ativas();
-    const pior = ativas.reduce((a, k) => (a === null || n[k] < n[a] ? k : a), null);
-    this.coracaoNec.setTint(pior ? this.corDaBarra(pior, n[pior]) : N.COR_BOA);
-    NEC.LISTA.forEach((k, i) => this.pontosNec[i].setFillStyle(this.corDaBarra(k, n[k])));
+    this.atualizarBotaoNec(n);
     this.pulsando = SINAIS.alerta(n);
     this.alertaNec.setVisible(this.pulsando);
 
@@ -624,9 +644,9 @@ class Quarto extends Phaser.Scene {
     const fundo = this.add.image(0, 0, 'painel_necessidades').setOrigin(0, 0).setInteractive();  // segura os toques
     itens.push(fundo);
     itens.push(escrever(this, P.LARGURA / 2, 4, 'NECESSIDADES', fonte(9, '#ffd860')).setOrigin(0.5, 0));
-    const fechar = this.add.image(P.LARGURA - 15, 3, 'botao_fechar').setOrigin(0, 0);
+    const fechar = this.add.image(N.FECHAR_X, N.FECHAR_Y, 'botao_fechar').setOrigin(0, 0);
     itens.push(fechar);
-    itens.push(this.add.zone(P.LARGURA - 20, 0, 20, 18).setOrigin(0, 0).setInteractive()
+    itens.push(this.add.zone(P.LARGURA - 24, 0, 24, 20).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => this.fecharPainel()));
 
     this.linhas = {};
@@ -641,12 +661,12 @@ class Quarto extends Phaser.Scene {
       L.nome = escrever(this, x + 32, y + 4, N.NOMES[k], fonte(8, '#ffffff'));
       L.dica = escrever(this, x + 72, y + 5, N.DICAS[k], fonte(7, '#ffd860')).setVisible(false);
       L.pct = escrever(this, x + 151, y + 4, '', fonte(8, '#ffffff')).setOrigin(1, 0);
-      L.barraFundo = this.add.rectangle(x + 32, y + 18, 98, 7, 0x120a18).setOrigin(0, 0).setStrokeStyle(1, 0x6a4a88);
+      L.barraFundo = this.add.rectangle(x + 32, y + 18, 98, 7, N.BARRA_FUNDO).setOrigin(0, 0).setStrokeStyle(1, N.BARRA_BORDA);
       L.barra = this.add.rectangle(x + 33, y + 19, 96, 5, N.COR_BOA).setOrigin(0, 0);
       // Divisões a cada 10%
       const marcas = [];
       for (let j = 1; j < 10; j++) {
-        marcas.push(this.add.rectangle(x + 33 + Math.round(9.6 * j), y + 19, 1, 5, 0x000000, 0.35).setOrigin(0, 0));
+        marcas.push(this.add.rectangle(x + 33 + Math.round(9.6 * j), y + 19, 1, 5, 0x000000, N.BARRA_DIVISAO).setOrigin(0, 0));
       }
       // TESTE: tocar na barra troca o valor (100 → 70 → 50 → 25 → 0)
       if (CONFIG.SINAIS.TESTE_BARRAS) {
@@ -676,7 +696,7 @@ class Quarto extends Phaser.Scene {
       const parada = N.QUEDA_POR_HORA[k] === 0;
       if (parada) {
         L.barra.setSize(96, 5).setFillStyle(0x5a5a5a).setVisible(true);
-        L.pct.setText('EM BREVE').setColor('#9a9a9a').setFontSize(7);
+        L.pct.setText('EM BREVE').setColor(N.COR_EM_BREVE).setFontSize(7);
         L.alerta.setVisible(false);
       } else {
         const larg = Math.round(96 * v / 100);

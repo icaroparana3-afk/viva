@@ -61,7 +61,7 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
   - Na primeira vez que pede comida, uma mãozinha aponta para a mamadeira (uma vez só).
   - O bebê chega com fome 40, sede 40 e diversão 30, ou seja, já chorando: de propósito, para ensinar o jogo.
 - Energia e higiene só começam a cair nas etapas do sono e do banho.
-- No quarto as barras ficam escondidas num botão de coração (canto inferior direito). A cor do coração é a da barra mais baixa, e ele pulsa quando alguma está no vermelho. Tocar abre o painel com as 5 barras grandes e a dica do que fazer em cada uma (Etapa 8.1).
+- No quarto as barras ficam escondidas num botão (canto inferior direito). Dentro dele aparece o ícone da necessidade mais baixa (com tudo 100%, a carinha feliz) e 5 quadradinhos: tudo 100% = 5 verdes, acima de 50 = 4 verdes e 1 vazio, 1 a 50 = 3 amarelos e 2 vazios, 0 = 5 vermelhos. Ele pulsa com um "!" quando alguma está abaixo de 25 (v0.0.45). Tocar abre o painel com as 5 barras grandes e a dica do que fazer em cada uma (Etapa 8.1).
 
 ## Casa
 Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (cadeirinha). O jogador navega entre eles.

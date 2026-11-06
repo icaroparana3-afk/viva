@@ -344,14 +344,14 @@ function criarIcones16Provisorios(cena) {
 }
 
 // Painel de necessidades (Etapa 8.1), todos em assets/ui:
-//   botao_necessidades  26×26   botão sem o coração
-//   coracao_necessidades 9×8    coração BRANCO (o jogo pinta a cor)
+//   botao_necessidades  26×26   botão sem ícone (o jogo põe o ícone da necessidade e os 5 quadradinhos)
 //   painel_necessidades 164×196 fundo do painel com faixa do título
 //   linha_necessidade   156×32  fundo de uma linha (e linha_necessidade_sel, a selecionada)
 //   moldura_icone       22×22   moldura clara do ícone
-//   botao_fechar        12×12   X
+//   botao_fechar        16×16   X
 function criarPainelNecessidadesProvisorio(cena) {
   const caixa = (nome, l, a, fundo, borda, extra) => {
+    if (cena.textures.exists(nome)) return;      // desenho pronto já carregado
     const t = cena.textures.createCanvas(nome, l, a);
     const c = t.getContext();
     c.fillStyle = borda; c.fillRect(0, 0, l, a);
@@ -363,9 +363,6 @@ function criarPainelNecessidadesProvisorio(cena) {
     c.fillStyle = '#120a18'; c.fillRect(0, 0, 1, 1); c.fillRect(25, 0, 1, 1); c.fillRect(0, 25, 1, 1); c.fillRect(25, 25, 1, 1);
     c.fillStyle = '#3d2452'; c.fillRect(2, 2, 22, 22);
   });
-  let t = cena.textures.createCanvas('coracao_necessidades', 9, 8);
-  pintarPixels(t.getContext(), ['.ww...ww.', 'wwww.wwww', 'wwwwwwwww', 'wwwwwwwww', '.wwwwwww.', '..wwwww..', '...www...', '....w....'], { w: '#ffffff' });
-  t.refresh();
   caixa('painel_necessidades', 164, 196, '#2a1838', '#7b4aa6', c => {
     c.fillStyle = '#4a2a66'; c.fillRect(1, 1, 162, 16);     // faixa do título
     c.fillStyle = '#7b4aa6'; c.fillRect(1, 17, 162, 1);
@@ -373,9 +370,9 @@ function criarPainelNecessidadesProvisorio(cena) {
   caixa('linha_necessidade', 156, 32, '#3a2150', '#4a3060');
   caixa('linha_necessidade_sel', 156, 32, '#5e3487', '#ffd860');
   caixa('moldura_icone', 22, 22, '#e8d8f0', '#9a7ab8');
-  caixa('botao_fechar', 12, 12, '#a03048', '#ffffff', c => {
+  caixa('botao_fechar', 16, 16, '#a03048', '#ffffff', c => {
     c.fillStyle = '#ffffff';
-    for (let i = 0; i < 6; i++) { c.fillRect(3 + i, 3 + i, 1, 1); c.fillRect(8 - i, 3 + i, 1, 1); }
+    for (let i = 0; i < 6; i++) { c.fillRect(5 + i, 5 + i, 1, 1); c.fillRect(10 - i, 5 + i, 1, 1); }
   });
 }
 
@@ -385,7 +382,7 @@ function criarPainelNecessidadesProvisorio(cena) {
 //   selos          32×8   4 selos 8×8: triste, chorando, chorando forte, esgotado
 //   balao_pedido   26×24  balão com perninha (ícone 16×16 em 5,2; selo 8×8 em 17,11)
 //   x_nao          10×10  X vermelho ("não quero")
-//   maozinha       24×12  2 quadros 12×12, apontando para a esquerda
+//   maozinha       36×18  2 quadros 18×18, apontando para a esquerda
 //   bebe_choro     32×32  camada: lágrimas e boca aberta
 //   bebe_esgotado  32×32  camada: olhos fechados (e gotinha de suor)
 function criarSinaisProvisorios(cena) {
@@ -403,10 +400,13 @@ function criarSinaisProvisorios(cena) {
     pontos.forEach(([x, y]) => { m[y][x] = letra; });
     return m.map(l => l.join(''));
   };
-  let t = cena.textures.createCanvas('humor', 36, 12);
-  let c = t.getContext();
+  const falta = (nome) => !cena.textures.exists(nome);   // desenho do autor já carregado? então pula
+  let t, c, f;
+  if (falta('humor')) {
+  t = cena.textures.createCanvas('humor', 36, 12);
+  c = t.getContext();
   // feliz: olhos e sorriso
-  let f = marcar(rosto('y'), [[4, 4], [4, 5], [7, 4], [7, 5], [3, 7], [8, 7], [4, 8], [5, 8], [6, 8], [7, 8]], 'k');
+  f = marcar(rosto('y'), [[4, 4], [4, 5], [7, 4], [7, 5], [3, 7], [8, 7], [4, 8], [5, 8], [6, 8], [7, 8]], 'k');
   pintarPixels(c, f, pal, 0, 0);
   // entediada: olhos meio fechados (traço), boca reta
   f = marcar(rosto('a'), [[3, 5], [4, 5], [7, 5], [8, 5], [4, 8], [5, 8], [6, 8], [7, 8]], 'k');
@@ -417,10 +417,12 @@ function criarSinaisProvisorios(cena) {
   pintarPixels(c, f, pal, 24, 0);
   registrarQuadros(t, 12, 12, 3);
   t.refresh();
+  }
 
   // Selos 8×8
   const selo = (cor) => ['..oooo..', '.oCCCCo.', 'oCCCCCCo', 'oCCCCCCo', 'oCCCCCCo', 'oCCCCCCo', '.oCCCCo.', '..oooo..']
     .map(l => l.replace(/C/g, cor));
+  if (falta('selos')) {
   t = cena.textures.createCanvas('selos', 32, 8);
   c = t.getContext();
   pintarPixels(c, marcar(selo('b'), [[2, 3], [5, 3], [3, 5], [4, 5], [2, 6], [5, 6]], 'k'), pal, 0, 0);          // triste
@@ -431,8 +433,10 @@ function criarSinaisProvisorios(cena) {
     [[4, 6]], 'p'), [[7, 0], [7, 1]], 'l'), pal, 24, 0);                                                      // esgotado (X, língua, suor)
   registrarQuadros(t, 8, 8, 4);
   t.refresh();
+  }
 
   // Balão de pedido 26×24 (caixa branca arredondada + perninha à esquerda)
+  if (falta('balao_pedido')) {
   t = cena.textures.createCanvas('balao_pedido', 26, 24);
   c = t.getContext();
   c.fillStyle = o; c.fillRect(2, 0, 22, 20); c.fillRect(1, 1, 24, 18); c.fillRect(0, 2, 26, 16);
@@ -440,41 +444,50 @@ function criarSinaisProvisorios(cena) {
   c.fillStyle = o; c.fillRect(3, 19, 6, 2); c.fillRect(2, 20, 4, 2); c.fillRect(1, 21, 3, 2); c.fillRect(0, 22, 2, 2);
   c.fillStyle = '#ffffff'; c.fillRect(4, 19, 4, 1); c.fillRect(3, 20, 2, 1); c.fillRect(2, 21, 1, 1);
   t.refresh();
+  }
 
   // X vermelho 10×10
+  if (falta('x_nao')) {
   t = cena.textures.createCanvas('x_nao', 10, 10);
   pintarPixels(t.getContext(), [
     'oo......oo', 'orro..orro', '.orroorro.', '..orrrro..', '...orro...',
     '...orro...', '..orrrro..', '.orroorro.', 'orro..orro', 'oo......oo'
   ], pal);
   t.refresh();
+  }
 
-  // Mãozinha 12×12, apontando para a esquerda (2 quadros: o segundo 1 px mais perto)
+  // Mãozinha 18×18, apontando para a esquerda (2 quadros: o segundo 1 px mais perto)
+  if (falta('maozinha')) {
   const mao = [
     '............', '............', '......ooo...', '.ooooowwwo..', 'owwwwwwwwwo.', '.oooowwwwwwo',
     '....owwwwwwo', '....owwwwwwo', '....owwwwwo.', '.....ooooo..', '............', '............'
   ];
-  t = cena.textures.createCanvas('maozinha', 24, 12);
-  pintarPixels(t.getContext(), mao, pal, 1, 0);
-  pintarPixels(t.getContext(), mao, pal, 12, 0);
-  registrarQuadros(t, 12, 12, 2);
+  t = cena.textures.createCanvas('maozinha', 36, 18);
+  pintarPixels(t.getContext(), mao, pal, 4, 3);
+  pintarPixels(t.getContext(), mao, pal, 21, 3);
+  registrarQuadros(t, 18, 18, 2);
   t.refresh();
+  }
 
   // Camada do bebê chorando: lágrimas embaixo dos olhos e boca aberta (por cima da chupeta)
+  if (falta('bebe_choro')) {
   t = cena.textures.createCanvas('bebe_choro', 32, 32);
   c = t.getContext();
   c.fillStyle = '#6ec8ff';
   [[10, 14], [10, 15], [9, 16], [21, 14], [21, 15], [22, 16]].forEach(([x, y]) => c.fillRect(x, y, 1, 1));
   pintarPixels(c, ['.kk.', 'kkkk', 'kppk', '.kk.'], pal, 14, 15);
   t.refresh();
+  }
 
   // Camada do bebê esgotado: olhos fechados retos e gotinha de suor
+  if (falta('bebe_esgotado')) {
   t = cena.textures.createCanvas('bebe_esgotado', 32, 32);
   c = t.getContext();
   c.fillStyle = '#141414';
   c.fillRect(10, 13, 4, 1); c.fillRect(18, 13, 4, 1);
   pintarPixels(c, ['.l.', 'lll', 'lwl', '.l.'], pal, 23, 5);
   t.refresh();
+  }
 }
 
 // "!" pequeno do canto do botão de necessidades (3×8, só por código)

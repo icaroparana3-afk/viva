@@ -77,17 +77,18 @@ class Carregando extends Phaser.Scene {
     if (P.icones_necessidades16) {
       this.load.spritesheet('icones_necessidades16', './assets/ui/icones_necessidades16.png', { frameWidth: 16, frameHeight: 16 });
     }
+    if (P.humor) this.load.spritesheet('humor', './assets/ui/humor.png', { frameWidth: 12, frameHeight: 12 });
+    if (P.x_nao) this.load.image('x_nao', './assets/ui/x_nao.png');
+    if (P.maozinha) this.load.spritesheet('maozinha', './assets/ui/maozinha.png', { frameWidth: 18, frameHeight: 18 });
     if (P.sinais) {   // Etapa 8.2: sinais de cuidado
-      this.load.spritesheet('humor', './assets/ui/humor.png', { frameWidth: 12, frameHeight: 12 });
       this.load.spritesheet('selos', './assets/ui/selos.png', { frameWidth: 8, frameHeight: 8 });
       this.load.image('balao_pedido', './assets/ui/balao_pedido.png');
-      this.load.image('x_nao', './assets/ui/x_nao.png');
-      this.load.spritesheet('maozinha', './assets/ui/maozinha.png', { frameWidth: 12, frameHeight: 12 });
       this.load.image('bebe_choro', './assets/sprites/bebe_choro.png');
       this.load.image('bebe_esgotado', './assets/sprites/bebe_esgotado.png');
     }
+    if (P.botao_necessidades) this.load.image('botao_necessidades', './assets/ui/botao_necessidades.png');
     if (P.painel_necessidades) {
-      ['botao_necessidades', 'coracao_necessidades', 'painel_necessidades', 'linha_necessidade',
+      ['painel_necessidades', 'linha_necessidade',
         'linha_necessidade_sel', 'moldura_icone', 'botao_fechar']
         .forEach(nome => this.load.image(nome, './assets/ui/' + nome + '.png'));
     }
@@ -155,11 +156,11 @@ class Carregando extends Phaser.Scene {
     if (!P.coracao) criarCoracaoProvisorio(this);
     if (!P.mamadeira_bebe) criarMamadeiraBebeProvisoria(this);
     if (!P.icones_necessidades16) criarIcones16Provisorios(this);
-    if (!P.sinais) criarSinaisProvisorios(this);
+    criarSinaisProvisorios(this);   // só cria os que ainda não chegaram do autor
     criarAlertaMini(this);      // "!" do botão de necessidades (feito por código)
     this.anims.create({ key: 'maozinha_aponta', frames: this.anims.generateFrameNumbers('maozinha', { frames: [0, 1] }),
       frameRate: 3, repeat: -1 });
-    if (!P.painel_necessidades) criarPainelNecessidadesProvisorio(this);
+    criarPainelNecessidadesProvisorio(this);   // só cria as peças que ainda não chegaram
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarEstrelinha(this);      // estrelinha da festa de chegada
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)

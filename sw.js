@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.43';
+const VERSAO = '0.0.46';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -67,6 +67,7 @@ const ARQUIVOS = [
   './assets/ui/botao_comecar.png',
   './assets/ui/botao_configuracoes.png',
   './assets/ui/botao_continuar_historia.png',
+  './assets/ui/botao_fechar.png',
   './assets/ui/botao_levar_berco.png',
   './assets/ui/botao_mamae.png',
   './assets/ui/botao_mamae_sel.png',
@@ -85,16 +86,23 @@ const ARQUIVOS = [
   './assets/ui/botao_som_off.png',
   './assets/ui/botao_voltar.png',
   './assets/ui/fundo_perfil.png',
+  './assets/ui/humor.png',
   './assets/ui/icone.png',
   './assets/ui/icone_180.png',
   './assets/ui/icone_192.png',
   './assets/ui/icone_512.png',
   './assets/ui/icone_512_maskable.png',
+  './assets/ui/icones_necessidades16.png',
+  './assets/ui/linha_necessidade.png',
+  './assets/ui/linha_necessidade_sel.png',
   './assets/ui/mamadeira.png',
   './assets/ui/mamadeira_carregando.png',
+  './assets/ui/maozinha.png',
   './assets/ui/mapa_brasil.png',
   './assets/ui/menu_ceu.png',
   './assets/ui/menu_montanhas.png',
+  './assets/ui/moldura_icone.png',
+  './assets/ui/painel_necessidades.png',
   './assets/ui/quarto_menina.png',
   './assets/ui/quarto_menino.png',
   './assets/ui/texto_nome.png',
@@ -102,6 +110,7 @@ const ARQUIVOS = [
   './assets/ui/texto_sua_regiao.png',
   './assets/ui/texto_titulo.png',
   './assets/ui/texto_voce_e.png',
+  './assets/ui/x_nao.png',
   './js/scenes/Boot.js',
   './js/scenes/Carregando.js',
   './js/scenes/Cegonha.js',

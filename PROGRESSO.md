@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.46 com desenhos do autor, botão novo e painel novo; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -135,6 +135,11 @@
   - TESTE: com o painel aberto, tocar na barra de uma necessidade troca o valor: 100 → 70 → 50 → 25 → 0 (`SINAIS.TESTE_BARRAS`, tirar antes de lançar).
   - Arte provisória por código (`ARTES_PRONTAS.sinais`): carinhas, selos, balão de pedido 26×24 (substitui o balão 22×24 da 8.1), X, mãozinha e as camadas do bebê chorando e esgotado. O bebê ganhou as camadas `choro` e `esgotado` e pode girar para deitar (bebe_visual.js), sem mexer nos PNGs dele.
   - Corrigido: o quarto quebrava ao abrir com o bebê já pedindo algo (o balão era montado antes do relógio da cena).
+- **v0.0.44 — desenhos do autor e botão de necessidades novo:**
+  - Entraram os desenhos do autor: ícones 16×16 (fome maçã, sede gota, energia raio, higiene bolhas, diversão bola), carinhas de humor (feliz, entediado, triste), mãozinha (agora 18×18, 2 quadros) e X vermelho. `ARTES_PRONTAS` ganhou `humor`, `x_nao` e `maozinha` separados; `sinais` (selos, balão, bebê chorando e esgotado) continua provisório por decisão do autor.
+  - Botão de necessidades: no lugar do coração aparece o ícone da necessidade ativa mais baixa. Embaixo, 5 quadradinhos (v0.0.45): tudo 100% = carinha feliz e 5 verdes; acima de 50 = 4 verdes e 1 vazio; 1 a 50 = 3 amarelos e 2 vazios; 0 = 5 vermelhos. O "!" e o pulso abaixo de 25 continuam. Posições em `CONFIG.SINAIS` (BOTAO_ICONE, BOTAO_FELIZ, QUADRADOS_*). O coração (`coracao_necessidades`) saiu do jogo.
+  - O X da recusa foi para o canto do balão (onde fica o selo), porque em cima da maçã vermelha não aparecia.
+- **v0.0.46 — painel de necessidades novo (modelo do autor):** o modelo (assets/originais/painel_necessidades_modelo.png, 844×1024) foi redesenhado pixel a pixel no tamanho do painel do jogo (164×196), com as cores dele: moldura dourada com cantinhos, faixa do título com linha dourada, linhas com borda roxa clara, moldura lilás do ícone, botão X prateado e vermelho (agora 16×16, em cima do canto) e barra com trilho escuro e divisões a cada 10%. "EM BREVE" em cinza-lilás. `ARTES_PRONTAS.painel_necessidades = true`; o botão de necessidades ganhou flag própria (`botao_necessidades`, ainda provisório). Números em `CONFIG.NECESSIDADES` (FECHAR_X/Y, BARRA_FUNDO, BARRA_BORDA, BARRA_DIVISAO, COR_EM_BREVE).
 
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
@@ -170,11 +175,18 @@
 | assets/sprites/berco_tras.png / berco_frente.png | 80×64 cada | berço do autor reduzido e limpo; frente = postes + painel |
 | assets/ui/botao_levar_berco.png / botao_menu.png | 110×20 / 34×14 | botões do autor (v0.0.30) |
 | assets/sprites/brinquedo_menina_*.png / brinquedo_menino_*.png | 10×17 a 23×13 | brinquedos recortados dos quartos do autor (v0.0.34) |
+| assets/ui/icones_necessidades16.png | 80×16 | 5 ícones 16×16 do autor: fome, sede, energia, higiene, diversão (v0.0.44) |
+| assets/ui/humor.png | 36×12 | carinhas 12×12 do autor: feliz, entediado, triste (v0.0.44) |
+| assets/ui/maozinha.png | 36×18 | 2 quadros 18×18 do autor, apontando para a esquerda (v0.0.44) |
+| assets/ui/x_nao.png | 10×10 | X vermelho do autor (v0.0.44) |
+| assets/ui/painel_necessidades.png | 164×196 | redesenhado no tamanho do jogo a partir do modelo do autor (v0.0.46) |
+| assets/ui/linha_necessidade(_sel).png | 156×32 | idem |
+| assets/ui/moldura_icone.png / botao_fechar.png | 22×22 / 16×16 | idem |
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
-- **Necessidades (Etapas 8 e 8.1):** em assets/ui: `icones_necessidades16.png` 80×16 (fome, sede, energia, higiene, diversão), `botao_necessidades.png` 26×26 (sem o coração), `coracao_necessidades.png` 9×8 (BRANCO), `painel_necessidades.png` 164×196, `linha_necessidade.png` e `linha_necessidade_sel.png` 156×32, `moldura_icone.png` 22×22, `botao_fechar.png` 12×12. Em assets/sprites: `mamadeira_bebe.png` 12×7. Flags em `CONFIG.ARTES_PRONTAS`.
-- **Sinais de cuidado (Etapa 8.2):** em assets/ui: `humor.png` 36×12 (feliz, entediada, triste), `selos.png` 32×8 (triste, chorando, chorando forte, esgotado), `balao_pedido.png` 26×24 (ícone 16×16 em 5,2; selo em 17,11), `x_nao.png` 10×10, `maozinha.png` 24×12 (2 quadros, apontando para a esquerda). Em assets/sprites: `bebe_choro.png` e `bebe_esgotado.png` 32×32 (camadas por cima do bebê). Depois, `ARTES_PRONTAS.sinais = true`.
+- **Necessidades (Etapas 8 e 8.1):** em assets/ui: `botao_necessidades.png` 26×26 (só a caixa: o jogo põe o ícone em 5,2 e os 5 quadradinhos 3×3 a partir de 4,20; flag `botao_necessidades`). Em assets/sprites: `mamadeira_bebe.png` 12×7.
+- **Sinais de cuidado (Etapa 8.2), opcional:** o autor decidiu manter provisórios `selos.png` 32×8, `balao_pedido.png` 26×24, `bebe_choro.png` e `bebe_esgotado.png` 32×32. Se um dia desenhar: `ARTES_PRONTAS.sinais = true`.
 - **Fonte pixel (opcional):** hoje os textos usam a fonte do navegador.
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.

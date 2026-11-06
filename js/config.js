@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.43',
+  VERSAO: '0.0.46',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -75,11 +75,16 @@ const CONFIG = {
     janela: false,     // assets/sprites/nuvem_janela1.png 12×5, nuvem_janela2.png 8×4 e lua.png 5×5
     coracao: false,    // assets/sprites/coracao.png 7×6
     mamadeira_bebe: false,        // assets/sprites/mamadeira_bebe.png 12×7 (deitada, bico à esquerda)
-    icones_necessidades16: false, // assets/ui/icones_necessidades16.png 80×16 (5 ícones de 16×16: fome, sede, energia, higiene, diversão)
-    sinais: false,                // Etapa 8.2, em assets/ui: humor.png 36×12, selos.png 32×8, balao_pedido.png 26×24,
-                                  //   x_nao.png 10×10, maozinha.png 24×12; em assets/sprites: bebe_choro.png e bebe_esgotado.png 32×32
-    painel_necessidades: false,   // assets/ui: botao_necessidades 26×26, coracao_necessidades 9×8 (branco),
-                                  //   painel_necessidades 164×196, linha_necessidade(_sel) 156×32, moldura_icone 22×22, botao_fechar 12×12
+    icones_necessidades16: true,  // assets/ui/icones_necessidades16.png 80×16 (5 ícones de 16×16: fome, sede, energia, higiene, diversão) — do autor
+    humor: true,                  // assets/ui/humor.png 36×12 (3 carinhas 12×12: feliz, entediado, triste) — do autor
+    x_nao: true,                  // assets/ui/x_nao.png 10×10 — do autor
+    maozinha: true,               // assets/ui/maozinha.png 36×18 (2 quadros 18×18, apontando para a esquerda) — do autor
+    sinais: false,                // Etapa 8.2 (ficam provisórios por decisão do autor): em assets/ui selos.png 32×8 e
+                                  //   balao_pedido.png 26×24; em assets/sprites bebe_choro.png e bebe_esgotado.png 32×32
+    painel_necessidades: true,    // assets/ui: painel_necessidades 164×196, linha_necessidade(_sel) 156×32, moldura_icone 22×22,
+                                  //   botao_fechar 16×16 — redesenhados no tamanho do jogo a partir do modelo do autor
+                                  //   (assets/originais/painel_necessidades_modelo.png) (v0.0.46)
+    botao_necessidades: false,    // assets/ui/botao_necessidades.png 26×26 (só a caixa: o jogo põe o ícone e os 5 quadradinhos)
     sons: false,                  // assets/audio: abrir.mp3 e clique.mp3 (Etapa 30)
     sons_choro: false             // assets/audio: choro e choro_forte (.ogg e .mp3)
     // O quarto (menina e menino), o berço e a cegonha já são desenhos do autor.
@@ -306,6 +311,9 @@ const CONFIG = {
     PAINEL_ESCURO: 0.55,          // quanto o quarto escurece atrás do painel (0 a 1)
     PAINEL_SUBIR_MS: 200,         // animação do painel subindo
     LINHA_Y0: 21, LINHA_ESPACO: 34,   // primeira linha e distância entre linhas (dentro do painel)
+    FECHAR_X: 147, FECHAR_Y: 1,       // botão X (16×16), em cima do canto da moldura, como no modelo
+    BARRA_FUNDO: 0x1b1225, BARRA_BORDA: 0x634a76, BARRA_DIVISAO: 0.35,   // trilho da barra e divisões a cada 10%
+    COR_EM_BREVE: '#8a7f96',
     LIMITE_ALERTA: 25,            // abaixo disso aparece o "!" piscando
     NOMES: { fome: 'Fome', sede: 'Sede', energia: 'Energia', higiene: 'Higiene', diversao: 'Diversão' },
     DICAS: { fome: '> MAMADEIRA', sede: '> MAMADEIRA', energia: '> DORMIR', higiene: '> BANHO', diversao: '> BRINCAR' },
@@ -343,10 +351,21 @@ const CONFIG = {
     FORTE_INTERVALO: 10, FORTE_VOLUME: 1,         // chorando forte: "choro_forte" a cada ~10 s
     // "Não quero" (mamadeira com fome e sede cheias)
     RECUSA_SEGUNDOS: 1.5, RECUSA_BALANCOS: 2, RECUSA_PIXELS: 2,
+    RECUSA_X_X: 15, RECUSA_X_Y: 9,   // X 10×10 no canto do balão (no lugar do selo, sobre o branco)
     // Mãozinha da primeira vez (fome → aponta para a mamadeira)
-    MAOZINHA_X: 28, MAOZINHA_Y: 153,
+    MAOZINHA_X: 26, MAOZINHA_Y: 151,   // mãozinha 18×18, o dedo encosta na caixa da mamadeira
     // Botão de necessidades: "!" no canto quando alguma barra ativa está abaixo de 25
     ALERTA_BOTAO_X: 20, ALERTA_BOTAO_Y: 1,
+    // Botão de necessidades (v0.0.45): ícone da necessidade mais baixa + 5 quadradinhos
+    //   tudo 100%   → carinha feliz, 5 verdes
+    //   acima de 50 → ícone, 4 verdes e 1 vazio
+    //   1 a 50      → ícone, 3 amarelos e 2 vazios
+    //   0           → ícone, 5 vermelhos
+    BOTAO_ICONE_X: 5, BOTAO_ICONE_Y: 2,           // ícone 16×16 dentro do botão
+    BOTAO_FELIZ_X: 7, BOTAO_FELIZ_Y: 5,           // carinha feliz 12×12 (tudo 100%)
+    QUADRADOS_X: 4, QUADRADOS_Y: 20,              // primeiro quadradinho
+    QUADRADO_TAMANHO: 3, QUADRADO_ESPACO: 1,      // 5 quadradinhos de 3×3 com 1 px entre eles
+    COR_QUADRADO_APAGADO: 0x1c1026,
     // TESTE: no painel aberto, tocar na barra de uma necessidade troca o valor
     // por esta lista (100 → 70 → 50 → 25 → 0 → 100). Tirar antes de lançar.
     TESTE_BARRAS: true, TESTE_VALORES: [100, 70, 50, 25, 0]
