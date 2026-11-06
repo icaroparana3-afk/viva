@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.49: tela preta tratada, brinquedo +5, carinha à esquerda da caixinha alinhada ao topo; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.50: gato animado e quadros novos na parede; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -139,6 +139,10 @@
   - Entraram os desenhos do autor: ícones 16×16 (fome maçã, sede gota, energia raio, higiene bolhas, diversão bola), carinhas de humor (feliz, entediado, triste), mãozinha (agora 18×18, 2 quadros) e X vermelho. `ARTES_PRONTAS` ganhou `humor`, `x_nao` e `maozinha` separados; `sinais` (selos, balão, bebê chorando e esgotado) continua provisório por decisão do autor.
   - Botão de necessidades: no lugar do coração aparece o ícone da necessidade ativa mais baixa. Embaixo, 5 quadradinhos (v0.0.45): tudo 100% = carinha feliz e 5 verdes; acima de 50 = 4 verdes e 1 vazio; 1 a 50 = 3 amarelos e 2 vazios; 0 = 5 vermelhos. O "!" e o pulso abaixo de 25 continuam. Posições em `CONFIG.SINAIS` (BOTAO_ICONE, BOTAO_FELIZ, QUADRADOS_*). O coração (`coracao_necessidades`) saiu do jogo.
   - O X da recusa foi para o canto do balão (onde fica o selo), porque em cima da maçã vermelha não aparecia.
+- **v0.0.50 — gato e quadros do autor na parede:**
+  - Gato: `assets/sprites/gato_prateleira.png` (84×29, 2 quadros de 42×29: rabo para cima / rabo balançando). Fica em (147, 114) em cima da prateleira. A cada 30 s ele balança o rabo 3 vezes (240 ms por quadro). Números em `CONFIG.QUARTO` (GATO_INTERVALO_SEGUNDOS, GATO_BALANCOS, GATO_QUADRO_MS).
+  - Quadros: `assets/sprites/quadros_parede.png` (56×50 com a sombra), em (41, 133). O modelo do autor (1024×977, com parede) foi recortado só nos três quadros e reduzido para o tamanho do jogo (cores recalculadas; sombra suave de 2 px criada). O original está em `assets/originais/quadros_modelo.png`. Ficou maior que o antigo (37×35); para rostos mais nítidos, o autor pode desenhar direto no tamanho do jogo.
+  - Os quartos (`quarto_menina.png`, `quarto_menino.png`) foram limpos: sem o gato e sem os quadros antigos. Cópias das versões antigas em `assets/originais/quarto_menina_v0.0.49.png` e `quarto_menino_v0.0.49.png`.
 - **v0.0.49:** a carinha de humor fica à ESQUERDA da caixinha, alinhada ao topo dela (`HUMOR_ESPACO` 18 e `HUMOR_Y` 4 em `CONFIG.QUARTO`), e o nome do humor aparece centralizado embaixo dela.
 - **v0.0.47 — tela preta, brinquedos e caixinha:**
   - Tela preta depois de "Levar para o berço" (às vezes, no celular). Não apareceu nos testes, mas o código tinha dois pontos fracos que causam exatamente isso, e os dois foram tratados em `js/seguranca.js`:
