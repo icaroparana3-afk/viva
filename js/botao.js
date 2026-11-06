@@ -258,8 +258,8 @@ function temSave() {
 
 // Toca um efeito sonoro se os efeitos estiverem ligados e o arquivo existir.
 // Sem o arquivo (os sons chegam na Etapa 30): não toca e não dá erro.
-function tocarSom(cena, chave) {
+function tocarSom(cena, chave, config) {
   if (!Opcoes.som) return;
   if (!cena.cache.audio.exists(chave)) return;
-  cena.sound.play(chave);
+  cena.sound.play(chave, config);
 }

@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.1 — Painel de necessidades** (aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -124,6 +124,18 @@
   - TESTE: tocar no relógio da parede agora também faz as barras caírem como se passassem 30 min reais (`TESTE_MINUTOS_RELOGIO`).
   - Arte provisória feita por código, com os mesmos nomes e tamanhos dos arquivos do autor.
 
+- **Etapa 8.2 — Sinais de cuidado (v0.0.43):** o jogador percebe o que o bebê precisa sem abrir o painel e sem texto. A lógica das barras não mudou. Números em `CONFIG.SINAIS`; contas em `js/sinais.js`.
+  - Carinha de humor 12×12 no lugar do texto "Feliz/Entediado/Triste" (mesmas regras da Etapa 8). Tocar nela mostra o nome por 2 s. Carinhas novas: um quadro a mais em humor.png e uma linha em `HUMOR_QUADROS`.
+  - Escada de sinais (só barras ativas): acima de 70 nada; 70–51 balão com selo triste e bebê olhando para baixo, mexendo de leve; 50–26 selo chorando, bebê chora (olhos apertados, boca aberta, lágrimas caindo) e "choro" a cada ~20 s; 25–1 selo chorando forte, balão tremendo, bebê balança no berço e "choro_forte" a cada ~10 s; 0 selo esgotado, bebê deitado de olhos fechados, em silêncio.
+  - O balão mostra a mais urgente; duas na mesma faixa alternam a cada 2 s. O bebê segue a pior.
+  - Mamadeira com fome e sede cheias: X vermelho em cima da fome no balão por 1,5 s e o bebê balança de lado 2 vezes. Saiu o texto "Não quero!".
+  - Botão de necessidades: abaixo de 25 pulsa e ganha um "!" no canto.
+  - Mãozinha da primeira vez: quando o balão pede comida, aponta para a mamadeira até o jogador tocar nela. Fica guardado no save (`sinais.maozinha_fome`) e não volta mais.
+  - Sons de choro prontos no código (`ARTES_PRONTAS.sons_choro`, assets/audio/choro e choro_forte em .ogg e .mp3): só tocam com efeitos ligados e jogo aberto; sem arquivos, nada acontece.
+  - TESTE: com o painel aberto, tocar na barra de uma necessidade troca o valor: 100 → 70 → 50 → 25 → 0 (`SINAIS.TESTE_BARRAS`, tirar antes de lançar).
+  - Arte provisória por código (`ARTES_PRONTAS.sinais`): carinhas, selos, balão de pedido 26×24 (substitui o balão 22×24 da 8.1), X, mãozinha e as camadas do bebê chorando e esgotado. O bebê ganhou as camadas `choro` e `esgotado` e pode girar para deitar (bebe_visual.js), sem mexer nos PNGs dele.
+  - Corrigido: o quarto quebrava ao abrir com o bebê já pedindo algo (o balão era montado antes do relógio da cena).
+
 ## Arquivos de arte no projeto
 | Arquivo | Tamanho | Observação |
 |---|---|---|
@@ -161,7 +173,8 @@
 | assets/sprites/cegonha.png | 160×87 | 2 quadros de 80×87 (reduzidos do desenho do autor de 110×119), olhando para a esquerda, trouxinha no bico (v0.0.29) |
 
 ## Falta desenhar (pode ser depois)
-- **Necessidades (Etapas 8 e 8.1):** em assets/ui: `icones_necessidades16.png` 80×16 (fome, sede, energia, higiene, diversão), `botao_necessidades.png` 26×26 (sem o coração), `coracao_necessidades.png` 9×8 (BRANCO), `painel_necessidades.png` 164×196, `linha_necessidade.png` e `linha_necessidade_sel.png` 156×32, `moldura_icone.png` 22×22, `botao_fechar.png` 12×12. Em assets/sprites: `balao.png` 22×24 (ícone no ponto 3,2) e `mamadeira_bebe.png` 12×7. Flags em `CONFIG.ARTES_PRONTAS`.
+- **Necessidades (Etapas 8 e 8.1):** em assets/ui: `icones_necessidades16.png` 80×16 (fome, sede, energia, higiene, diversão), `botao_necessidades.png` 26×26 (sem o coração), `coracao_necessidades.png` 9×8 (BRANCO), `painel_necessidades.png` 164×196, `linha_necessidade.png` e `linha_necessidade_sel.png` 156×32, `moldura_icone.png` 22×22, `botao_fechar.png` 12×12. Em assets/sprites: `mamadeira_bebe.png` 12×7. Flags em `CONFIG.ARTES_PRONTAS`.
+- **Sinais de cuidado (Etapa 8.2):** em assets/ui: `humor.png` 36×12 (feliz, entediada, triste), `selos.png` 32×8 (triste, chorando, chorando forte, esgotado), `balao_pedido.png` 26×24 (ícone 16×16 em 5,2; selo em 17,11), `x_nao.png` 10×10, `maozinha.png` 24×12 (2 quadros, apontando para a esquerda). Em assets/sprites: `bebe_choro.png` e `bebe_esgotado.png` 32×32 (camadas por cima do bebê). Depois, `ARTES_PRONTAS.sinais = true`.
 - **Fonte pixel (opcional):** hoje os textos usam a fonte do navegador.
 - **Janela (opcional):** `assets/sprites/nuvem_janela1.png` 12×5, `nuvem_janela2.png` 8×4, `lua.png` 5×5 (fundo transparente). Ao chegar: ligar `ARTES_PRONTAS.janela`.
 - **Coração (opcional):** `assets/sprites/coracao.png` 7×6. Ao chegar: ligar `ARTES_PRONTAS.coracao`.

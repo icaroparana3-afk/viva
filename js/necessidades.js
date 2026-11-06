@@ -66,6 +66,14 @@ const NEC = {
     Estado.salvar();
   },
 
+  // Põe uma barra num valor exato (usado pelos botões de teste)
+  definir(k, valor) {
+    const n = NEC.atualizar();
+    if (!n) return;
+    n[k] = NEC.limitar(valor);
+    Estado.salvar();
+  },
+
   limitar(v) { return Math.max(0, Math.min(100, v)); },
 
   // As barras atuais (sem atualizar)
@@ -91,17 +99,6 @@ const NEC = {
   // Barras que já caem nesta etapa (as outras ficam paradas)
   ativas() {
     return NEC.LISTA.filter(k => CONFIG.NECESSIDADES.QUEDA_POR_HORA[k] > 0);
-  },
-
-  // O que o bebê mais quer agora (para o balão). null = nada urgente.
-  pedido(n = NEC.atuais()) {
-    const N = CONFIG.NECESSIDADES;
-    if (!n) return null;
-    let pior = null;
-    for (const k of NEC.ativas()) {
-      if (n[k] < N.LIMITE_PEDIR && (pior === null || n[k] < n[pior])) pior = k;
-    }
-    return pior;
   }
 };
 

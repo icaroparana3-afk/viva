@@ -77,7 +77,15 @@ class Carregando extends Phaser.Scene {
     if (P.icones_necessidades16) {
       this.load.spritesheet('icones_necessidades16', './assets/ui/icones_necessidades16.png', { frameWidth: 16, frameHeight: 16 });
     }
-    if (P.balao) this.load.image('balao', './assets/sprites/balao.png');
+    if (P.sinais) {   // Etapa 8.2: sinais de cuidado
+      this.load.spritesheet('humor', './assets/ui/humor.png', { frameWidth: 12, frameHeight: 12 });
+      this.load.spritesheet('selos', './assets/ui/selos.png', { frameWidth: 8, frameHeight: 8 });
+      this.load.image('balao_pedido', './assets/ui/balao_pedido.png');
+      this.load.image('x_nao', './assets/ui/x_nao.png');
+      this.load.spritesheet('maozinha', './assets/ui/maozinha.png', { frameWidth: 12, frameHeight: 12 });
+      this.load.image('bebe_choro', './assets/sprites/bebe_choro.png');
+      this.load.image('bebe_esgotado', './assets/sprites/bebe_esgotado.png');
+    }
     if (P.painel_necessidades) {
       ['botao_necessidades', 'coracao_necessidades', 'painel_necessidades', 'linha_necessidade',
         'linha_necessidade_sel', 'moldura_icone', 'botao_fechar']
@@ -85,6 +93,8 @@ class Carregando extends Phaser.Scene {
     }
     // Sons (Etapa 30): só carregam quando os arquivos existirem
     if (P.sons) ['abrir', 'clique'].forEach(nome => this.load.audio(nome, './assets/audio/' + nome + '.mp3'));
+    if (P.sons_choro) ['choro', 'choro_forte'].forEach(nome =>
+      this.load.audio(nome, ['./assets/audio/' + nome + '.ogg', './assets/audio/' + nome + '.mp3']));
     // Quarto (desenhos do autor): um para menina, outro para menino, e o berço
     this.load.image('quarto_menina', './assets/ui/quarto_menina.png');
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
@@ -145,7 +155,10 @@ class Carregando extends Phaser.Scene {
     if (!P.coracao) criarCoracaoProvisorio(this);
     if (!P.mamadeira_bebe) criarMamadeiraBebeProvisoria(this);
     if (!P.icones_necessidades16) criarIcones16Provisorios(this);
-    if (!P.balao) criarBalaoProvisorio(this);
+    if (!P.sinais) criarSinaisProvisorios(this);
+    criarAlertaMini(this);      // "!" do botão de necessidades (feito por código)
+    this.anims.create({ key: 'maozinha_aponta', frames: this.anims.generateFrameNumbers('maozinha', { frames: [0, 1] }),
+      frameRate: 3, repeat: -1 });
     if (!P.painel_necessidades) criarPainelNecessidadesProvisorio(this);
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarEstrelinha(this);      // estrelinha da festa de chegada

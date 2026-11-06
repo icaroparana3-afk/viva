@@ -54,6 +54,12 @@ Entra voando com o bebê e fica segurando-o até o jogador tocar. NUNCA solta ne
 - Barras de 0 a 100 que caem pelo TEMPO REAL, não pelo relógio rápido do jogo (decisão do autor, 2026-11-05). A fome vai de cheia a vazia em 5 h reais.
 - Com o jogo fechado, as barras continuam caindo, mas na metade da velocidade.
 - O bebê pede o que mais precisa com um balão. Humor (Etapa 8): feliz, entediado (diversão baixa) ou triste (alguma barra muito baixa).
+- Sinais de cuidado (Etapa 8.2), sem texto porque o bebê não fala: o bebê mostra que algo está errado, o balão diz o que ele quer e a carinha na caixinha mostra o humor geral.
+  - Faixas de cada barra: acima de 70 nada; 70–51 tristinho; 50–26 chora (som a cada ~20 s); 25–1 chora forte (som a cada ~10 s, balão treme, botão pulsa com "!"); 0 esgotado, deitado e em silêncio.
+  - O balão mostra a mais urgente; se duas estiverem na mesma faixa, alterna. O choro segue a pior.
+  - Recusa da mamadeira: X vermelho no balão e o bebê vira o rosto. Nenhum texto.
+  - Na primeira vez que pede comida, uma mãozinha aponta para a mamadeira (uma vez só).
+  - O bebê chega com fome 40, sede 40 e diversão 30, ou seja, já chorando: de propósito, para ensinar o jogo.
 - Energia e higiene só começam a cair nas etapas do sono e do banho.
 - No quarto as barras ficam escondidas num botão de coração (canto inferior direito). A cor do coração é a da barra mais baixa, e ele pulsa quando alguma está no vermelho. Tocar abre o painel com as 5 barras grandes e a dica do que fazer em cada uma (Etapa 8.1).
 
@@ -144,3 +150,4 @@ Interações inspiradas em "Meu Talking Tom" (só a ideia; nada de arte, nomes o
 7. ~~Cabo Verde "pele escura".~~ Decidido: tom negro (provisório).
 8. Especiais: atributos próprios decididos na Etapa 3; cada um tem uma camada extra de desenho (antenas, dentes, orelhas). Visual final na Etapa 5.
 9. Fala: vale o nível (nível médio) ou a idade (fim do 1º/3º ano)? Provável: o nível, com velocidade de subida que leva a essas idades. (Etapa 14)
+10. O que acontece quando uma barra fica em 0% (esgotado)? Por enquanto só o sinal, sem doença nem consequência. (Pergunta aberta da Etapa 8.2)

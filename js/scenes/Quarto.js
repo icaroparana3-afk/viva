@@ -55,6 +55,14 @@ class Quarto extends Phaser.Scene {
     // Área de toque do bebê (um pouco maior que ele, fácil de acertar com o dedo)
     const toque = this.add.zone(Q.BEBE_X - 2, Q.BEBE_Y - 2, 36, 36).setOrigin(0, 0).setInteractive();
     toque.on('pointerup', () => this.tocarBebe());
+    // Lágrimas que caem quando ele chora (Etapa 8.2)
+    this.lagrimas = this.add.container(0, 0);
+    this.sinalBebe = 'nada';        // faixa da pior barra (js/sinais.js)
+    this.poseAtual = 'nada';        // o que o bebê está mostrando agora
+    this.recusaDx = 0;
+    this.timerLagrima = 0;
+    this.timerChoro = 0;
+    this.grupoBalao = [];
 
     this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_frente').setOrigin(0, 0);
 
@@ -228,9 +236,10 @@ class Quarto extends Phaser.Scene {
     this.infoHora = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 21, '', {
       fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6'
     }).setOrigin(1, 0);
-    this.infoHumor = escrever(this, Q.INFO_X - 4, Q.INFO_Y + 30, '', {
-      fontFamily: 'monospace', fontSize: '7px', color: '#ffffff'
-    }).setOrigin(1, 0);
+    // Carinha de humor (Etapa 8.2): no lugar do texto; tocar mostra o nome por 2 s
+    this.infoHumor = this.add.image(Q.INFO_X - 16, Q.INFO_Y + 30, 'humor', 0).setOrigin(0, 0);
+    this.add.zone(Q.INFO_X - 19, Q.INFO_Y + 27, 18, 18).setOrigin(0, 0).setInteractive()
+      .on('pointerup', () => this.mostrarNomeHumor());
     this.textoInfo = null;
     this.atualizarInfo();
   }
@@ -249,11 +258,25 @@ class Quarto extends Phaser.Scene {
     this.infoNome.setText(nome);
     this.infoIdade.setText(idade);
     this.infoHora.setText(hora);
-    const H = { feliz: ['Feliz', '#8ee06a'], entediado: ['Entediad' + (this.bebe.sexo === 'F' ? 'a' : 'o'), '#ffd860'],
-      triste: ['Triste', '#ff7a7a'] }[humor];
-    this.infoHumor.setText(H[0]).setColor(H[1]);
-    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width, this.infoHora.width, this.infoHumor.width)) + 8;
-    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 40);
+    this.infoHumor.setFrame(CONFIG.SINAIS.HUMOR_QUADROS[humor] || 0);
+    const larg = Math.ceil(Math.max(this.infoNome.width, this.infoIdade.width, this.infoHora.width, 12)) + 8;
+    this.infoCaixa.setPosition(Q.INFO_X - larg, Q.INFO_Y).setSize(larg, 45);
+  }
+
+  // Tocar na carinha: mostra o nome do humor por alguns segundos
+  mostrarNomeHumor() {
+    if (this.painelAberto) return;
+    const Q = CONFIG.QUARTO, S = CONFIG.SINAIS;
+    const nomes = S.HUMOR_NOMES[NEC.humor()] || ['', ''];
+    if (this.textoHumor) this.textoHumor.destroy();
+    this.textoHumor = escrever(this, Q.INFO_X - 1, Q.INFO_Y + 48, nomes[this.bebe.sexo === 'F' ? 1 : 0], {
+      fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', stroke: '#2a1838', strokeThickness: 3
+    }).setOrigin(1, 0);
+    const t = this.textoHumor;
+    this.time.delayedCall(S.HUMOR_TEXTO_SEGUNDOS * 1000, () => {
+      this.tweens.add({ targets: t, alpha: 0, duration: 250, onComplete: () => t.destroy() });
+      if (this.textoHumor === t) this.textoHumor = null;
+    });
   }
 
   // Aviso de quem volta depois de um tempo fora
@@ -455,7 +478,8 @@ class Quarto extends Phaser.Scene {
 
     // Respirar: metade do tempo 1 px para cima, metade no lugar
     const respira = (this.tempo % Q.RESPIRAR_SEGUNDOS) < Q.RESPIRAR_SEGUNDOS / 2 ? 0 : -1;
-    this.visual.setPosition(Q.BEBE_X, Q.BEBE_Y + respira - Math.round(this.pulo));
+    this.atualizarBebeSinal(seg, respira);
+    if (this.balao) this.mostrarBalao();
     if (this.botaoNec) {
       const N = CONFIG.NECESSIDADES;
       const sobe = this.pulsando && Math.floor(this.tempo / N.PULSO_SEGUNDOS) % 2 === 1 ? N.PULSO_PIXELS : 0;
@@ -471,7 +495,8 @@ class Quarto extends Phaser.Scene {
     const Q = CONFIG.QUARTO;
     const espera = Phaser.Math.FloatBetween(Q.PISCAR_MIN, Q.PISCAR_MAX) * 1000;
     this.time.delayedCall(espera, () => {
-      if (this.olhosDoToque) { this.agendarPiscada(); return; } // já está de olhos fechados pelo toque
+      // já está de olhos fechados (toque, choro ou esgotado)
+      if (this.olhosDoToque || ['chorando', 'forte', 'esgotado'].includes(this.poseAtual)) { this.agendarPiscada(); return; }
       this.visual.piscar(true);
       this.time.delayedCall(Q.PISCAR_DURACAO * 1000, () => {
         if (!this.olhosDoToque) this.visual.piscar(false);
@@ -516,8 +541,10 @@ class Quarto extends Phaser.Scene {
     const B = N.BOTAO;
     this.coracaoNec = this.add.image(8, 6, 'coracao_necessidades').setOrigin(0, 0);
     this.pontosNec = NEC.LISTA.map((k, i) => this.add.rectangle(4 + i * 4, 19, 2, 2, N.COR_BOA).setOrigin(0, 0));
+    const S = CONFIG.SINAIS;
+    this.alertaNec = this.add.image(S.ALERTA_BOTAO_X, S.ALERTA_BOTAO_Y, 'alerta_mini').setOrigin(0, 0).setVisible(false);
     this.botaoNec = this.add.container(B.X, B.Y, [
-      this.add.image(0, 0, 'botao_necessidades').setOrigin(0, 0), this.coracaoNec, ...this.pontosNec
+      this.add.image(0, 0, 'botao_necessidades').setOrigin(0, 0), this.coracaoNec, ...this.pontosNec, this.alertaNec
     ]);
     // A área de toque fica parada (o botão pulsa, o toque não muda de lugar)
     this.add.zone(B.X - 2, B.Y - 2, 30, 30).setOrigin(0, 0).setInteractive()
@@ -534,12 +561,18 @@ class Quarto extends Phaser.Scene {
       .on('pointerout', () => caixa.setFillStyle(0x2a1838, 0.85))
       .on('pointerup', () => { caixa.setFillStyle(0x2a1838, 0.85); this.darMamadeira(); });
 
-    // Balão de pedido (ícone 16×16 do que ele quer)
+    // Balão de pedido (Etapa 8.2): ícone 16×16 do que ele quer + selo 8×8 de como ele está
+    this.balaoIcone = this.add.image(S.BALAO_ICONE_X, S.BALAO_ICONE_Y, 'icones_necessidades16', 0).setOrigin(0, 0);
+    this.balaoSelo = this.add.image(S.BALAO_SELO_X, S.BALAO_SELO_Y, 'selos', 0).setOrigin(0, 0);
+    this.balaoX = this.add.image(S.BALAO_ICONE_X + 3, S.BALAO_ICONE_Y + 3, 'x_nao').setOrigin(0, 0).setVisible(false);
     this.balao = this.add.container(N.BALAO_X, N.BALAO_Y, [
-      this.add.image(0, 0, 'balao').setOrigin(0, 0),
-      this.add.image(3, 2, 'icones_necessidades16', 0).setOrigin(0, 0)
+      this.add.image(0, 0, 'balao_pedido').setOrigin(0, 0), this.balaoIcone, this.balaoSelo, this.balaoX
     ]).setVisible(false);
     this.tweens.add({ targets: this.balao, y: N.BALAO_Y - 2, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+
+    // Mãozinha da primeira vez: aponta para a mamadeira quando o balão pede comida
+    this.maozinha = this.add.sprite(S.MAOZINHA_X, S.MAOZINHA_Y, 'maozinha', 0).setOrigin(0, 0)
+      .setVisible(false).play('maozinha_aponta');
 
     this.atualizarNecessidades();
   }
@@ -561,11 +594,13 @@ class Quarto extends Phaser.Scene {
     const pior = ativas.reduce((a, k) => (a === null || n[k] < n[a] ? k : a), null);
     this.coracaoNec.setTint(pior ? this.corDaBarra(pior, n[pior]) : N.COR_BOA);
     NEC.LISTA.forEach((k, i) => this.pontosNec[i].setFillStyle(this.corDaBarra(k, n[k])));
-    this.pulsando = ativas.some(k => n[k] < 25);
+    this.pulsando = SINAIS.alerta(n);
+    this.alertaNec.setVisible(this.pulsando);
 
-    const pedido = this.mamando ? null : NEC.pedido(n);
-    this.balao.setVisible(!!pedido);
-    if (pedido) this.balao.list[1].setFrame(NEC.LISTA.indexOf(pedido));
+    // Sinais (Etapa 8.2): o balão mostra a mais urgente; o bebê segue a pior
+    this.grupoBalao = SINAIS.grupoDoBalao(n);
+    this.sinalBebe = SINAIS.pior(n);
+    this.mostrarBalao();
     this.atualizarInfo();
     if (this.painelAberto) this.atualizarPainel();
   }
@@ -613,10 +648,16 @@ class Quarto extends Phaser.Scene {
       for (let j = 1; j < 10; j++) {
         marcas.push(this.add.rectangle(x + 33 + Math.round(9.6 * j), y + 19, 1, 5, 0x000000, 0.35).setOrigin(0, 0));
       }
+      // TESTE: tocar na barra troca o valor (100 → 70 → 50 → 25 → 0)
+      if (CONFIG.SINAIS.TESTE_BARRAS) {
+        L.teste = this.add.zone(x + 30, y + 15, 102, 13).setOrigin(0, 0).setInteractive()
+          .on('pointerup', () => this.testarBarra(k));
+      }
       L.alerta = escrever(this, x + 140, y + 14, '!', Object.assign(fonte(11, '#ff5050'), { fontStyle: 'bold' })).setVisible(false);
       this.tweens.add({ targets: L.alerta, alpha: 0.15, duration: 350, yoyo: true, repeat: -1 });
       this.linhas[k] = L;
       itens.push(L.fundo, L.toque, moldura, icone, L.nome, L.dica, L.pct, L.barraFundo, L.barra, ...marcas, L.alerta);
+      if (L.teste) itens.push(L.teste);
     });
 
     // O painel sobe de baixo
@@ -677,10 +718,11 @@ class Quarto extends Phaser.Scene {
   // Mamadeira: o bebê mama até encher a fome (a sede enche junto)
   darMamadeira() {
     const N = CONFIG.NECESSIDADES;
-    if (this.mamando || this.pulando || this.painelAberto) return;
+    if (this.mamando || this.pulando || this.painelAberto || this.recusando) return;
+    this.esconderMaozinha();
     const n = NEC.atualizar();
     if (!n) return;
-    if (n.fome >= N.MAMADEIRA_RECUSA && n.sede >= N.MAMADEIRA_RECUSA) { this.falar('Não quero!'); return; }
+    if (n.fome >= N.MAMADEIRA_RECUSA && n.sede >= N.MAMADEIRA_RECUSA) { this.recusar(); return; }
     this.mamando = true;
     this.olhosDoToque = true;
     this.visual.piscar(true, true);       // olhos fechados, contente
@@ -716,16 +758,120 @@ class Quarto extends Phaser.Scene {
     this.atualizarNecessidades();
   }
 
-  // Um textinho que sobe em cima do bebê ("Não quero!")
-  falar(texto) {
-    const Q = CONFIG.QUARTO;
-    const t = escrever(this, Q.BEBE_X + 16, Q.BEBE_Y - 4, texto, {
-      fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', stroke: '#2a1838', strokeThickness: 3
-    }).setOrigin(0.5, 1);
-    t.posY = t.y;
+  // ---------- Sinais de cuidado (Etapa 8.2) ----------
+
+  // Balão: mostra a necessidade mais urgente; se houver mais de uma na mesma faixa, alterna
+  mostrarBalao() {
+    const S = CONFIG.SINAIS, N = CONFIG.NECESSIDADES;
+    if (this.recusando) return;                       // o "X" está na tela
+    const g = this.grupoBalao;
+    if (this.mamando || !g.length) { this.balao.setVisible(false); this.balao.x = N.BALAO_X; return; }
+    const t = this.tempo || 0;                        // a cena pode ainda estar montando
+    const p = g[Math.floor(t / S.ALTERNAR_SEGUNDOS) % g.length];
+    this.balao.setVisible(true);
+    this.balaoIcone.setFrame(NEC.LISTA.indexOf(p.k));
+    this.balaoSelo.setFrame(S.SELO_QUADROS[p.faixa]).setVisible(true);
+    // Chorando forte: o balão treme
+    const treme = p.faixa === 'forte' ? (Math.floor(t / 0.08) % 2 ? 1 : -1) * S.TREMOR_BALAO_PIXELS : 0;
+    this.balao.x = N.BALAO_X + treme;
+    // Primeira vez que pede comida: a mãozinha aponta para a mamadeira
+    if (p.k === 'fome' && !this.maozinha.visible && !this.maozinhaJaVista()) this.maozinha.setVisible(true);
+  }
+
+  maozinhaJaVista() {
+    const s = Estado.dados || Estado.carregar();
+    return !!(s && s.sinais && s.sinais.maozinha_fome);
+  }
+
+  esconderMaozinha() {
+    if (!this.maozinha.visible) return;
+    this.maozinha.setVisible(false);
+    const s = Estado.carregar();
+    s.sinais = Object.assign({}, s.sinais, { maozinha_fome: true });   // nunca mais volta
+    Estado.salvar();
+  }
+
+  // O bebê mostra a faixa da pior barra: triste, chorando, chorando forte ou esgotado
+  atualizarBebeSinal(seg, respira) {
+    const Q = CONFIG.QUARTO, S = CONFIG.SINAIS;
+    const pose = (this.mamando || this.recusando || this.olhosDoToque) ? 'nada' : this.sinalBebe;
+    if (pose !== this.poseAtual) {
+      this.poseAtual = pose;
+      const chora = pose === 'chorando' || pose === 'forte';
+      this.visual.sinal(chora ? 'choro' : pose === 'esgotado' ? 'esgotado' : null);
+      this.visual.olharBaixo(pose === 'triste');
+      this.visual.setAngle(pose === 'esgotado' ? -90 : 0);
+      this.timerChoro = 1.5;          // o primeiro choro vem logo
+      this.timerLagrima = 0;
+    }
+    let x = Q.BEBE_X, y = Q.BEBE_Y + respira - Math.round(this.pulo);
+    if (pose === 'triste') {
+      // "mexe as mãos" (provisório: mexe de lado de leve)
+      x += Math.floor(this.tempo / S.MAOS_SEGUNDOS) % 2 * S.MAOS_PIXELS;
+    } else if (pose === 'forte') {
+      x += Math.round(Math.sin(this.tempo * 2 * Math.PI / S.BALANCO_FORTE_SEGUNDOS) * S.BALANCO_FORTE_PIXELS);
+    } else if (pose === 'esgotado') {
+      y = Q.BEBE_Y + S.DEITADO_Y;       // deitado, parado
+    }
+    x += Math.round(this.recusaDx);
+    this.visual.setPosition(x, y);
+
+    // Lágrimas e som do choro
+    if (pose === 'chorando' || pose === 'forte') {
+      this.timerLagrima -= seg;
+      if (this.timerLagrima <= 0) {
+        this.timerLagrima = pose === 'forte' ? S.LAGRIMA_FORTE : S.LAGRIMA_CHORANDO;
+        this.soltarLagrimas(x, y);
+      }
+      this.timerChoro -= seg;
+      if (this.timerChoro <= 0) {
+        const forte = pose === 'forte';
+        this.timerChoro = forte ? S.FORTE_INTERVALO : S.CHORO_INTERVALO;
+        tocarSom(this, forte ? 'choro_forte' : 'choro', { volume: forte ? S.FORTE_VOLUME : S.CHORO_VOLUME });
+      }
+    }
+  }
+
+  soltarLagrimas(x, y) {
+    const S = CONFIG.SINAIS;
+    for (const lx of [10, 21]) {
+      const g = this.add.rectangle(x + lx, y + 16, 1, 2, S.LAGRIMA_COR).setOrigin(0, 0);
+      this.lagrimas.add(g);
+      g.posY = g.y;
+      this.tweens.add({
+        targets: g, posY: g.y + 8, alpha: 0, duration: 650, ease: 'Sine.easeIn',
+        onUpdate: () => { g.y = Math.round(g.posY); }, onComplete: () => g.destroy()
+      });
+    }
+  }
+
+  // "Não quero": X vermelho em cima da fome no balão e o bebê vira o rosto
+  recusar() {
+    const S = CONFIG.SINAIS, N = CONFIG.NECESSIDADES;
+    this.recusando = true;
+    this.balao.setVisible(true);
+    this.balao.x = N.BALAO_X;
+    this.balaoIcone.setFrame(NEC.LISTA.indexOf('fome'));
+    this.balaoSelo.setVisible(false);
+    this.balaoX.setVisible(true);
+    // provisório: balança de lado 2 vezes
     this.tweens.add({
-      targets: t, posY: t.y - 12, alpha: { from: 1, to: 0 }, delay: 500, duration: 900,
-      onUpdate: () => { t.y = Math.round(t.posY); }, onComplete: () => t.destroy()
+      targets: this, recusaDx: { from: -S.RECUSA_PIXELS, to: S.RECUSA_PIXELS }, duration: 130,
+      yoyo: true, repeat: S.RECUSA_BALANCOS - 1, onComplete: () => { this.recusaDx = 0; }
     });
+    this.time.delayedCall(S.RECUSA_SEGUNDOS * 1000, () => {
+      this.recusando = false;
+      this.balaoX.setVisible(false);
+      this.mostrarBalao();
+    });
+  }
+
+  // TESTE: no painel aberto, tocar na barra troca o valor (100 → 70 → 50 → 25 → 0)
+  testarBarra(k) {
+    const lista = CONFIG.SINAIS.TESTE_VALORES;
+    const n = NEC.atuais();
+    const i = lista.indexOf(Math.round(n[k]));
+    NEC.definir(k, lista[(i + 1) % lista.length]);
+    this.atualizarNecessidades();
   }
 }

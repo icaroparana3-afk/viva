@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.42',
+  VERSAO: '0.0.43',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -76,10 +76,12 @@ const CONFIG = {
     coracao: false,    // assets/sprites/coracao.png 7×6
     mamadeira_bebe: false,        // assets/sprites/mamadeira_bebe.png 12×7 (deitada, bico à esquerda)
     icones_necessidades16: false, // assets/ui/icones_necessidades16.png 80×16 (5 ícones de 16×16: fome, sede, energia, higiene, diversão)
-    balao: false,                 // assets/sprites/balao.png 22×24 (o ícone de 16×16 entra no ponto 3,2)
+    sinais: false,                // Etapa 8.2, em assets/ui: humor.png 36×12, selos.png 32×8, balao_pedido.png 26×24,
+                                  //   x_nao.png 10×10, maozinha.png 24×12; em assets/sprites: bebe_choro.png e bebe_esgotado.png 32×32
     painel_necessidades: false,   // assets/ui: botao_necessidades 26×26, coracao_necessidades 9×8 (branco),
                                   //   painel_necessidades 164×196, linha_necessidade(_sel) 156×32, moldura_icone 22×22, botao_fechar 12×12
-    sons: false                   // assets/audio: abrir.mp3 e clique.mp3 (Etapa 30)
+    sons: false,                  // assets/audio: abrir.mp3 e clique.mp3 (Etapa 30)
+    sons_choro: false             // assets/audio: choro e choro_forte (.ogg e .mp3)
     // O quarto (menina e menino), o berço e a cegonha já são desenhos do autor.
   },
 
@@ -283,7 +285,6 @@ const CONFIG = {
     LIMITE_ABERTO_SEGUNDOS: 60,   // mais que isso sem atualizar = o jogo estava fechado
     // Como o bebê chega: com fome, com sede e entediado (DESIGN)
     CHEGADA: { fome: 40, sede: 40, energia: 80, higiene: 90, diversao: 30 },
-    LIMITE_PEDIR: 30,             // abaixo disso o bebê pede (balão em cima dele)
     LIMITE_TRISTE: 20,            // abaixo disso fica triste
     LIMITE_ENTEDIADO: 40,         // diversão abaixo disso = entediado
     COR_BOA: 0x6cc24a, COR_MEDIA: 0xf0c020, COR_RUIM: 0xe04848,   // cores da barra (>50, 25–50, <25)
@@ -309,9 +310,46 @@ const CONFIG = {
     NOMES: { fome: 'Fome', sede: 'Sede', energia: 'Energia', higiene: 'Higiene', diversao: 'Diversão' },
     DICAS: { fome: '> MAMADEIRA', sede: '> MAMADEIRA', energia: '> DORMIR', higiene: '> BANHO', diversao: '> BRINCAR' },
     TESTE_MINUTOS_RELOGIO: 30,    // TESTE: tocar no relógio também faz as barras caírem como se passassem 30 min reais
-    BALAO_X: 100, BALAO_Y: 172,   // balão de pedido (22×24), ao lado da cabeça do bebê
+    BALAO_X: 100, BALAO_Y: 172,   // balão de pedido (26×24), ao lado da cabeça do bebê
     BOTAO_MAMADEIRA_X: 4, BOTAO_MAMADEIRA_Y: 140,   // botão da mamadeira (22×38), na parede da esquerda
     MAMADEIRA_BOCA_X: 91, MAMADEIRA_BOCA_Y: 212     // mamadeira na boca (canto superior esquerdo, sobe e desce com o bebê)
+  },
+
+  // ---------- SINAIS DE CUIDADO (Etapa 8.2) ----------
+  // O jogador percebe o que o bebê precisa sem abrir o painel e sem texto.
+  // Só as barras ATIVAS sinalizam (energia e higiene paradas, não). Contas em js/sinais.js.
+  SINAIS: {
+    // Faixas pela porcentagem (arredondada) da barra:
+    //   acima de 70 → nada | 70 a 51 → triste | 50 a 26 → chorando | 25 a 1 → chorando forte | 0 → esgotado
+    FAIXAS: { TRISTE: 70, CHORANDO: 50, FORTE: 25 },
+    ALTERNAR_SEGUNDOS: 2,         // duas necessidades na mesma faixa: o balão alterna entre elas
+    // Carinha de humor (no lugar do texto): humor → quadro de humor.png. Para uma carinha nova,
+    // desenhe mais um quadro e acrescente aqui.
+    HUMOR_QUADROS: { feliz: 0, entediado: 1, triste: 2 },
+    HUMOR_NOMES: { feliz: ['Feliz', 'Feliz'], entediado: ['Entediado', 'Entediada'], triste: ['Triste', 'Triste'] }, // [menino, menina]
+    HUMOR_TEXTO_SEGUNDOS: 2,      // tocar na carinha mostra o nome por este tempo
+    SELO_QUADROS: { triste: 0, chorando: 1, forte: 2, esgotado: 3 },   // quadros de selos.png
+    // Balão: posições dentro dele
+    BALAO_ICONE_X: 5, BALAO_ICONE_Y: 2, BALAO_SELO_X: 17, BALAO_SELO_Y: 11,
+    TREMOR_BALAO_PIXELS: 1,       // chorando forte: o balão treme
+    // Bebê
+    MAOS_PIXELS: 1, MAOS_SEGUNDOS: 0.35,          // triste: "mexe as mãos" (provisório: mexe de lado de leve)
+    LAGRIMA_COR: 0x6ec8ff,
+    LAGRIMA_CHORANDO: 0.6, LAGRIMA_FORTE: 0.3,    // segundos entre uma lágrima e outra
+    BALANCO_FORTE_PIXELS: 2, BALANCO_FORTE_SEGUNDOS: 0.8,   // chorando forte: balança no berço
+    DEITADO_Y: 35,                // esgotado: deitado (o bebê gira 90°; a altura dele em relação ao BEBE_Y)
+    // Sons (só com efeitos ligados, jogo aberto e arquivos presentes)
+    CHORO_INTERVALO: 20, CHORO_VOLUME: 0.6,       // chorando: "choro" a cada ~20 s
+    FORTE_INTERVALO: 10, FORTE_VOLUME: 1,         // chorando forte: "choro_forte" a cada ~10 s
+    // "Não quero" (mamadeira com fome e sede cheias)
+    RECUSA_SEGUNDOS: 1.5, RECUSA_BALANCOS: 2, RECUSA_PIXELS: 2,
+    // Mãozinha da primeira vez (fome → aponta para a mamadeira)
+    MAOZINHA_X: 28, MAOZINHA_Y: 153,
+    // Botão de necessidades: "!" no canto quando alguma barra ativa está abaixo de 25
+    ALERTA_BOTAO_X: 20, ALERTA_BOTAO_Y: 1,
+    // TESTE: no painel aberto, tocar na barra de uma necessidade troca o valor
+    // por esta lista (100 → 70 → 50 → 25 → 0 → 100). Tirar antes de lançar.
+    TESTE_BARRAS: true, TESTE_VALORES: [100, 70, 50, 25, 0]
   },
 
   // ---------- BEBÊ (Etapa 3) ----------
