@@ -100,7 +100,7 @@ class Carregando extends Phaser.Scene {
     this.load.image('quarto_menina', './assets/ui/quarto_menina.png');
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
     this.load.image('quadros_parede', './assets/sprites/quadros_parede.png');                      // v0.0.50: 56×50, do autor
-    this.load.spritesheet('gato', './assets/sprites/gato_prateleira.png', { frameWidth: 42, frameHeight: 29 });  // v0.0.50: 2 quadros 42×29 (rabo para cima / rabo balançando)
+    this.load.spritesheet('gato', './assets/sprites/gato_prateleira.png', { frameWidth: 42, frameHeight: 29 });  // v0.0.55: 10 quadros 42×29, animação do autor (gatuanimation00–09), toca em loop
     this.load.image('berco_tras', './assets/sprites/berco_tras.png');
     this.load.image('berco_frente', './assets/sprites/berco_frente.png');
     for (const quarto of ['menina', 'menino']) {

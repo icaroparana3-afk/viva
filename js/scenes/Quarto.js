@@ -44,7 +44,12 @@ class Quarto extends Phaser.Scene {
     // ---------- Quadros e gato da parede (v0.0.50) ----------
     this.add.image(Q.QUADROS_X, Q.QUADROS_Y, 'quadros_parede').setOrigin(0, 0);
     this.gato = this.add.sprite(Q.GATO_X, Q.GATO_Y, 'gato', 0).setOrigin(0, 0);
-    this.time.addEvent({ delay: Q.GATO_INTERVALO_SEGUNDOS * 1000, loop: true, callback: () => this.balancarRaboGato() });
+    // v0.0.55: o gato mexe o rabo o tempo todo (animação do autor, todos os quadros em loop, sem toque)
+    if (!this.anims.exists('gato_rabo_sempre')) {
+      const total = this.textures.get('gato').frameTotal - 1;   // funciona com qualquer número de quadros
+      this.anims.create({ key: 'gato_rabo_sempre', frames: this.anims.generateFrameNumbers('gato', { start: 0, end: total - 1 }), frameRate: Q.GATO_FPS, repeat: -1 });
+    }
+    this.gato.play('gato_rabo_sempre');
 
     // ---------- Brinquedos do chão (tocáveis) ----------
     this.criarBrinquedos();
@@ -225,14 +230,6 @@ class Quarto extends Phaser.Scene {
     if (this.ehNoite() !== this.noite) this.aplicarPeriodo(!this.noite);
     this.atualizarInfo();
     this.atualizarNecessidades();
-  }
-
-  // O gato balança o rabo algumas vezes (quadro 1 = rabo balançando, quadro 0 = rabo para cima)
-  balancarRaboGato() {
-    const Q = CONFIG.QUARTO;
-    for (let i = 0; i < Q.GATO_BALANCOS * 2; i++) {
-      this.time.delayedCall(i * Q.GATO_QUADRO_MS, () => { if (this.gato) this.gato.setFrame(i % 2 === 0 ? 1 : 0); });
-    }
   }
 
   // ---------- Nome e idade (canto superior direito) ----------

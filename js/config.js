@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.50',
+  VERSAO: '0.0.55',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -192,8 +192,7 @@ const CONFIG = {
     // Parede (v0.0.50): quadros e gato da prateleira, desenhos do autor (o quarto não os tem mais)
     QUADROS_X: 41, QUADROS_Y: 133,             // quadros 56×50 (com a sombra)
     GATO_X: 147, GATO_Y: 114,                  // gato 42×29 (o chão dele é a prateleira, em y=135)
-    GATO_INTERVALO_SEGUNDOS: 30,               // de quanto em quanto tempo o gato balança o rabo
-    GATO_BALANCOS: 3, GATO_QUADRO_MS: 240,     // quantas balançadas, e quanto dura cada quadro
+    GATO_FPS: 8,                               // velocidade do rabo, em loop o tempo todo (quadros por segundo; 10 quadros = 1,25 s por volta)
     INFO_ALTURA: 31,                 // altura da caixinha (3 linhas: nome, idade, dia e hora)
     HUMOR_ESPACO: 18, HUMOR_Y: 4,   // carinha de humor 12×12, FORA da caixinha, à ESQUERDA dela; y = topo da caixinha; 18 px de folga para o nome do humor (centralizado embaixo dela) não encostar na caixinha
     TROCA_HORA_SEGUNDOS: 1,          // de quanto em quanto tempo (real) o quarto confere se virou dia/noite
