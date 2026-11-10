@@ -17,10 +17,61 @@
 //
 // Se mesmo assim o jogo parar de desenhar (um erro no código), aparece um
 // aviso com o erro e "Toque para continuar" (recarrega; o save não se perde).
+//
+// 3. ERRO NUM QUADRO SÓ (v0.0.59). Um erro dentro do Phaser durante um quadro
+//    (ex.: "drawImage" de null ao voltar do álbum, no celular) fazia o laço do
+//    jogo parar para sempre. → SEGURANCA.protegerQuadros(): o quadro com erro é
+//    pulado e o jogo segue. Só aparece o aviso se o erro se repetir sem parar
+//    (QUADROS_COM_ERRO seguidos). O aviso agora mostra também a coluna, a tela
+//    aberta e o começo da pilha do erro, para achar a causa pela foto.
 // =============================================================
 
 const SEGURANCA = {
   ultimoErro: '',
+  QUADROS_COM_ERRO: 90,    // ~1,5 s de erro em todo quadro = travou de verdade
+  errosPulados: 0,         // quantos quadros com erro já foram pulados (teste)
+
+  // Texto curto do erro: mensagem, arquivo:linha:coluna, tela aberta e pilha
+  descreverErro(e, arquivo, linha, coluna) {
+    const msg = (e && e.message) || String(e || 'erro');
+    let onde = '';
+    if (arquivo) onde = ' (' + String(arquivo).split('/').pop() + ':' + linha + (coluna ? ':' + coluna : '') + ')';
+    let telas = '';
+    try { telas = ' [' + jogo.scene.getScenes(true).map(c => c.scene.key).join(',') + ']'; } catch (x) { /* nada */ }
+    let pilha = '';
+    if (e && e.stack) {
+      pilha = ' ' + e.stack.split('\n').slice(1, 4)
+        .map(l => l.trim().replace(/^at /, '').replace(/https?:\/\/[^\s)]*\//g, '')).join(' < ');
+    }
+    return (msg + onde + telas + pilha).slice(0, 400);
+  },
+
+  // Um erro num quadro não trava mais o jogo: o quadro é pulado.
+  // Troca o "passo" do Phaser (Game.step) por um que pega o erro.
+  protegerQuadros() {
+    if (typeof Phaser === 'undefined' || !Phaser.Game || Phaser.Game.prototype._protegido) return;
+    const passoOriginal = Phaser.Game.prototype.step;
+    let seguidos = 0;
+    Phaser.Game.prototype.step = function (time, delta) {
+      try {
+        passoOriginal.call(this, time, delta);
+        seguidos = 0;
+      } catch (e) {
+        seguidos++;
+        SEGURANCA.errosPulados++;
+        SEGURANCA.ultimoErro = SEGURANCA.descreverErro(e);
+        if (seguidos === 1) console.error('[viva] erro num quadro (pulado):', e);
+        // O desenho pode ter parado no meio: devolve o renderizador ao normal
+        try { if (this.renderer && this.renderer.gl === undefined && this.renderer.gameContext) this.renderer.gameContext.setTransform(1, 0, 0, 1, 0, 0); } catch (x) { /* nada */ }
+        if (seguidos >= SEGURANCA.QUADROS_COM_ERRO) SEGURANCA.mostrarTravou();
+      }
+    };
+    Phaser.Game.prototype._protegido = true;
+    // Se o laço já começou com o passo antigo, troca também
+    try {
+      if (typeof jogo !== 'undefined' && jogo.loop && jogo.loop.callback) jogo.loop.callback = jogo.step.bind(jogo);
+    } catch (x) { /* nada */ }
+  },
 
   // Devolve a página para o lugar e remede a tela (depois do teclado fechar)
   consertarTela() {
@@ -74,8 +125,9 @@ const SEGURANCA = {
 
   iniciar() {
     window.addEventListener('error', e => {
-      SEGURANCA.ultimoErro = (e.message || 'erro') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '');
+      SEGURANCA.ultimoErro = SEGURANCA.descreverErro(e.error || { message: e.message }, e.filename, e.lineno, e.colno);
     });
+    SEGURANCA.protegerQuadros();
     window.addEventListener('unhandledrejection', e => { SEGURANCA.ultimoErro = String(e.reason); });
 
     // Teclado fechou / tela mudou de tamanho: sem campo de texto em uso, põe a página no lugar

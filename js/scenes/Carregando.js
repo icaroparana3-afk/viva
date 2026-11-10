@@ -108,7 +108,7 @@ class Carregando extends Phaser.Scene {
     const EV = CONFIG.ARTES_PRONTAS;
     if (EV.balao_pensamento) this.load.image('balao_pensamento', './assets/sprites/balao_pensamento.png');
     if (EV.pensamentos) this.load.spritesheet('pensamentos', './assets/sprites/pensamentos.png', { frameWidth: 12, frameHeight: 12 });
-    if (EV.chocalho) this.load.spritesheet('chocalho', './assets/sprites/chocalho.png', { frameWidth: 11, frameHeight: 12 });
+    if (EV.chocalho) this.load.spritesheet('chocalho', './assets/sprites/chocalho.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.curativo) this.load.image('curativo', './assets/sprites/curativo.png');
     if (EV.galo) this.load.image('galo', './assets/sprites/galo.png');
     if (EV.icone_curativo) this.load.image('icone_curativo', './assets/ui/icone_curativo.png');

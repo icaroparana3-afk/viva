@@ -26,7 +26,7 @@
 // Salvo em save.eventos: { curativoAte, ultimoDodoi, dodois, imaginacoes, chocalhos }
 //
 // v0.0.58: soluço, espirro, beijinho (vínculo alto), brinquedo arrastado
-// até o berço (30% de dodói, como o chocalho), susto com o trovão,
+// até o berço (15% de dodói; o chocalho 10%, v0.0.59), susto com o trovão,
 // recepção na volta, mesversário/aniversário e as mãozinhas do tutorial.
 // =============================================================
 
@@ -224,7 +224,7 @@ const EVENTOS = {
     ev.vaiDarDodoi = forcarDodoi || (Math.random() < C.CHANCE_DODOI && EVENTOS.dodoiLiberado());
     ev.chocalhoSolto = false;
     q.tweens.killTweensOf(q.chocalho);
-    q.chocalho.setVisible(true).setAlpha(1).setFrame(0);
+    q.chocalho.setVisible(true).setAlpha(1).setFrame(0).setAngle(-CONFIG.EVENTOS.CHOCALHO.BALANCO_GRAUS);
     q.brincando = true;
     q.visual.piscar(true, true);          // olhinhos felizes (^ ^) enquanto balança
     EVENTOS.contar('chocalhos');
@@ -236,7 +236,8 @@ const EVENTOS = {
     const C = CONFIG.EVENTOS.CHOCALHO, ev = q.ev;
     if (q.mamando || !['nada', 'triste'].includes(q.sinalBebe)) { EVENTOS.soltarChocalho(q); EVENTOS.fimChocalho(q, false); return; }
     ev.t += seg;
-    q.chocalho.setFrame(Math.floor(ev.t * 1000 / C.BALANCO_MS) % 2);
+    // balança girando pela base do cabo (na mão do bebê): um lado, o outro
+    q.chocalho.setAngle(Math.floor(ev.t * 1000 / C.BALANCO_MS) % 2 ? C.BALANCO_GRAUS : -C.BALANCO_GRAUS);
     ev.somChocalho -= seg;
     if (ev.somChocalho <= 0) { ev.somChocalho = 1.2; tocarSom(q, 'chocalho', { volume: 0.5 }); }
     if (ev.t < C.SEGUNDOS) return;
@@ -257,7 +258,7 @@ const EVENTOS = {
     q.tweens.add({
       targets: c, py: c.y + 8, alpha: 0, duration: 400, ease: 'Sine.easeIn',
       onUpdate: () => { c.y = Math.round(c.py); },
-      onComplete: () => { c.setVisible(false); q.ev.chocalhoSolto = false; }
+      onComplete: () => { c.setVisible(false).setAngle(0); q.ev.chocalhoSolto = false; }
     });
   },
 
@@ -497,7 +498,7 @@ const EVENTOS = {
     q.timerSusto = q.time.delayedCall(CONFIG.EVENTOS.TROVAO.CHORO_SEGUNDOS * 1000, () => { q.susto = false; });
   },
 
-  // ---------- Brinquedo arrastado até o berço (30% de dodói) ----------
+  // ---------- Brinquedo arrastado até o berço (15% de dodói) ----------
   podeBrinquedo(q) {
     return !q.ev.ativo && EVENTOS.pode(q);
   },

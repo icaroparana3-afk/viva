@@ -77,11 +77,12 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 Coisas que acontecem sozinhas no quarto, só com o jogo aberto e o bebê bem (nenhuma barra chorando). Sem texto: o bebê não fala.
 - Imaginação: nuvem de pensamento com 3 coisas, uma depois da outra (gato, bola, coração; sol e passarinho de dia, lua e estrela à noite; mamadeira se tiver fome). Tocar estoura a bolha (+2 diversão).
 - Chocalho: o bebê brinca sozinho (+8 diversão).
-- Dodói: às vezes o chocalho bate na testa: galo, estrelinhas, choro forte e o balão pede um curativo. Tocar no bebê põe o curativo (fica 10 min reais). Ignorado: para sozinho em 45 s, mas perde 15 de diversão. No máximo 1 dodói a cada 30 min reais.
+- Dodói: às vezes o chocalho bate na testa: galo, estrelinhas, choro forte e o balão pede um curativo. Tocar no bebê põe o curativo (fica 10 min reais). Ignorado: para sozinho em 45 s, mas perde 15 de diversão. (v0.0.59: sem limite de tempo entre dodóis; chance de 10% por chocalho.)
 - Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
 
-- v0.0.58: soluço (carinho ou mamadeira faz passar), espirro (o gato pula; mais no frio), beijinho (vínculo alto), susto com o trovão. Chocalho com 30% de dodói.
-- Dar o brinquedo: arrastar do chão até o berço; o bebê brinca (+12 diversão), com 30% de chance de se machucar (dodói).
+- v0.0.58: soluço (carinho ou mamadeira faz passar), espirro (o gato pula; mais no frio), beijinho (vínculo alto), susto com o trovão. Chocalho com 10% de dodói (era 30% na v0.0.58).
+- Chocalho: desenho do autor 12×12 (1 quadro); o jogo balança girando ±15° pela base do cabo.
+- Dar o brinquedo: arrastar do chão até o berço; o bebê brinca (+12 diversão), com 15% de chance de se machucar (dodói; era 30% na v0.0.58).
 
 ## Estações e clima (v0.0.58)
 - O calendário começa no mês real em que o bebê chegou. Cada estação dura 3 meses do jogo; ciclo verão → outono → inverno → primavera.

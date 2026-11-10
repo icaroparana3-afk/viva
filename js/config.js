@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.58',
+  VERSAO: '0.0.59',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -70,7 +70,7 @@ const CONFIG = {
     // Eventos do bebê (v0.0.57). Enquanto false, o jogo desenha um provisório (js/provisorios.js).
     balao_pensamento: false,  // assets/sprites/balao_pensamento.png — 34×30 (nuvem + 2 bolinhas descendo à direita)
     pensamentos: false,       // assets/sprites/pensamentos.png — 8 quadros 12×12 (96×12): gato, passaro, sol, lua, estrela, mamadeira, bola, coracao
-    chocalho: false,          // assets/sprites/chocalho.png — 2 quadros 11×12 (22×12), cabo no centro de baixo
+    chocalho: true,           // assets/sprites/chocalho.png — 12×12, 1 quadro, cabo no centro de baixo (do autor, v0.0.59; o jogo balança girando)
     curativo: false,          // assets/sprites/curativo.png — 7×4 (band-aid na testa)
     galo: false,              // assets/sprites/galo.png — 4×3 (galo vermelho na testa)
     icone_curativo: false,    // assets/ui/icone_curativo.png — 16×16 (ícone do balão durante o dodói)
@@ -419,8 +419,9 @@ const CONFIG = {
       MAO_X: 27, MAO_Y: 22,       // onde fica a base do cabo (na mão direita do bebê, em relação ao canto do bebê)
       SEGUNDOS: 6,                // quanto tempo ele brinca
       BALANCO_MS: 170,            // troca de lado a cada... (milissegundos)
+      BALANCO_GRAUS: 15,          // quanto o chocalho inclina para cada lado (gira pela base do cabo)
       DIVERSAO: 8,                // diversão ganha ao brincar até o fim
-      CHANCE_DODOI: 0.30,         // chance de terminar em dodói (30%, decisão do autor em v0.0.58)
+      CHANCE_DODOI: 0.10,         // chance de terminar em dodói (10%, decisão do autor em v0.0.59)
       DODOI_INTERVALO_MINUTOS: 0  // tempo mínimo entre dois dodóis do chocalho (0 = sem limite)
     },
     DODOI: {
@@ -443,7 +444,7 @@ const CONFIG = {
       SOLTAR: { X: 50, Y: 180, LARGURA: 80, ALTURA: 70 },   // área do berço onde dá para soltar
       X: 104, BASE_Y: 230,        // onde o brinquedo fica no colchão (x do canto, y do pé)
       SEGUNDOS: 6, DIVERSAO: 12,  // brinca 6 s e ganha mais diversão que só tocando
-      CHANCE_DODOI: 0.30,         // 30% de se machucar (decisão do autor)
+      CHANCE_DODOI: 0.15,         // 15% de se machucar (decisão do autor em v0.0.59)
       PULO_PIXELS: 3, PULO_SEGUNDOS: 0.45
     },
     SOLUCO: {

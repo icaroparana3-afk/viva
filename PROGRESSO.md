@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -150,6 +150,13 @@
   - Arte provisória feita por código (`criarEventosProvisorios` em `provisorios.js`): `balao_pensamento` 34×30, `pensamentos` 96×12 (8 quadros 12×12), `chocalho` 22×12 (2 quadros 11×12), `curativo` 7×4, `galo` 4×3 e `icone_curativo` 16×16. Cada uma tem uma chave em `ARTES_PRONTAS` (false até o autor mandar).
   - TESTE: tocar nos quadros da parede dispara imaginação → chocalho → dodói (`EVENTOS.TESTE_TOQUE_QUADROS`). Tirar antes de lançar.
   - Testado no navegador: os 3 eventos, a bolha estourando, o curativo, o curativo depois de recarregar, o sorteio automático e nenhum evento com o bebê chorando, sem erros.
+- **v0.0.59 — chocalho do autor, menos dodói e o jogo não trava mais por um erro só:**
+  - **Travamento ao voltar do álbum** (foto do autor: "Cannot read properties of null (reading 'drawImage')", phaser.min.js, v0.0.58). Não deu para repetir no navegador de teste (40+ idas e voltas no PC e no celular Android emulado, com eventos, chuva, toques rápidos e perda do contexto gráfico simulada), e o código do jogo não chama `drawImage`, então o erro vem de dentro do Phaser, no celular. Duas mudanças em `js/seguranca.js`:
+    - `SEGURANCA.protegerQuadros()`: um erro dentro de um quadro do jogo não para mais o jogo. O quadro com erro é pulado e o jogo segue. O aviso "O jogo travou" só aparece se o erro se repetir em todo quadro por ~1,5 s (`QUADROS_COM_ERRO` = 90).
+    - O aviso agora mostra a coluna do erro, a tela aberta e o começo da pilha do erro. Se voltar a aparecer, uma foto já aponta a função exata do Phaser.
+  - **Chocalho do autor:** `assets/sprites/chocalho.png` 12×12, 1 quadro, cabo no centro de baixo (`ARTES_PRONTAS.chocalho = true`). Como é um quadro só, o jogo balança o chocalho girando pela base do cabo, ±15° (`CHOCALHO.BALANCO_GRAUS`), trocando de lado a cada 170 ms. O álbum usa o mesmo desenho.
+  - **Dodói menos frequente (decisão do autor):** chocalho 10% (`CHOCALHO.CHANCE_DODOI`), brinquedo arrastado até o berço 15% (`BRINQUEDO.CHANCE_DODOI`). Lembrete: no teste dos quadros da parede, o 3º toque (dodói) força o dodói de propósito; só o 2º toque (chocalho) usa a chance.
+  - Testado: chocalho balançando na mão, sorteio de 2000 vezes (≈10% e ≈15%), erro de teste num quadro (o jogo seguiu, sem aviso), ida e volta no álbum e os testes da v0.0.57/58, sem erros.
 - **v0.0.58 — o quarto ganha vida (11 sugestões aprovadas pelo autor; a 3, "olhar que segue", ficou de fora):**
   - **Estações e clima** (`js/clima.js`, `js/janela.js`, `CONFIG.CLIMA`): o calendário começa no mês REAL em que o bebê chegou e anda com os meses de vida; cada estação dura 3 meses do jogo (≈ 21 h reais). O tempo de cada dia do jogo é sorteado pela estação e pela região do perfil, sempre igual para o mesmo dia. Verão: sol forte (mais forte no Nordeste), chuva forte rápida no fim da tarde (45% dos dias; Nordeste 12%, fraca). Outono: sol mais fraco, folhas secas atravessando a janela, chuvinha às vezes. Inverno: Sul e Sudeste nublados, com neve de madrugada (Sul 20%, Sudeste 8% dos dias); Centro-Oeste seco; Norte e Nordeste com chuva frequente (55%). Primavera: temporal rápido com raios e vento forte no Centro-Oeste e no Sudeste (40%); nas outras regiões, sol. Na janela: sol 9×9, véu do céu, gotas, flocos, folhas e raio (com clarão na tela, trovão e tremida). No quarto: luz amarela com sol forte e sombra nos dias fechados. Temperatura por região, estação, noite e chuva. Tocar na janela mostra "Estação · temperatura" e o tempo.
   - **Visitas na janela:** passarinho, borboleta, abelha e balão (pesos 50/25/20/5). Frequência: verão 1,6×, primavera 0,6×, outono 0,35×, inverno nenhuma; nenhuma com chuva ou neve, nem à noite.
