@@ -93,6 +93,10 @@ class Carregando extends Phaser.Scene {
         .forEach(nome => this.load.image(nome, './assets/ui/' + nome + '.png'));
     }
     // Sons (Etapa 30): só carregam quando os arquivos existirem
+    // v0.0.58: sons provisórios (sintetizados) para tudo o que o autor ainda não mandou
+    const doAutor = [...(P.sons ? ['abrir', 'clique'] : []), ...(P.sons_choro ? ['choro', 'choro_forte'] : [])];
+    CONFIG.SONS_PROVISORIOS.filter(n => !doAutor.includes(n))
+      .forEach(nome => this.load.audio(nome, './assets/audio/provisorios/' + nome + '.wav'));
     if (P.sons) ['abrir', 'clique'].forEach(nome => this.load.audio(nome, './assets/audio/' + nome + '.mp3'));
     if (P.sons_choro) ['choro', 'choro_forte'].forEach(nome =>
       this.load.audio(nome, ['./assets/audio/' + nome + '.ogg', './assets/audio/' + nome + '.mp3']));
@@ -100,7 +104,25 @@ class Carregando extends Phaser.Scene {
     this.load.image('quarto_menina', './assets/ui/quarto_menina.png');
     this.load.image('quarto_menino', './assets/ui/quarto_menino.png');
     this.load.image('quadros_parede', './assets/sprites/quadros_parede.png');                      // v0.0.50: 56×50, do autor
-    this.load.spritesheet('gato', './assets/sprites/gato_prateleira.png', { frameWidth: 42, frameHeight: 29 });  // v0.0.55: 10 quadros 42×29, animação do autor (gatuanimation00–09), toca em loop
+    // Eventos do bebê (v0.0.57): só carrega o que o autor já desenhou
+    const EV = CONFIG.ARTES_PRONTAS;
+    if (EV.balao_pensamento) this.load.image('balao_pensamento', './assets/sprites/balao_pensamento.png');
+    if (EV.pensamentos) this.load.spritesheet('pensamentos', './assets/sprites/pensamentos.png', { frameWidth: 12, frameHeight: 12 });
+    if (EV.chocalho) this.load.spritesheet('chocalho', './assets/sprites/chocalho.png', { frameWidth: 11, frameHeight: 12 });
+    if (EV.curativo) this.load.image('curativo', './assets/sprites/curativo.png');
+    if (EV.galo) this.load.image('galo', './assets/sprites/galo.png');
+    if (EV.icone_curativo) this.load.image('icone_curativo', './assets/ui/icone_curativo.png');
+    // Clima, visitas, festa e álbum (v0.0.58)
+    if (EV.sol_janela) this.load.image('sol_janela', './assets/sprites/sol_janela.png');
+    if (EV.raio_janela) this.load.image('raio_janela', './assets/sprites/raio_janela.png');
+    if (EV.borboleta) this.load.spritesheet('borboleta', './assets/sprites/borboleta.png', { frameWidth: 7, frameHeight: 6 });
+    if (EV.abelha) this.load.spritesheet('abelha', './assets/sprites/abelha.png', { frameWidth: 7, frameHeight: 6 });
+    if (EV.balao_visita) this.load.image('balao_visita', './assets/sprites/balao_visita.png');
+    if (EV.folha_seca) this.load.spritesheet('folha_seca', './assets/sprites/folha_seca.png', { frameWidth: 5, frameHeight: 5 });
+    if (EV.bolo) this.load.spritesheet('bolo', './assets/sprites/bolo.png', { frameWidth: 14, frameHeight: 14 });
+    if (EV.icones_album) this.load.spritesheet('icones_album', './assets/ui/icones_album.png', { frameWidth: 12, frameHeight: 12 });
+    if (EV.botao_album) this.load.image('botao_album', './assets/ui/botao_album.png');
+    this.load.spritesheet('gato', './assets/sprites/gato_prateleira.png', { frameWidth: CONFIG.QUARTO.GATO_LARGURA, frameHeight: CONFIG.QUARTO.GATO_ALTURA });  // v0.0.56: 10 quadros 19×20 (animação do autor reduzida), toca em loop
     this.load.image('berco_tras', './assets/sprites/berco_tras.png');
     this.load.image('berco_frente', './assets/sprites/berco_frente.png');
     for (const quarto of ['menina', 'menino']) {
@@ -163,6 +185,8 @@ class Carregando extends Phaser.Scene {
     this.anims.create({ key: 'maozinha_aponta', frames: this.anims.generateFrameNumbers('maozinha', { frames: [0, 1] }),
       frameRate: 3, repeat: -1 });
     criarPainelNecessidadesProvisorio(this);   // só cria as peças que ainda não chegaram
+    criarClimaProvisorio(this);      // v0.0.58: sol, raio, visitas, folha seca, bolo, ícones do álbum
+    criarEventosProvisorios(this);   // v0.0.57: nuvem, pensamentos, chocalho, curativo, galo (só os que faltam)
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarEstrelinha(this);      // estrelinha da festa de chegada
     criarPalpebrasBebe(this);   // pálpebras do bebê (feitas a partir dos olhos do desenho do autor)

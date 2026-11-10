@@ -497,3 +497,185 @@ function criarAlertaMini(cena) {
     { o: '#2a1838', r: '#ff4848' });
   t.refresh();
 }
+
+// ---------- Eventos do bebê (v0.0.57) — provisórios até chegar a arte do autor ----------
+//   balao_pensamento  34×30   nuvem de pensamento + 2 bolinhas descendo à direita (até a cabeça do bebê)
+//   pensamentos       96×12   8 quadros 12×12: gato, passaro, sol, lua, estrela, mamadeira, bola, coracao
+//   chocalho          22×12   2 quadros 11×12 (inclinado para a esquerda e para a direita; cabo no centro de baixo)
+//   curativo          7×4     band-aid na testa
+//   galo              4×3     galo vermelho na testa (dodói)
+//   icone_curativo    16×16   ícone do balão de pedido durante o dodói
+function criarEventosProvisorios(cena) {
+  const falta = (nome) => !cena.textures.exists(nome);
+  const o = '#2a1838';
+  const pal = {
+    o, k: '#141414', w: '#ffffff', m: '#b07e5c', M: '#7a5440', p: '#ff8aa8', P: '#e05a8a',
+    b: '#6ec8ff', B: '#3d8ad0', y: '#ffd860', Y: '#f0a830', a: '#f6dc8a', r: '#e04848', i: '#ffc8d2',
+    t: '#e8b88a', T: '#c89870', c: '#fff2dc', d: '#8a5a3c', g: '#ff8a8a', G: '#d8505a', u: '#f0f0f8'
+  };
+  let t;
+
+  // Nuvem de pensamento: máscara de círculos → contorno escuro e miolo branco
+  if (falta('balao_pensamento')) {
+    const W = 34, H = 30;
+    const circ = [[8, 11, 7], [16, 8, 8.2], [25, 11, 7], [16, 14, 7], [10, 15, 5], [23, 15, 5], [27.5, 23.5, 2.3], [31.5, 27.5, 1.6]];
+    const dentro = (x, y) => circ.some(([cx, cy, r]) => (x + 0.5 - cx) ** 2 + (y + 0.5 - cy) ** 2 <= r * r);
+    t = cena.textures.createCanvas('balao_pensamento', W, H);
+    const c = t.getContext();
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      if (!dentro(x, y)) continue;
+      const borda = !dentro(x - 1, y) || !dentro(x + 1, y) || !dentro(x, y - 1) || !dentro(x, y + 1);
+      c.fillStyle = borda ? o : (y > 17 && x < 26 ? '#eee6f6' : '#ffffff');   // sombrinha embaixo
+      c.fillRect(x, y, 1, 1);
+    }
+    t.refresh();
+  }
+
+  if (falta('pensamentos')) {
+    const mapas = [
+      // gato
+      ['............', '.o........o.', '.oo......oo.', '.omoooooomo.', '.ommmmmmmmo.', 'ommmmmmmmmmo',
+       'omkmmmmmmkmo', 'omkmmmmmmkmo', 'ommmmppmmmmo', 'oMmmmmmmmmMo', '.ommmmmmmmo.', '..oooooooo..'],
+      // passarinho
+      ['............', '............', '.....oooo...', '....obbbbo..', '...obbbbkbo.', '..obbbbbbbyo',
+       '.obbBBbbbbo.', 'obbBBBbbbo..', 'obBBBbbbo...', '.oooobbbo...', '.....ooo....', '............'],
+      // sol
+      ['............', '.y....y....y', '..y..ooo..y.', '....oYYYo...', '...oYyyyYo..', '.yyoYyyyYoyy',
+       '...oYyyyYo..', '....oYYYo...', '..y..ooo..y.', '.y....y....y', '............', '............'],
+      // lua
+      ['............', '.....ooooo..', '...ooaaaao..', '..oaaaaoo...', '..oaaao.....', '..oaao......',
+       '..oaao......', '..oaaao.....', '..oaaaaoo...', '...ooaaaao..', '.....ooooo..', '............'],
+      // estrela
+      ['............', '.....oo.....', '....oyyo....', '....oyyo....', 'ooooyyyyoooo', '.oyyyyyyyyo.',
+       '..oyyyyyyo..', '...oyyyyo...', '..oyyooyyo..', '..oyo..oyo..', '..oo....oo..', '............'],
+      // mamadeira
+      ['.....oo.....', '....oaao....', '....oaao....', '...oBBBBo...', '...owwwwo...', '...ouwwwo...',
+       '...owwwwo...', '...ouwwwo...', '...owwwwo...', '...owwwwo...', '...owwwwo...', '....oooo....'],
+      // bola
+      ['....oooo....', '..oorrwwoo..', '.orrrrwwwwo.', '.orrrrwwwwo.', 'orrrrrwwwwwo', 'orrrrrwwwwwo',
+       'owwwwwbbbbbo', 'owwwwwbbbbbo', '.owwwwbbbbo.', '.owwwwbbbbo.', '..oowwbboo..', '....oooo....'],
+      // coração
+      ['............', '..ooo..ooo..', '.oirrooirro.', 'oiirrrrrrrro', 'orrrrrrrrrro', 'orrrrrrrrrro',
+       '.orrrrrrrro.', '..orrrrrro..', '...orrrro...', '....orro....', '.....oo.....', '............']
+    ];
+    t = cena.textures.createCanvas('pensamentos', 12 * mapas.length, 12);
+    mapas.forEach((m, i) => pintarPixels(t.getContext(), m, pal, i * 12, 0));
+    registrarQuadros(t, 12, 12, mapas.length);
+    t.refresh();
+  }
+
+  if (falta('chocalho')) {
+    const q0 = ['.oooo......', 'oppppo.....', 'owpppo.....', 'opPppo.....', '.opppo.....', '..oooyo....',
+                '....oyo....', '....oyo....', '....oyo....', '....oyo....', '....oyo....', '....ooo....'];
+    const q1 = q0.map(l => l.split('').reverse().join(''));   // espelhado: o cabo continua no centro
+    t = cena.textures.createCanvas('chocalho', 22, 12);
+    pintarPixels(t.getContext(), q0, pal, 0, 0);
+    pintarPixels(t.getContext(), q1, pal, 11, 0);
+    registrarQuadros(t, 11, 12, 2);
+    t.refresh();
+  }
+
+  if (falta('curativo')) {
+    t = cena.textures.createCanvas('curativo', 7, 4);
+    pintarPixels(t.getContext(), ['.ddddd.', 'dtcccTd', 'dtcccTd', '.ddddd.'], pal);
+    t.refresh();
+  }
+
+  if (falta('galo')) {
+    t = cena.textures.createCanvas('galo', 4, 3);
+    pintarPixels(t.getContext(), ['.gg.', 'gGGg', '.GG.'], pal);
+    t.refresh();
+  }
+
+  if (falta('icone_curativo')) {
+    t = cena.textures.createCanvas('icone_curativo', 16, 16);
+    pintarPixels(t.getContext(), [
+      '................', '................', '................', '................',
+      '..oooooooooooo..', '.otttoccccottto.', 'ottttocTccotttto', 'ottttoccccotttto',
+      'ottttoccTcotttto', 'ottttoccccotttto', '.otttoccccottto.', '..oooooooooooo..',
+      '................', '................', '................', '................'
+    ], pal);
+    t.refresh();
+  }
+}
+
+// ---------- Clima, visitas, festa e álbum (v0.0.58) — provisórios ----------
+//   sol_janela     9×9     sol do canto da janela
+//   raio_janela    9×28    raio do temporal
+//   borboleta      14×6    2 quadros 7×6 (asas abertas / fechadas)
+//   abelha         14×6    2 quadros 7×6 (olhando para a direita; o jogo espelha)
+//   balao_visita   7×11    balão de festa que sobe pela janela (branco: o jogo pinta)
+//   folha_seca     20×5    4 quadros 5×5 (girando)
+//   bolo           28×14   2 quadros 14×14 (a chama da vela muda)
+//   icones_album   96×12   8 quadros 12×12: chuva, neve, raio, folha, flor, bolo, soluço, espirro
+//   botao_album    14×14   livrinho do álbum (botão do quarto)
+function criarClimaProvisorio(cena) {
+  const falta = (nome) => !cena.textures.exists(nome);
+  const o = '#2a1838';
+  const pal = {
+    o, y: '#ffd860', Y: '#f0a830', w: '#ffffff', W: '#e8eef8', k: '#141414', b: '#6ec8ff', B: '#3d8ad0',
+    p: '#ff8aa8', P: '#e05a8a', r: '#e04848', l: '#ffb347', L: '#d06a28', m: '#a0522d', g: '#8ce07a', G: '#4f9a40',
+    c: '#f6dc8a', C: '#c8945a', v: '#c89cff', V: '#8a5ad0', a: '#9aa0b0', s: '#d8e0ec', n: '#5a3a28', e: '#ff6e8c'
+  };
+  const pintar = (nome, w, h, mapas, qw) => {
+    if (!falta(nome)) return;
+    const t = cena.textures.createCanvas(nome, w, h);
+    mapas.forEach((m, i) => pintarPixels(t.getContext(), m, pal, i * (qw || w), 0));
+    if (mapas.length > 1) registrarQuadros(t, qw, h, mapas.length);
+    t.refresh();
+  };
+  pintar('sol_janela', 9, 9, [['...yYy...', '.y.yyy.y.', '..yyyyy..', 'Yyyyyyyyy', 'yyyyyyyyY', 'Yyyyyyyyy', '..yyyyy..', '.y.yyy.y.', '...yYy...']]);
+  pintar('raio_janela', 9, 28, [[
+    '.....ww..', '....wyw..', '....wyw..', '...wyw...', '...wyw...', '..wyw....', '..wyyyww.', '..wwyyyw.',
+    '....wyw..', '....wyw..', '...wyw...', '...wyw...', '..wyw....', '..wyyyww.', '..wwyyw..', '....wyw..',
+    '....ww...', '...wyw...', '...ww....', '..wyw....', '..ww.....', '.wyw.....', '.ww......', '.w.......',
+    '.........', '.........', '.........', '.........']]);
+  pintar('borboleta', 14, 6, [
+    ['vv.k.vv', 'vVvkvVv', 'vvvkvvv', '.vvkvv.', '.vVkVv.', '..v.v..'],
+    ['...k...', '.vvkvv.', '.vVkVv.', '..vkv..', '..vkv..', '...k...']], 7);
+  pintar('abelha', 14, 6, [
+    ['..ww...', '.wwww..', '.okyky.', 'okykyko', '.okyky.', '..ooo..'],
+    ['.......', '..ww...', '.wkyky.', 'okykyko', '.okyky.', '..ooo..']], 7);
+  pintar('balao_visita', 7, 11, [['.wwww..', 'wwwwww.', 'wWwwwww', 'wwwwwww', 'wwwwwww', '.wwwww.', '..www..', '...w...', '...k...', '..k....', '...k...']]);
+  pintar('folha_seca', 20, 5, [
+    ['.ll..', 'lllL.', '.lLL.', '..L..', '.....'],
+    ['..l..', '.llL.', 'llLL.', '.L...', '.....'],
+    ['.....', 'lllLL', '.LLL.', '.....', '.....'],
+    ['.l...', '.ll..', '.lL..', '..L..', '...L.']], 5);
+  pintar('bolo', 28, 14, [
+    ['......y.......', '......l.......', '......w.......', '......w.......', '.oooooooooooo.', 'oppppppppppppo',
+     'oPwpPwpPwpPwPo', 'occcccccccccco', 'occcccccccccco', 'oCCCCCCCCCCCCo', 'oppppppppppppo', 'oPPPPPPPPPPPPo',
+     '.oooooooooooo.', '..............'],
+    ['.....y........', '......y.......', '......w.......', '......w.......', '.oooooooooooo.', 'oppppppppppppo',
+     'oPwpPwpPwpPwPo', 'occcccccccccco', 'occcccccccccco', 'oCCCCCCCCCCCCo', 'oppppppppppppo', 'oPPPPPPPPPPPPo',
+     '.oooooooooooo.', '..............']], 14);
+  pintar('icones_album', 96, 12, [
+    // chuva
+    ['............', '....oooo....', '..oossssoo..', '.osssssssso.', 'ossssssssaso', '.oaaaaaaaao.', '............',
+     '..b...b...b.', '.b...b...b..', '...b...b....', '..b...b...b.', '............'],
+    // neve (floco)
+    ['.....w......', '...w.w.w....', '....www.....', '.w..www..w..', '..w.www.w...', 'wwwwwwwwwww.', '..w.www.w...',
+     '.w..www..w..', '....www.....', '...w.w.w....', '.....w......', '............'],
+    // raio
+    ['......oooo..', '.....oyyo...', '....oyyo....', '...oyyo.....', '..oyyyyyoo..', '..ooyyyyo...', '....oyyo....',
+     '...oyyo.....', '..oyyo......', '..oyo.......', '..oo........', '............'],
+    // folha seca
+    ['........oo..', '......ooLo..', '....oollLo..', '...ollllLo..', '..ollllLo...', '.olllLLo....', '.ollLLo.....',
+     '.olLLo......', '.oLoo.......', 'oLo.........', 'oo..........', '............'],
+    // flor
+    ['............', '....oo......', '...oppo.oo..', '...oppoppo..', '.oooyyooo...', 'oppoyyoppo..', '.ooppoopo...',
+     '..oppoopo...', '...oo.o.....', '......oGo...', '.....oGGo...', '......o.....'],
+    // bolo
+    ['.....y......', '.....l......', '.....w......', '..oooooooo..', '.oppppppppo.', '.oPwPwPwPwo.', '.occcccccco.',
+     '.occcccccco.', '.oCCCCCCCCo.', '.oppppppppo.', '..oooooooo..', '............'],
+    // soluço ("hic" num balãozinho)
+    ['............', '.oooooooooo.', 'owwwwwwwwwwo', 'owkwkwkwkkwo', 'owkkkwkwkwwo', 'owkwkwkwkwwo', 'owkwkwkwkkwo',
+     'owwwwwwwwwwo', '.oooooooooo.', '...ow.......', '...o........', '............'],
+    // espirro (gotinhas)
+    ['............', '..b.....b...', '....b.b.....', '.b..bbb..b..', '...bbbbb....', '..bbbbbbb...', '...bbbbb....',
+     '.b..bbb..b..', '....b.b.....', '..b.....b...', '............', '............']], 12);
+  pintar('botao_album', 14, 14, [[
+    '.oooooooooooo.', 'oVvvvvvvvvvvvo', 'oVvwwwwwwwwvvo', 'oVvwvvvvvvwvvo', 'oVvwvpppvvwvvo', 'oVvwvpPpvvwvvo',
+    'oVvwvvpvvvwvvo', 'oVvwvvvvvvwvvo', 'oVvwwwwwwwwvvo', 'oVvvvvvvvvvvvo', 'oVvvvvvvvvvvvo', 'oVVVVVVVVVVVVo',
+    'owwwwwwwwwwwwo', '.oooooooooooo.']]);
+}

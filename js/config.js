@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.55',
+  VERSAO: '0.0.58',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -67,6 +67,23 @@ const CONFIG = {
   // por código (no mesmo tamanho). Quando o seu desenho chegar, ele vai para
   // a pasta indicada e o item vira true. Nada mais precisa mudar.
   ARTES_PRONTAS: {
+    // Eventos do bebê (v0.0.57). Enquanto false, o jogo desenha um provisório (js/provisorios.js).
+    balao_pensamento: false,  // assets/sprites/balao_pensamento.png — 34×30 (nuvem + 2 bolinhas descendo à direita)
+    pensamentos: false,       // assets/sprites/pensamentos.png — 8 quadros 12×12 (96×12): gato, passaro, sol, lua, estrela, mamadeira, bola, coracao
+    chocalho: false,          // assets/sprites/chocalho.png — 2 quadros 11×12 (22×12), cabo no centro de baixo
+    curativo: false,          // assets/sprites/curativo.png — 7×4 (band-aid na testa)
+    galo: false,              // assets/sprites/galo.png — 4×3 (galo vermelho na testa)
+    icone_curativo: false,    // assets/ui/icone_curativo.png — 16×16 (ícone do balão durante o dodói)
+    // Clima, visitas, festa e álbum (v0.0.58)
+    sol_janela: false,        // assets/sprites/sol_janela.png — 9×9
+    raio_janela: false,       // assets/sprites/raio_janela.png — 9×28
+    borboleta: false,         // assets/sprites/borboleta.png — 2 quadros 7×6 (14×6)
+    abelha: false,            // assets/sprites/abelha.png — 2 quadros 7×6 (14×6), olhando para a direita
+    balao_visita: false,      // assets/sprites/balao_visita.png — 7×11, BRANCO (o jogo pinta a cor)
+    folha_seca: false,        // assets/sprites/folha_seca.png — 4 quadros 5×5 (20×5)
+    bolo: false,              // assets/sprites/bolo.png — 2 quadros 14×14 (28×14), a chama muda
+    icones_album: false,      // assets/ui/icones_album.png — 8 quadros 12×12 (96×12): chuva, neve, raio, folha, flor, bolo, soluço, espirro
+    botao_album: false,       // assets/ui/botao_album.png — 14×14
     botoes_som: true,  // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada (do autor)
     animal: false,     // assets/sprites/animal.png — 8 quadros de 16×16 lado a lado (128×16)
     folha: false,      // assets/sprites/folha.png — 4 quadros de 4×4 lado a lado (16×4)
@@ -191,7 +208,10 @@ const CONFIG = {
     INFO_X: 176, INFO_Y: 4,          // caixinha do nome e da idade (canto superior direito; x = borda direita)
     // Parede (v0.0.50): quadros e gato da prateleira, desenhos do autor (o quarto não os tem mais)
     QUADROS_X: 41, QUADROS_Y: 133,             // quadros 56×50 (com a sombra)
-    GATO_X: 147, GATO_Y: 114,                  // gato 42×29 (o chão dele é a prateleira, em y=135)
+    GATO_X: 155, GATO_Y: 120,                  // v0.0.56: gato menor, 19×20 por quadro (os pés ficam na prateleira, em y=140)
+    GATO_LARGURA: 19, GATO_ALTURA: 20,         // tamanho de cada quadro da folha gato_prateleira.png
+    GATO_ACAO: 'balanca',                      // ao tocar no gato: mesma reação dos brinquedos ('balanca' = de um lado para o outro)
+    GATO_DIVERSAO: 0,                          // diversão que o bebê ganha ao tocar no gato (0 = nenhuma; os brinquedos dão 5)
     GATO_FPS: 8,                               // velocidade do rabo, em loop o tempo todo (quadros por segundo; 10 quadros = 1,25 s por volta)
     INFO_ALTURA: 31,                 // altura da caixinha (3 linhas: nome, idade, dia e hora)
     HUMOR_ESPACO: 18, HUMOR_Y: 4,   // carinha de humor 12×12, FORA da caixinha, à ESQUERDA dela; y = topo da caixinha; 18 px de folga para o nome do humor (centralizado embaixo dela) não encostar na caixinha
@@ -376,6 +396,171 @@ const CONFIG = {
     // por esta lista (100 → 70 → 50 → 25 → 0 → 100). Tirar antes de lançar.
     TESTE_BARRAS: true, TESTE_VALORES: [100, 70, 50, 25, 0]
   },
+
+  // ---------- EVENTOS DO BEBÊ (v0.0.57) ----------
+  // Coisas que acontecem sozinhas no quarto, só com o jogo aberto e o bebê bem
+  // (nenhuma barra chorando, sem mamar, sem painel aberto).
+  EVENTOS: {
+    PRIMEIRO_SEGUNDOS: 20,        // o primeiro evento pode acontecer depois deste tempo no quarto
+    CONFERIR_SEGUNDOS: 30,        // de quanto em quanto tempo o jogo sorteia se acontece algo
+    CHANCE: 0.35,                 // chance de acontecer algo a cada sorteio
+    DESCANSO_SEGUNDOS: 60,        // tempo mínimo entre um evento e o próximo
+    PESOS: { imaginacao: 3, chocalho: 2, soluco: 2, espirro: 1, beijinho: 1 },   // qual evento sai mais (espirro vale dobrado no outono e no inverno; beijinho só com vínculo alto)
+    IMAGINACAO: {
+      X: 49, Y: 169,              // nuvem de pensamento 34×30, à esquerda, acima da cabeça (as bolinhas descem até ela)
+      ICONE_X: 10, ICONE_Y: 5,    // onde fica o desenho 12×12 dentro da nuvem
+      QUANTOS: 3,                 // quantas coisas ele imagina, uma depois da outra
+      SEGUNDOS_CADA: 1.6,         // quanto tempo cada uma fica na nuvem
+      DIVERSAO_ESTOURAR: 2,       // tocar na nuvem estoura a bolha (o bebê acha graça)
+      // Ordem dos quadros de pensamentos.png
+      QUADROS: ['gato', 'passaro', 'sol', 'lua', 'estrela', 'mamadeira', 'bola', 'coracao']
+    },
+    CHOCALHO: {
+      MAO_X: 27, MAO_Y: 22,       // onde fica a base do cabo (na mão direita do bebê, em relação ao canto do bebê)
+      SEGUNDOS: 6,                // quanto tempo ele brinca
+      BALANCO_MS: 170,            // troca de lado a cada... (milissegundos)
+      DIVERSAO: 8,                // diversão ganha ao brincar até o fim
+      CHANCE_DODOI: 0.30,         // chance de terminar em dodói (30%, decisão do autor em v0.0.58)
+      DODOI_INTERVALO_MINUTOS: 0  // tempo mínimo entre dois dodóis do chocalho (0 = sem limite)
+    },
+    DODOI: {
+      ESPERA_SEGUNDOS: 45,        // se ninguém cuidar, ele para de chorar sozinho depois disso...
+      DIVERSAO_IGNORADO: -15,     // ...mas perde diversão
+      DIVERSAO_CUIDADO: 3,        // ganha ao receber o curativo (carinho)
+      CURATIVO_MINUTOS: 10,       // o curativo fica na testa por este tempo real (fica salvo)
+      GALO_SEGUNDOS: 60,          // sem curativo, o galo fica aparecendo por este tempo
+      ESTRELAS_SEGUNDOS: 2.5,     // estrelinhas girando na cabeça depois do "toc"
+      ESTRELAS_Y: 1, ESTRELAS_RAIO_X: 10, ESTRELAS_RAIO_Y: 3, ESTRELAS_VOLTA_SEGUNDOS: 1,
+      GALO_X: 20, GALO_Y: 6,      // posição na testa (em relação ao canto do bebê)
+      CURATIVO_X: 17, CURATIVO_Y: 6
+    },
+    // TESTE: tocar nos quadros da parede dispara um evento (imaginação → chocalho → dodói → ...). Tirar antes de lançar.
+    TESTE_TOQUE_QUADROS: true,
+    TESTE_ORDEM: ['imaginacao', 'chocalho', 'dodoi', 'soluco', 'espirro', 'beijinho'],
+
+    // v0.0.58 — novos eventos
+    BRINQUEDO: {                  // arrastar um brinquedo do chão até o berço
+      SOLTAR: { X: 50, Y: 180, LARGURA: 80, ALTURA: 70 },   // área do berço onde dá para soltar
+      X: 104, BASE_Y: 230,        // onde o brinquedo fica no colchão (x do canto, y do pé)
+      SEGUNDOS: 6, DIVERSAO: 12,  // brinca 6 s e ganha mais diversão que só tocando
+      CHANCE_DODOI: 0.30,         // 30% de se machucar (decisão do autor)
+      PULO_PIXELS: 3, PULO_SEGUNDOS: 0.45
+    },
+    SOLUCO: {
+      SEGUNDOS: 20,               // se ninguém fizer nada, passa sozinho depois disso
+      INTERVALO: 1.3,             // um "hic" a cada...
+      DIVERSAO_IGNORADO: -3
+    },
+    ESPIRRO: { FATOR_FRIO: 2 },   // no outono e no inverno o espirro sai 2× mais
+    TROVAO: { CHORO_SEGUNDOS: 3 } // o trovão assusta: o bebê pula e chora um pouquinho
+  },
+
+  // ---------- CLIMA E ESTAÇÕES (v0.0.58) ----------
+  // O calendário do jogo começa no mês REAL em que o bebê chegou e anda com os meses de vida.
+  // Estações de 3 meses do jogo (≈ 21 h reais cada). O tempo de cada dia do jogo é sorteado
+  // pela região do jogador (perfil) e pela estação, sempre igual para o mesmo dia.
+  CLIMA: {
+    ESTACAO_DO_MES: ['verao', 'verao', 'outono', 'outono', 'outono', 'inverno', 'inverno', 'inverno',
+                     'primavera', 'primavera', 'primavera', 'verao'],   // jan … dez (Brasil)
+    NOMES: { verao: 'Verão', outono: 'Outono', inverno: 'Inverno', primavera: 'Primavera' },
+    // Força do sol (0 a 1): deixa o sol da janela e a luz do quarto mais fortes
+    SOL: { verao: 0.85, outono: 0.45, inverno: 0.3, primavera: 0.65 },
+    SOL_NORDESTE_VERAO: 1,
+    LUZ_SOL_MAX: 0.08,            // luz amarela no quarto com sol forte (0 = nenhuma)
+    // Visitas na janela (passarinho, borboleta, abelha, balão): multiplicador da frequência
+    VISITAS: { verao: 1.6, primavera: 0.6, outono: 0.35, inverno: 0 },
+    VISITA_INTERVALO_MIN: 8, VISITA_INTERVALO_MAX: 18,   // segundos (divididos pelo multiplicador)
+    VISITA_PESOS: { passaro: 50, borboleta: 25, abelha: 20, balao: 5 },
+    // Temperatura de dia (°C); à noite cai NOITE_MENOS (no inverno do Sul e Sudeste, NOITE_MENOS_FRIO)
+    TEMPERATURA: {
+      verao:     { norte: 31, nordeste: 32, 'centro-oeste': 30, sudeste: 29, sul: 28 },
+      outono:    { norte: 29, nordeste: 28, 'centro-oeste': 26, sudeste: 23, sul: 18 },
+      inverno:   { norte: 27, nordeste: 25, 'centro-oeste': 22, sudeste: 13, sul: 7 },
+      primavera: { norte: 31, nordeste: 29, 'centro-oeste': 29, sudeste: 24, sul: 20 }
+    },
+    NOITE_MENOS: 5, NOITE_MENOS_FRIO: 8, CHUVA_MENOS: 3,
+    // Como é cada dia. ceu: chance de cada céu; chuva/neve: chance no dia, tipo, hora de começar e quantas horas.
+    // tipo: 'fraca', 'forte' ou 'temporal' (forte + raios + vento). 'padrao' vale para as regiões não listadas.
+    DIAS: {
+      verao: {
+        padrao:   { ceu: { limpo: 70, parcial: 30 }, chuva: { chance: 0.45, tipo: 'forte', inicio: [15, 18], horas: [1, 2] } },
+        nordeste: { ceu: { limpo: 85, parcial: 15 }, chuva: { chance: 0.12, tipo: 'fraca', inicio: [14, 18], horas: [1, 2] } }
+      },
+      outono: {
+        padrao: { ceu: { limpo: 30, parcial: 50, nublado: 20 }, chuva: { chance: 0.2, tipo: 'fraca', inicio: [8, 20], horas: [2, 4] }, folhas: true }
+      },
+      inverno: {
+        sul:            { ceu: { nublado: 65, parcial: 25, limpo: 10 }, chuva: { chance: 0.15, tipo: 'fraca', inicio: [9, 18], horas: [2, 4] }, neve: { chance: 0.2, inicio: [2, 5], horas: [2, 4] } },
+        sudeste:        { ceu: { nublado: 55, parcial: 30, limpo: 15 }, chuva: { chance: 0.15, tipo: 'fraca', inicio: [9, 18], horas: [2, 4] }, neve: { chance: 0.08, inicio: [2, 5], horas: [2, 3] } },
+        'centro-oeste': { ceu: { seco: 80, limpo: 20 } },
+        nordeste:       { ceu: { nublado: 50, parcial: 40, limpo: 10 }, chuva: { chance: 0.55, tipo: 'forte', inicio: [0, 19], horas: [2, 5] } },
+        norte:          { ceu: { nublado: 50, parcial: 40, limpo: 10 }, chuva: { chance: 0.55, tipo: 'forte', inicio: [0, 19], horas: [2, 5] } },
+        padrao:         { ceu: { parcial: 60, limpo: 40 } }
+      },
+      primavera: {
+        padrao:         { ceu: { limpo: 60, parcial: 40 }, chuva: { chance: 0.1, tipo: 'fraca', inicio: [10, 18], horas: [1, 2] } },
+        'centro-oeste': { ceu: { parcial: 60, limpo: 40 }, chuva: { chance: 0.4, tipo: 'temporal', inicio: [14, 18], horas: [1, 1] } },
+        sudeste:        { ceu: { parcial: 60, limpo: 40 }, chuva: { chance: 0.4, tipo: 'temporal', inicio: [14, 18], horas: [1, 1] } }
+      }
+    },
+    // Aparência na janela
+    FILTRO: {                     // véu por cima do céu: [cor de dia, cor de noite, força]
+      parcial: [0xb8c4d0, 0x1a1c2a, 0.1], nublado: [0x8890a0, 0x1a1c2a, 0.45], seco: [0xe8d8a8, 0x2a2418, 0.3],
+      fraca: [0x8890a0, 0x1a1c2a, 0.45], forte: [0x6a7080, 0x14161f, 0.6], temporal: [0x4a5060, 0x0e0f16, 0.72],
+      neve: [0xc8d0dc, 0x2a2e40, 0.45]
+    },
+    SOMBRA_QUARTO: { nublado: 0.06, fraca: 0.1, forte: 0.15, temporal: 0.2, neve: 0.08 },   // o quarto fica mais escuro
+    GOTAS: { fraca: 12, forte: 26, temporal: 40 }, GOTA_VELOCIDADE: { fraca: 80, forte: 120, temporal: 150 },
+    VENTO_TEMPORAL: -55,          // gotas tortas (pixels por segundo para o lado)
+    FLOCOS: 18,
+    FOLHA_INTERVALO_MIN: 2.5, FOLHA_INTERVALO_MAX: 6,
+    RAIO_INTERVALO_MIN: 6, RAIO_INTERVALO_MAX: 15,
+    SOL_X: 74, SOL_Y: 80,         // sol de 9×9 no canto de cima da janela
+    AVISO_SEGUNDOS: 2.5,          // tocar na janela mostra a estação, a temperatura e o tempo
+    // TESTE: cada toque na janela troca o tempo forçado (para ver todos). Tirar antes de lançar.
+    TESTE_TOQUE_JANELA: true,
+    TESTE_TEMPOS: [null, 'verao_sol', 'verao_chuva', 'outono_folhas', 'inverno_nublado', 'inverno_neve', 'inverno_seco', 'primavera_temporal']
+  },
+
+  // ---------- VÍNCULO (v0.0.58) ----------
+  // Valor escondido (0 a 100) que sobe com carinho e cuidado e muda as reações do bebê.
+  VINCULO: {
+    INICIAL: 30,
+    TOQUE: 0.3, MAMADEIRA: 1, CURATIVO: 3, SOLUCO: 1, BOLHA: 0.5, BRINQUEDO: 1,
+    DODOI_IGNORADO: -3, SOLUCO_IGNORADO: -1, ESGOTADO_POR_MINUTO: -0.5, LONGE_DEMAIS: -5,
+    RECEPCAO_MIN: 40,             // a partir daqui ele recebe você com festa
+    DOIS_CORACOES_MIN: 60,        // a partir daqui o carinho solta 2 corações
+    BEIJINHO_MIN: 80,             // a partir daqui ele às vezes manda um beijinho sozinho
+    TESTE_MOSTRAR: true           // TESTE: mostra o número no álbum. Tirar antes de lançar.
+  },
+
+  // ---------- FESTAS (v0.0.58) ----------
+  // Mesversário todo mês até 1 ano; depois, só aniversário.
+  FESTA: {
+    SEGUNDOS: 7, CONFETES: 40, BALOES: 4,
+    BOLO_X: 83, BOLO_Y: 258,
+    TESTE_TOQUE_CAIXINHA: true    // TESTE: tocar na caixinha do nome adianta 1 mês do jogo. Tirar antes de lançar.
+  },
+
+  // ---------- ÁLBUM DE MOMENTOS (v0.0.58) ----------
+  ALBUM: {
+    BOTAO_X: 42, BOTAO_Y: 4,      // botão 14×14 ao lado do MENU, no quarto
+    POR_PAGINA: 6, MAXIMO: 300
+  },
+
+  // ---------- TUTORIAL (v0.0.58) ----------
+  // A mãozinha ensina cada coisa uma vez só.
+  TUTORIAL: {
+    PAINEL_ABAIXO_DE: 50,         // alguma barra abaixo disso: aponta para o botão das necessidades
+    BRINQUEDO_ABAIXO_DE: 60,      // diversão abaixo disso: aponta para os brinquedos
+    MAO_PAINEL_X: 130, MAO_PAINEL_Y: 291,
+    MAO_BRINQUEDO_X: 40, MAO_BRINQUEDO_Y: 256
+  },
+
+  // ---------- SONS PROVISÓRIOS (v0.0.58) ----------
+  // Sons sintetizados (assets/audio/provisorios/*.wav) até chegarem os do autor.
+  SONS_PROVISORIOS: ['clique', 'abrir', 'choro', 'choro_forte', 'risada', 'chocalho', 'toc', 'estouro',
+                     'hic', 'espirro', 'trovao', 'chuva', 'festa', 'beijinho'],
 
   // ---------- BEBÊ (Etapa 3) ----------
   // Regras do sorteio do bebê que a cegonha traz.

@@ -37,6 +37,7 @@ class Quarto extends Phaser.Scene {
 
     // ---------- Janela: o mundo lá fora (fica ATRÁS do quarto) ----------
     this.criarJanela();
+    JANELA_VIVA.criar(this);     // v0.0.58: sol, chuva, neve, folhas, raio e visitas (atrás do quarto)
 
     // ---------- Quarto e berço ----------
     this.add.image(0, 0, this.bebe.sexo === 'F' ? 'quarto_menina' : 'quarto_menino').setOrigin(0, 0);
@@ -50,6 +51,10 @@ class Quarto extends Phaser.Scene {
       this.anims.create({ key: 'gato_rabo_sempre', frames: this.anims.generateFrameNumbers('gato', { start: 0, end: total - 1 }), frameRate: Q.GATO_FPS, repeat: -1 });
     }
     this.gato.play('gato_rabo_sempre');
+    // v0.0.56: tocar no gato faz ele se mexer como os brinquedos (de um lado para o outro)
+    this.gatoBrinq = { img: this.gato, x: Q.GATO_X, y: Q.GATO_Y, acao: Q.GATO_ACAO, dx: 0, dy: 0, ocupado: false, diversao: Q.GATO_DIVERSAO };
+    this.add.zone(Q.GATO_X - 3, Q.GATO_Y - 3, Q.GATO_LARGURA + 6, Q.GATO_ALTURA + 6).setOrigin(0, 0).setInteractive()
+      .on('pointerup', () => this.mexerBrinquedo(this.gatoBrinq));
 
     // ---------- Brinquedos do chão (tocáveis) ----------
     this.criarBrinquedos();
@@ -58,7 +63,7 @@ class Quarto extends Phaser.Scene {
     this.ponteiros = this.add.graphics();
     this.ultimoMinuto = -1;
     this.desenharRelogio();
-    this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_tras').setOrigin(0, 0);
+    this.bercoTras = this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_tras').setOrigin(0, 0);
 
     // ---------- Bebê (camadas do autor) ----------
     this.visual = criarBebeVisual(this, Q.BEBE_X, Q.BEBE_Y, 1).mostrar(this.bebe);
@@ -76,6 +81,9 @@ class Quarto extends Phaser.Scene {
 
     this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_frente').setOrigin(0, 0);
 
+    // Eventos (v0.0.57): chocalho na mão, galo, curativo e estrelinhas do dodói (seguem o bebê)
+    EVENTOS.criarCamadas(this);
+
     // Mamadeira na boca do bebê (aparece enquanto mama; atrás do escuro da noite)
     const N = CONFIG.NECESSIDADES;
     this.mamadeira = this.add.image(N.MAMADEIRA_BOCA_X, N.MAMADEIRA_BOCA_Y, 'mamadeira_bebe').setOrigin(0, 0).setVisible(false);
@@ -87,11 +95,19 @@ class Quarto extends Phaser.Scene {
     // ---------- Abajur: acende e apaga (só luz, sem ligação com o sono) ----------
     this.criarAbajur(save);
 
+    // v0.0.58: luz do sol, sombra dos dias fechados, clarão do raio e toque na janela
+    JANELA_VIVA.criarLuz(this);
+
     // ---------- Necessidades (Etapas 8 e 8.1): botão do coração, mamadeira e balão ----------
     this.criarNecessidades();
 
+    // Nuvem de pensamento da imaginação (depois do escuro: fica clara à noite, como o balão)
+    EVENTOS.criarNuvem(this);
+
     // ---------- Topo: botão de voltar ao menu ----------
     criarBotaoImg(this, 4, 4, 'botao_menu', () => irPara(this, 'Menu'));   // botão do autor (34×14)
+    // v0.0.58: álbum de momentos (botão 14×14 ao lado do MENU)
+    criarBotaoImg(this, CONFIG.ALBUM.BOTAO_X, CONFIG.ALBUM.BOTAO_Y, 'botao_album', () => { if (!this.painelAberto) irPara(this, 'Album'); });
 
     // Versão no rodapé (à esquerda: no canto direito fica o botão de necessidades)
     escrever(this, 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
@@ -127,11 +143,12 @@ class Quarto extends Phaser.Scene {
     // ---------- Avisos ao entrar ----------
     if (!this.bebe.nome) this.pedirNome();          // save antigo, de antes do nome: pergunta agora
     else if (this.chegou) this.boasVindas();
-    else if (VISITA.valeAvisar(VISITA.foraAoAbrir)) this.avisarVolta(VISITA.foraAoAbrir);
+    else if (VISITA.valeAvisar(VISITA.foraAoAbrir)) { this.avisarVolta(VISITA.foraAoAbrir); EVENTOS.voltou(this, VISITA.foraAoAbrir); }
+    MOMENTOS.registrar('chegada', { dia: 1, idade: this.bebe.sexo === 'F' ? 'recém-nascida' : 'recém-nascido', em: save.chegadaReal });
     VISITA.foraAoAbrir = 0;                         // o aviso de "ficou fora" aparece uma vez só
 
     // Voltou para o jogo sem recarregar (trocou de app e voltou)
-    const aoVoltar = (ms) => { if (VISITA.valeAvisar(ms)) { this.conferirHora(); this.avisarVolta(ms); } };
+    const aoVoltar = (ms) => { if (VISITA.valeAvisar(ms)) { this.conferirHora(); this.avisarVolta(ms); EVENTOS.voltou(this, ms); } };
     jogo.events.on('voltou', aoVoltar);
     this.events.once('shutdown', () => jogo.events.off('voltou', aoVoltar));
 
@@ -184,16 +201,9 @@ class Quarto extends Phaser.Scene {
     this.agendarCadente();
   }
 
+  // v0.0.58: o passarinho virou uma das visitas da janela (frequência pela estação, js/janela.js)
   agendarPassaro() {
-    const J = CONFIG.JANELA;
-    this.time.delayedCall(Phaser.Math.FloatBetween(J.PASSARO_INTERVALO_MIN, J.PASSARO_INTERVALO_MAX) * 1000, () => {
-      const p = this.passaro;
-      p.posX = J.X - 9;                                            // começa escondido atrás da parede
-      p.y = Phaser.Math.Between(J.Y + 3, J.Y + J.ALTURA - 14);
-      p.x = p.posX;
-      p.setVisible(true);
-      p.voando = true;
-    });
+    JANELA_VIVA.agendarVisita(this);
   }
 
   agendarCadente() {
@@ -228,6 +238,8 @@ class Quarto extends Phaser.Scene {
   // Virou dia ou noite? A idade mudou? (chamado a cada TROCA_HORA_SEGUNDOS)
   conferirHora() {
     if (this.ehNoite() !== this.noite) this.aplicarPeriodo(!this.noite);
+    JANELA_VIVA.conferir(this);
+    if (this.ev) EVENTOS.conferirFesta(this);   // v0.0.58: mesversário / aniversário
     this.atualizarInfo();
     this.atualizarNecessidades();
   }
@@ -252,6 +264,16 @@ class Quarto extends Phaser.Scene {
       .on('pointerup', () => this.mostrarNomeHumor());
     this.textoInfo = null;
     this.atualizarInfo();
+    // TESTE (v0.0.58): tocar na caixinha do nome adianta 1 mês do jogo (para ver estações e festas)
+    if (CONFIG.FESTA.TESTE_TOQUE_CAIXINHA) {
+      this.add.zone(Q.INFO_X - 44, Q.INFO_Y, 44, Q.INFO_ALTURA).setOrigin(0, 0).setInteractive()
+        .on('pointerup', () => {
+          if (this.painelAberto) return;
+          TEMPO.adiantar(365 / 12 * 24 * 60);
+          this.ultimoMinuto = -1;
+          this.conferirHora();
+        });
+    }
   }
 
   atualizarInfo() {
@@ -386,12 +408,38 @@ class Quarto extends Phaser.Scene {
   // ---------- Brinquedos ----------
   // Cada brinquedo é um desenho separado por cima do quarto. Ao tocar, ele se mexe.
   criarBrinquedos() {
+    this.input.dragDistanceThreshold = 4;   // mexer o dedo 4 px = arrastar (menos que isso = toque)
     const quarto = this.bebe.sexo === 'F' ? 'menina' : 'menino';
     this.brinquedos = CONFIG.BRINQUEDOS[quarto].map(b => {
       const img = this.add.image(b.x, b.y, 'brinquedo_' + quarto + '_' + b.nome).setOrigin(0, 0);
       const brinq = { img, x: b.x, y: b.y, acao: b.acao, dx: 0, dy: 0, ocupado: false };
-      this.add.zone(b.x - 2, b.y - 2, img.width + 4, img.height + 4).setOrigin(0, 0).setInteractive()
-        .on('pointerup', () => this.mexerBrinquedo(brinq));
+      // v0.0.58: tocar mexe o brinquedo; ARRASTAR até o berço dá o brinquedo para o bebê
+      const zona = this.add.zone(b.x - 2, b.y - 2, img.width + 4, img.height + 4).setOrigin(0, 0)
+        .setInteractive({ draggable: true });
+      zona.on('pointerdown', () => { brinq.arrastou = false; });
+      zona.on('pointerup', () => { if (!brinq.arrastou) this.mexerBrinquedo(brinq); });
+      zona.on('dragstart', () => {
+        brinq.semArrastar = brinq.ocupado || this.painelAberto;
+        if (brinq.semArrastar) return;
+        brinq.arrastou = true;
+        this.tweens.killTweensOf(brinq);
+        this.children.bringToTop(img);
+        EVENTOS.aprendeu(this, 'brinquedo');
+      });
+      zona.on('drag', (p) => {
+        if (brinq.semArrastar) return;
+        img.setPosition(Math.round(p.worldX - img.width / 2), Math.round(p.worldY - img.height / 2));
+      });
+      zona.on('dragend', (p) => {
+        if (brinq.semArrastar) return;
+        const S = CONFIG.EVENTOS.BRINQUEDO.SOLTAR;
+        const noBerco = p.worldX >= S.X && p.worldX <= S.X + S.LARGURA && p.worldY >= S.Y && p.worldY <= S.Y + S.ALTURA;
+        if (noBerco && EVENTOS.podeBrinquedo(this)) { EVENTOS.iniciarBrinquedo(this, brinq); return; }
+        // Soltou fora (ou o bebê não pode agora): volta para o lugar
+        brinq.ocupado = true;
+        this.tweens.add({ targets: img, x: brinq.x, y: brinq.y, duration: 300, ease: 'Sine.easeOut',
+          onComplete: () => { this.children.moveBelow(img, this.bercoTras); brinq.ocupado = false; } });
+      });
       return brinq;
     });
   }
@@ -399,8 +447,12 @@ class Quarto extends Phaser.Scene {
   mexerBrinquedo(b) {
     if (b.ocupado || this.painelAberto) return;
     b.ocupado = true;
-    NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BRINQUEDO);   // o bebê acha graça
-    this.atualizarNecessidades();
+    if (b !== this.gatoBrinq) EVENTOS.aprendeu(this, 'brinquedo');
+    const ganho = b.diversao !== undefined ? b.diversao : CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BRINQUEDO;
+    if (ganho > 0) {
+      NEC.mudar('diversao', ganho);   // o bebê acha graça
+      this.atualizarNecessidades();
+    }
     const B = CONFIG.BRINQUEDOS;
     const posicionar = () => b.img.setPosition(b.x + Math.round(b.dx), b.y + Math.round(b.dy));
     const fim = () => { b.dx = 0; b.dy = 0; posicionar(); b.ocupado = false; };
@@ -457,6 +509,7 @@ class Quarto extends Phaser.Scene {
       if (segundos === 0) obj.setAlpha(a);
       else this.tweens.add({ targets: obj, alpha: a, duration: segundos * 1000 });
     }
+    JANELA_VIVA.conferir(this, true);   // véu do céu e luz do sol mudam com o dia e a noite
   }
 
   update(time, delta) {
@@ -469,17 +522,12 @@ class Quarto extends Phaser.Scene {
     // Nuvens atravessam a janela devagar (fora do vidro ficam escondidas atrás da parede)
     const J = CONFIG.JANELA;
     for (const n of this.nuvens) {
-      n.posX += n.vel * seg;
+      n.posX += n.vel * (this.ventoFator || 1) * seg;   // com vento forte, as nuvens correm
       if (n.posX > J.X + J.LARGURA) this.sortearNuvem(n, false);
       n.x = Math.round(n.posX);
     }
-    // Passarinho atravessando a janela
-    const p = this.passaro;
-    if (p.voando) {
-      p.posX += J.PASSARO_VELOCIDADE * seg;
-      p.x = Math.round(p.posX);
-      if (p.x > J.X + J.LARGURA) { p.voando = false; p.setVisible(false); this.agendarPassaro(); }
-    }
+    // Visitas na janela, chuva, neve, folhas e raios (js/janela.js)
+    JANELA_VIVA.atualizar(this, seg);
     // Estrela cadente: anda na diagonal (2 para o lado, 1 para baixo) e apaga
     const e = this.cadente;
     if (e.caindo) {
@@ -494,6 +542,7 @@ class Quarto extends Phaser.Scene {
     // Respirar: metade do tempo 1 px para cima, metade no lugar
     const respira = (this.tempo % Q.RESPIRAR_SEGUNDOS) < Q.RESPIRAR_SEGUNDOS / 2 ? 0 : -1;
     this.atualizarBebeSinal(seg, respira);
+    EVENTOS.atualizar(this, seg);
     if (this.balao) this.mostrarBalao();
     if (this.botaoNec) {
       const N = CONFIG.NECESSIDADES;
@@ -511,7 +560,7 @@ class Quarto extends Phaser.Scene {
     const espera = Phaser.Math.FloatBetween(Q.PISCAR_MIN, Q.PISCAR_MAX) * 1000;
     this.time.delayedCall(espera, () => {
       // já está de olhos fechados (toque, choro ou esgotado)
-      if (this.olhosDoToque || ['chorando', 'forte', 'esgotado'].includes(this.poseAtual)) { this.agendarPiscada(); return; }
+      if (this.olhosDoToque || this.brincando || ['chorando', 'forte', 'esgotado'].includes(this.poseAtual)) { this.agendarPiscada(); return; }
       this.visual.piscar(true);
       this.time.delayedCall(Q.PISCAR_DURACAO * 1000, () => {
         if (!this.olhosDoToque) this.visual.piscar(false);
@@ -523,15 +572,21 @@ class Quarto extends Phaser.Scene {
   // Toque no bebê: fecha os olhos (sorrindo), dá um pulinho e solta um coração
   tocarBebe() {
     const Q = CONFIG.QUARTO;
+    if (this.dodoi && !this.painelAberto && !this.mamando) { EVENTOS.cuidarDodoi(this); return; }   // v0.0.57: põe o curativo
     if (this.pulando || this.mamando || this.painelAberto) return;
+    EVENTOS.cuidarSoluco(this);       // v0.0.58: carinho faz o soluço passar
+    this.susto = false;               // e acalma o susto do trovão
     this.pulando = true;
     NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BEBE);
+    VINCULO.mudar(CONFIG.VINCULO.TOQUE);
+    tocarSom(this, 'risada', { volume: 0.5 });
+    if (VINCULO.valor() >= CONFIG.VINCULO.DOIS_CORACOES_MIN) this.time.delayedCall(200, () => EVENTOS.coracao(this, 7));
     this.atualizarNecessidades();
     this.olhosDoToque = true;
     this.visual.piscar(true, true);     // olhos fechados sorrindo (^ ^)
     this.time.delayedCall(Q.OLHOS_FECHADOS_TOQUE * 1000, () => {
       this.olhosDoToque = false;
-      this.visual.piscar(false);
+      this.visual.piscar(!!this.brincando, true);   // brincando com o chocalho: volta aos olhinhos felizes
     });
     this.tweens.add({
       targets: this, pulo: Q.PULINHO_PIXELS, duration: 120, yoyo: true, ease: 'Sine.easeOut',
@@ -635,6 +690,7 @@ class Quarto extends Phaser.Scene {
     // Sinais (Etapa 8.2): o balão mostra a mais urgente; o bebê segue a pior
     this.grupoBalao = SINAIS.grupoDoBalao(n);
     this.sinalBebe = SINAIS.pior(n);
+    if (NEC.ativas().every(k => n[k] >= 100)) MOMENTOS.registrar('tudo_cheio');
     this.mostrarBalao();
     this.atualizarInfo();
     if (this.painelAberto) this.atualizarPainel();
@@ -645,6 +701,7 @@ class Quarto extends Phaser.Scene {
     if (this.painelAberto || this.mamando) return;
     const N = CONFIG.NECESSIDADES, P = N.PAINEL;
     this.painelAberto = true;
+    EVENTOS.aprendeu(this, 'painel');
     this.linhaSel = null;
     tocarSom(this, 'abrir');
 
@@ -759,6 +816,8 @@ class Quarto extends Phaser.Scene {
     if (!n) return;
     if (n.fome >= N.MAMADEIRA_RECUSA && n.sede >= N.MAMADEIRA_RECUSA) { this.recusar(); return; }
     this.mamando = true;
+    VINCULO.mudar(CONFIG.VINCULO.MAMADEIRA);
+    MOMENTOS.registrar('primeira_mamadeira');
     this.olhosDoToque = true;
     this.visual.piscar(true, true);       // olhos fechados, contente
     this.mamadeira.setVisible(true);
@@ -799,6 +858,8 @@ class Quarto extends Phaser.Scene {
   mostrarBalao() {
     const S = CONFIG.SINAIS, N = CONFIG.NECESSIDADES;
     if (this.recusando) return;                       // o "X" está na tela
+    if (this.dodoi) { EVENTOS.balaoDodoi(this); return; }   // v0.0.57: dodói, o balão pede um curativo
+    if (this.balaoIcone.texture.key !== 'icones_necessidades16') this.balaoIcone.setTexture('icones_necessidades16', 0);
     const g = this.grupoBalao;
     if (this.mamando || !g.length) { this.balao.setVisible(false); this.balao.x = N.BALAO_X; return; }
     const t = this.tempo || 0;                        // a cena pode ainda estar montando
@@ -829,7 +890,9 @@ class Quarto extends Phaser.Scene {
   // O bebê mostra a faixa da pior barra: triste, chorando, chorando forte ou esgotado
   atualizarBebeSinal(seg, respira) {
     const Q = CONFIG.QUARTO, S = CONFIG.SINAIS;
-    const pose = (this.mamando || this.recusando || this.olhosDoToque) ? 'nada' : this.sinalBebe;
+    let pose = (this.mamando || this.recusando || this.olhosDoToque || this.brincando) ? 'nada' : this.sinalBebe;
+    if (this.dodoi && !this.mamando && !this.olhosDoToque) pose = 'forte';   // v0.0.57: dodói, chora forte
+    else if (this.susto && (pose === 'nada' || pose === 'triste')) pose = 'chorando';   // v0.0.58: susto do trovão
     if (pose !== this.poseAtual) {
       this.poseAtual = pose;
       const chora = pose === 'chorando' || pose === 'forte';
@@ -850,6 +913,7 @@ class Quarto extends Phaser.Scene {
     }
     x += Math.round(this.recusaDx);
     this.visual.setPosition(x, y);
+    EVENTOS.seguirBebe(this, x, y, pose);
 
     // Lágrimas e som do choro
     if (pose === 'chorando' || pose === 'forte') {

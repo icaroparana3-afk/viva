@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.55';
+const VERSAO = '0.0.58';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -26,9 +26,13 @@ const ARQUIVOS = [
   './js/bebe.js',
   './js/bebe_visual.js',
   './js/botao.js',
+  './js/clima.js',
   './js/config.js',
+  './js/eventos.js',
+  './js/janela.js',
   './js/main.js',
   './js/mapa.js',
+  './js/momentos.js',
   './js/necessidades.js',
   './js/provisorios.js',
   './js/seguranca.js',
@@ -114,6 +118,7 @@ const ARQUIVOS = [
   './assets/ui/texto_titulo.png',
   './assets/ui/texto_voce_e.png',
   './assets/ui/x_nao.png',
+  './js/scenes/Album.js',
   './js/scenes/Boot.js',
   './js/scenes/Carregando.js',
   './js/scenes/Cegonha.js',
@@ -122,7 +127,21 @@ const ARQUIVOS = [
   './js/scenes/Perfil.js',
   './js/scenes/Quarto.js',
   './js/scenes/Regiao.js',
-  './js/scenes/TesteBebe.js'
+  './js/scenes/TesteBebe.js',
+  './assets/audio/provisorios/abrir.wav',
+  './assets/audio/provisorios/beijinho.wav',
+  './assets/audio/provisorios/chocalho.wav',
+  './assets/audio/provisorios/choro.wav',
+  './assets/audio/provisorios/choro_forte.wav',
+  './assets/audio/provisorios/chuva.wav',
+  './assets/audio/provisorios/clique.wav',
+  './assets/audio/provisorios/espirro.wav',
+  './assets/audio/provisorios/estouro.wav',
+  './assets/audio/provisorios/festa.wav',
+  './assets/audio/provisorios/hic.wav',
+  './assets/audio/provisorios/risada.wav',
+  './assets/audio/provisorios/toc.wav',
+  './assets/audio/provisorios/trovao.wav'
 ];
 
 // Instalação: guarda tudo (o Phaser também, para abrir sem internet)

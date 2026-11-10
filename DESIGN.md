@@ -71,7 +71,32 @@ Quarto (berço), sala (TV), varanda (brinquedos), banheiro (banheira), cozinha (
 - Nome do bebê: o jogador escolhe quando a cegonha entrega (2 a 12 letras). Aparece nas boas-vindas do quarto.
 - Brinquedos do chão do quarto reagem ao toque (pulam, balançam, o carrinho anda). Cada toque dá 5 de diversão. Janela: passarinho de dia, estrela cadente à noite.
 - Relógio da parede do quarto funciona: os ponteiros mostram a hora do jogo.
+- Gato da estante (v0.0.55–0.0.56): desenho do autor, rabo animado o tempo todo; tocar faz ele balançar como os brinquedos (sem diversão).
+
+## Eventos do bebê (v0.0.57)
+Coisas que acontecem sozinhas no quarto, só com o jogo aberto e o bebê bem (nenhuma barra chorando). Sem texto: o bebê não fala.
+- Imaginação: nuvem de pensamento com 3 coisas, uma depois da outra (gato, bola, coração; sol e passarinho de dia, lua e estrela à noite; mamadeira se tiver fome). Tocar estoura a bolha (+2 diversão).
+- Chocalho: o bebê brinca sozinho (+8 diversão).
+- Dodói: às vezes o chocalho bate na testa: galo, estrelinhas, choro forte e o balão pede um curativo. Tocar no bebê põe o curativo (fica 10 min reais). Ignorado: para sozinho em 45 s, mas perde 15 de diversão. No máximo 1 dodói a cada 30 min reais.
 - Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
+
+- v0.0.58: soluço (carinho ou mamadeira faz passar), espirro (o gato pula; mais no frio), beijinho (vínculo alto), susto com o trovão. Chocalho com 30% de dodói.
+- Dar o brinquedo: arrastar do chão até o berço; o bebê brinca (+12 diversão), com 30% de chance de se machucar (dodói).
+
+## Estações e clima (v0.0.58)
+- O calendário começa no mês real em que o bebê chegou. Cada estação dura 3 meses do jogo; ciclo verão → outono → inverno → primavera.
+- Verão: sol mais intenso, mais visitas na janela, chuva rápida e forte no fim da tarde de vez em quando (Sudeste, Centro-Oeste, Sul e Norte). No Nordeste, menos chuva e sol mais forte.
+- Outono: transição para o frio. Folhas secas passando pela janela, sol mais fraco, temperatura um pouco mais baixa em todas as regiões, menos visitas.
+- Inverno: frio forte no Sul e Sudeste, com dias e madrugadas nublados e chance de neve; seca e frio no Centro-Oeste; chuva frequente no Norte e Nordeste. Sem visitas na janela.
+- Primavera: volta o calor. Chuvas rápidas com raios e vento forte no Centro-Oeste e Sudeste; sol nas outras regiões; as visitas voltam, com menos frequência.
+- A temperatura já é calculada (região, estação, noite, chuva) e aparece ao tocar na janela. Vai servir para a roupa e o clima do bebê.
+
+## Vínculo, festas e álbum (v0.0.58)
+- Vínculo: valor escondido que sobe com carinho e cuidado e cai com descuido. Muda a recepção na volta, os corações do carinho e o beijinho espontâneo.
+- Recepção: ao voltar, o bebê bem cuidado recebe você com festa.
+- Mesversário a cada mês até 1 ano; depois, só aniversário (decisão do autor).
+- Álbum de momentos: as primeiras vezes e as festas, guardadas sozinhas, com o dia do jogo e a idade.
+- Tutorial: a mãozinha ensina o painel e os brinquedos, uma vez cada.
 
 ## Bebê
 - Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome. A mamadeira enche a fome e a sede juntas (decisão do autor, 2026-11-05). Depois, na cozinha.
