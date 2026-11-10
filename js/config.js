@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.59',
+  VERSAO: '0.0.60',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -81,7 +81,12 @@ const CONFIG = {
     abelha: false,            // assets/sprites/abelha.png — 2 quadros 7×6 (14×6), olhando para a direita
     balao_visita: false,      // assets/sprites/balao_visita.png — 7×11, BRANCO (o jogo pinta a cor)
     folha_seca: false,        // assets/sprites/folha_seca.png — 4 quadros 5×5 (20×5)
-    bolo: false,              // assets/sprites/bolo.png — 2 quadros 14×14 (28×14), a chama muda
+    bolo: false,              // (provisório antigo) assets/sprites/bolo.png — 2 quadros 14×14; substituído pelos bolos do autor abaixo
+    bolos_autor: true,        // v0.0.60: assets/sprites/bolo_menino.png e bolo_menina.png — 4 quadros 14×14 (56×14), a vela mexe
+    mesa_festa: true,         // v0.0.60: assets/sprites/mesa_menino.png e mesa_menina.png — 40×28, o bolo fica em cima
+    gato_susto: true,         // v0.0.60: assets/sprites/gato_susto.png — 42×29 (o gato pulando de susto)
+    icones_album_autor: true, // v0.0.60: assets/ui/album_dodoi.png, album_primavera.png, album_soluco.png — 12×12
+    botoes_album: true,       // v0.0.60: assets/ui/botao_voltar_album.png 52×16 e seta_esquerda/direita(_off).png 18×16
     icones_album: false,      // assets/ui/icones_album.png — 8 quadros 12×12 (96×12): chuva, neve, raio, folha, flor, bolo, soluço, espirro
     botao_album: false,       // assets/ui/botao_album.png — 14×14
     botoes_som: true,  // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada (do autor)
@@ -453,6 +458,10 @@ const CONFIG = {
       DIVERSAO_IGNORADO: -3
     },
     ESPIRRO: { FATOR_FRIO: 2 },   // no outono e no inverno o espirro sai 2× mais
+    GATO_SUSTO: {                 // v0.0.60: o gato pula de susto (desenho do autor 42×29)
+      DX: -11, DY: -9,            // onde fica o desenho em relação ao canto do gato da prateleira
+      PULO_PIXELS: 4, SEGUNDOS: 0.8
+    },
     TROVAO: { CHORO_SEGUNDOS: 3 } // o trovão assusta: o bebê pula e chora um pouquinho
   },
 
@@ -539,7 +548,11 @@ const CONFIG = {
   // Mesversário todo mês até 1 ano; depois, só aniversário.
   FESTA: {
     SEGUNDOS: 7, CONFETES: 40, BALOES: 4,
-    BOLO_X: 83, BOLO_Y: 258,
+    BOLO_X: 83, BOLO_Y: 258,      // só para o bolo provisório (sem a mesa)
+    MESA_X: 70, MESA_Y: 252,      // v0.0.60: mesinha 40×28 na frente do berço (canto superior esquerdo)
+    BOLO_NA_MESA_X: 13,           // o bolo 14×14 centrado no tampo
+    BOLO_NA_MESA_Y: -6,           // a base do bolo pousa no tampo (y do bolo = MESA_Y + isto)
+    VELA_FPS: 4,                  // a chama da vela (4 quadros do autor)
     TESTE_TOQUE_CAIXINHA: true    // TESTE: tocar na caixinha do nome adianta 1 mês do jogo. Tirar antes de lançar.
   },
 

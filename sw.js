@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.59';
+const VERSAO = '0.0.60';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -53,6 +53,8 @@ const ARQUIVOS = [
   './assets/sprites/bebe_olhos.png',
   './assets/sprites/berco_frente.png',
   './assets/sprites/berco_tras.png',
+  './assets/sprites/bolo_menina.png',
+  './assets/sprites/bolo_menino.png',
   './assets/sprites/brinquedo_menina_blocos.png',
   './assets/sprites/brinquedo_menina_coelho.png',
   './assets/sprites/brinquedo_menina_elefante.png',
@@ -65,6 +67,9 @@ const ARQUIVOS = [
   './assets/sprites/cesta.png',
   './assets/sprites/chocalho.png',
   './assets/sprites/gato_prateleira.png',
+  './assets/sprites/gato_susto.png',
+  './assets/sprites/mesa_menina.png',
+  './assets/sprites/mesa_menino.png',
   './assets/sprites/moita_direita.png',
   './assets/sprites/moita_esquerda.png',
   './assets/sprites/nuvem1.png',
@@ -72,6 +77,9 @@ const ARQUIVOS = [
   './assets/sprites/passaro.png',
   './assets/sprites/quadros_parede.png',
   './assets/sprites/toalha.png',
+  './assets/ui/album_dodoi.png',
+  './assets/ui/album_primavera.png',
+  './assets/ui/album_soluco.png',
   './assets/ui/botao_comecar.png',
   './assets/ui/botao_configuracoes.png',
   './assets/ui/botao_continuar_historia.png',
@@ -93,6 +101,7 @@ const ARQUIVOS = [
   './assets/ui/botao_som.png',
   './assets/ui/botao_som_off.png',
   './assets/ui/botao_voltar.png',
+  './assets/ui/botao_voltar_album.png',
   './assets/ui/fundo_perfil.png',
   './assets/ui/humor.png',
   './assets/ui/icone.png',
@@ -113,6 +122,10 @@ const ARQUIVOS = [
   './assets/ui/painel_necessidades.png',
   './assets/ui/quarto_menina.png',
   './assets/ui/quarto_menino.png',
+  './assets/ui/seta_direita.png',
+  './assets/ui/seta_direita_off.png',
+  './assets/ui/seta_esquerda.png',
+  './assets/ui/seta_esquerda_off.png',
   './assets/ui/texto_nome.png',
   './assets/ui/texto_seu_perfil.png',
   './assets/ui/texto_sua_regiao.png',

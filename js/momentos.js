@@ -20,10 +20,10 @@ const MOMENTOS = {
     tudo_cheio:          ['Tudo 100%: muito bem cuidad{o}!', 'humor', 0],
     primeira_imaginacao: ['Primeira imaginação', 'pensamentos', 4],
     primeiro_chocalho:   ['Brincou de chocalho', 'chocalho', 0],
-    primeiro_dodoi:      ['Primeiro dodói', 'icone_curativo', null],
+    primeiro_dodoi:      ['Primeiro dodói', 'album_dodoi', null],
     primeiro_curativo:   ['Ganhou o primeiro curativo', 'icone_curativo', null],
     primeiro_brinquedo:  ['Brincou no berço', 'pensamentos', 6],
-    primeiro_soluco:     ['Primeiro soluço', 'icones_album', 6],
+    primeiro_soluco:     ['Primeiro soluço', 'album_soluco', null],
     primeiro_espirro:    ['Primeiro espirro', 'icones_album', 7],
     primeira_bolha:      ['Estourou a bolha de pensamento', 'pensamentos', 7],
     primeira_recepcao:   ['Recebeu você com festa', 'coracao', null],
@@ -35,7 +35,7 @@ const MOMENTOS = {
     estacao_verao:       ['Primeiro verão', 'pensamentos', 2],
     estacao_outono:      ['Primeiro outono', 'icones_album', 3],
     estacao_inverno:     ['Primeiro inverno', 'icones_album', 1],
-    estacao_primavera:   ['Primeira primavera', 'icones_album', 4],
+    estacao_primavera:   ['Primeira primavera', 'album_primavera', null],
     visita_borboleta:    ['Viu uma borboleta', 'borboleta', 0],
     visita_abelha:       ['Viu uma abelha', 'abelha', 0],
     visita_balao:        ['Viu um balão passar', 'balao_visita', null],
@@ -46,6 +46,16 @@ const MOMENTOS = {
   lista() {
     const s = Estado.dados || Estado.carregar();
     return (s && s.momentos) || [];
+  },
+
+  // Ícone para o álbum: [textura, quadro]. Usa o desenho de agora (TIPOS), e não o
+  // guardado no save, para que um momento antigo também ganhe o desenho novo.
+  // Festas usam o bolo do autor (azul para menino, rosa para menina).
+  icone(m, sexo) {
+    const base = m.id.replace(/_\d+$/, '');
+    if (base === 'mesversario' || base === 'aniversario') return [sexo === 'F' ? 'bolo_menina' : 'bolo_menino', 0];
+    const t = MOMENTOS.TIPOS[m.id] || MOMENTOS.TIPOS[base];
+    return t ? [t[1], t[2]] : [m.textura, m.quadro];
   },
 
   tem(id) {

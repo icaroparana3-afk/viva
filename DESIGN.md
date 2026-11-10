@@ -81,6 +81,7 @@ Coisas que acontecem sozinhas no quarto, só com o jogo aberto e o bebê bem (ne
 - Abajur (no criado-mudo): tocar acende e apaga. É SÓ LUZ, sem ligação com o sono do bebê (decisão do autor, 2026-11-05): à noite ele clareia o quarto escuro sem fazer o bebê dormir. O jeito de pôr o bebê para dormir será decidido na etapa do sono.
 
 - v0.0.58: soluço (carinho ou mamadeira faz passar), espirro (o gato pula; mais no frio), beijinho (vínculo alto), susto com o trovão. Chocalho com 10% de dodói (era 30% na v0.0.58).
+- Festa (v0.0.60): mesinha 40×28 no tapete com o bolo do autor em cima (azul para menino, rosa para menina), vela animada a 4 quadros por segundo. No espirro, o gato da prateleira pula de susto (desenho do autor 42×29).
 - Chocalho: desenho do autor 12×12 (1 quadro); o jogo balança girando ±15° pela base do cabo.
 - Dar o brinquedo: arrastar do chão até o berço; o bebê brinca (+12 diversão), com 15% de chance de se machucar (dodói; era 30% na v0.0.58).
 

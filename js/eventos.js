@@ -389,10 +389,26 @@ const EVENTOS = {
   assustarGato(q) {
     const g = q.gatoBrinq;
     if (!g || g.ocupado) return;
-    const acao = g.acao;
-    g.acao = 'pulinhos';
-    q.mexerBrinquedo(g);
-    g.acao = acao;
+    if (!q.textures.exists('gato_susto')) {          // sem o desenho do susto: só uns pulinhos
+      const acao = g.acao;
+      g.acao = 'pulinhos';
+      q.mexerBrinquedo(g);
+      g.acao = acao;
+      return;
+    }
+    // v0.0.60: o gato some da prateleira e aparece o desenho dele pulando de susto
+    const G = CONFIG.EVENTOS.GATO_SUSTO;
+    g.ocupado = true;
+    const x = g.x + G.DX, y = g.y + G.DY;
+    const susto = q.add.image(x, y, 'gato_susto').setOrigin(0, 0);
+    q.children.moveAbove(susto, g.img);
+    g.img.setVisible(false);
+    susto.py = y;
+    q.tweens.add({
+      targets: susto, py: y - G.PULO_PIXELS, duration: G.SEGUNDOS * 500, yoyo: true, ease: 'Sine.easeOut',
+      onUpdate: () => { susto.y = Math.round(susto.py); },
+      onComplete: () => { susto.destroy(); g.img.setVisible(true); g.ocupado = false; }
+    });
   },
 
   // ---------- Soluço: tocar no bebê (carinho) ou dar a mamadeira faz passar ----------
@@ -597,10 +613,21 @@ const EVENTOS = {
     mostrarAvisoCaixa(q, texto, 44, F.SEGUNDOS - 2);
     MOMENTOS.registrar((tipo === 'mes' ? 'mesversario_' : 'aniversario_') + n, { n });
     tocarSom(q, 'festa', { volume: 0.8 });
-    // Bolo com velinha
-    const bolo = q.add.sprite(F.BOLO_X, F.BOLO_Y, 'bolo', 0).setOrigin(0, 0).setDepth(40).setAlpha(0);
-    q.tweens.add({ targets: bolo, alpha: 1, duration: 300 });
-    const vela = q.time.addEvent({ delay: 180, loop: true, callback: () => bolo.setFrame(bolo.frame.name === 0 ? 1 : 0) });
+    // Bolo com velinha (v0.0.60: bolo e mesinha do autor, azul para menino e rosa para menina)
+    const lado = q.bebe.sexo === 'F' ? 'menina' : 'menino';
+    const chaveBolo = q.textures.exists('bolo_' + lado) ? 'bolo_' + lado : 'bolo';
+    const temMesa = q.textures.exists('mesa_' + lado);
+    const mesa = temMesa ? q.add.image(F.MESA_X, F.MESA_Y, 'mesa_' + lado).setOrigin(0, 0).setDepth(40).setAlpha(0) : null;
+    const bolo = temMesa
+      ? q.add.sprite(F.MESA_X + F.BOLO_NA_MESA_X, F.MESA_Y + F.BOLO_NA_MESA_Y, chaveBolo, 0)
+      : q.add.sprite(F.BOLO_X, F.BOLO_Y, chaveBolo, 0);
+    bolo.setOrigin(0, 0).setDepth(40).setAlpha(0);
+    const enfeites = mesa ? [mesa, bolo] : [bolo];
+    q.tweens.add({ targets: enfeites, alpha: 1, duration: 300 });
+    const quadros = Math.max(1, q.textures.get(chaveBolo).frameTotal - 1);
+    let quadro = 0;
+    const vela = q.time.addEvent({ delay: Math.round(1000 / F.VELA_FPS), loop: true,
+      callback: () => { quadro = (quadro + 1) % quadros; bolo.setFrame(quadro); } });
     // Confete caindo
     const cores = [0xff6e8c, 0xffd860, 0x6ec8ff, 0x8ce07a, 0xc89cff, 0xffffff];
     const confete = [];
@@ -635,8 +662,8 @@ const EVENTOS = {
     EVENTOS.pulinho(q, 3, 120, 3);
     q.time.delayedCall(F.SEGUNDOS * 1000, () => {
       vela.remove(); caiu.remove();
-      q.tweens.add({ targets: [bolo, ...confete, ...baloes], alpha: 0, duration: 500,
-        onComplete: () => [bolo, ...confete, ...baloes].forEach(o => o.destroy()) });
+      q.tweens.add({ targets: [...enfeites, ...confete, ...baloes], alpha: 0, duration: 500,
+        onComplete: () => [...enfeites, ...confete, ...baloes].forEach(o => o.destroy()) });
       q.olhosDoToque = false;
       if (!q.mamando) q.visual.piscar(false);
       q.festaAgora = false;

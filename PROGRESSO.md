@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -150,6 +150,13 @@
   - Arte provisória feita por código (`criarEventosProvisorios` em `provisorios.js`): `balao_pensamento` 34×30, `pensamentos` 96×12 (8 quadros 12×12), `chocalho` 22×12 (2 quadros 11×12), `curativo` 7×4, `galo` 4×3 e `icone_curativo` 16×16. Cada uma tem uma chave em `ARTES_PRONTAS` (false até o autor mandar).
   - TESTE: tocar nos quadros da parede dispara imaginação → chocalho → dodói (`EVENTOS.TESTE_TOQUE_QUADROS`). Tirar antes de lançar.
   - Testado no navegador: os 3 eventos, a bolha estourando, o curativo, o curativo depois de recarregar, o sorteio automático e nenhum evento com o bebê chorando, sem erros.
+- **v0.0.60 — desenhos do autor na festa, no gato e no álbum** (originais guardados em `assets/originais/v0059_autor/`):
+  - **Bolos:** `assets/sprites/bolo_menino.png` (azul) e `bolo_menina.png` (rosa), 4 quadros 14×14 cada (56×14). A vela troca de quadro a 4 por segundo (`FESTA.VELA_FPS`). O bolo é escolhido pelo sexo do bebê (`ARTES_PRONTAS.bolos_autor`).
+  - **Mesinhas:** `mesa_menino.png` (azul) e `mesa_menina.png` (rosa), 40×28, no tapete na frente do berço (`FESTA.MESA_X` 70, `MESA_Y` 252). O bolo fica centrado no tampo (`BOLO_NA_MESA_X` 13, `BOLO_NA_MESA_Y` −6). Mesa e bolo aparecem e somem juntos (`ARTES_PRONTAS.mesa_festa`). Sem a mesa, o bolo volta para `BOLO_X`/`BOLO_Y`.
+  - **Gato do susto:** `gato_susto.png` 42×29. No espirro, o gato da prateleira some e aparece o desenho dele pulando (sobe 4 px e volta, 0,8 s), depois volta ao normal (`EVENTOS.GATO_SUSTO`, `ARTES_PRONTAS.gato_susto`). Sem o desenho, continuam os pulinhos.
+  - **Ícones do álbum** (assets/ui, 12×12): `album_dodoi.png` (cara triste, primeiro dodói), `album_primavera.png` (flor, primeira primavera), `album_soluco.png` (balão "HIC", primeiro soluço). Mesversário e aniversário mostram o bolo do autor (azul ou rosa). O álbum agora usa o desenho atual de cada momento (`MOMENTOS.icone`), então momentos antigos do save também ganham o desenho novo.
+  - **Botões do álbum** (assets/ui): `botao_voltar_album.png` 52×16 e `seta_esquerda.png`, `seta_esquerda_off.png`, `seta_direita.png`, `seta_direita_off.png` 18×16. A seta usa o desenho apagado quando não há página para aquele lado; ao apertar, o botão afunda 1 pixel (`ARTES_PRONTAS.botoes_album`).
+  - Testado (menino e menina): susto do gato, festa com mesa e bolo animado, álbum com os ícones novos e as setas nas duas páginas, ida e volta, sem erros.
 - **v0.0.59 — chocalho do autor, menos dodói e o jogo não trava mais por um erro só:**
   - **Travamento ao voltar do álbum** (foto do autor: "Cannot read properties of null (reading 'drawImage')", phaser.min.js, v0.0.58). Não deu para repetir no navegador de teste (40+ idas e voltas no PC e no celular Android emulado, com eventos, chuva, toques rápidos e perda do contexto gráfico simulada), e o código do jogo não chama `drawImage`, então o erro vem de dentro do Phaser, no celular. Duas mudanças em `js/seguranca.js`:
     - `SEGURANCA.protegerQuadros()`: um erro dentro de um quadro do jogo não para mais o jogo. O quadro com erro é pulado e o jogo segue. O aviso "O jogo travou" só aparece se o erro se repetir em todo quadro por ~1,5 s (`QUADROS_COM_ERRO` = 90).

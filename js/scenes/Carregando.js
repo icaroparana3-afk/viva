@@ -120,6 +120,14 @@ class Carregando extends Phaser.Scene {
     if (EV.balao_visita) this.load.image('balao_visita', './assets/sprites/balao_visita.png');
     if (EV.folha_seca) this.load.spritesheet('folha_seca', './assets/sprites/folha_seca.png', { frameWidth: 5, frameHeight: 5 });
     if (EV.bolo) this.load.spritesheet('bolo', './assets/sprites/bolo.png', { frameWidth: 14, frameHeight: 14 });
+    // v0.0.60: festa, gato e álbum com os desenhos do autor
+    if (EV.bolos_autor) ['menino', 'menina'].forEach(q =>
+      this.load.spritesheet('bolo_' + q, './assets/sprites/bolo_' + q + '.png', { frameWidth: 14, frameHeight: 14 }));
+    if (EV.mesa_festa) ['menino', 'menina'].forEach(q => this.load.image('mesa_' + q, './assets/sprites/mesa_' + q + '.png'));
+    if (EV.gato_susto) this.load.image('gato_susto', './assets/sprites/gato_susto.png');
+    if (EV.icones_album_autor) ['dodoi', 'primavera', 'soluco'].forEach(n => this.load.image('album_' + n, './assets/ui/album_' + n + '.png'));
+    if (EV.botoes_album) ['botao_voltar_album', 'seta_esquerda', 'seta_esquerda_off', 'seta_direita', 'seta_direita_off'].forEach(n =>
+      this.load.image(n, './assets/ui/' + n + '.png'));
     if (EV.icones_album) this.load.spritesheet('icones_album', './assets/ui/icones_album.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.botao_album) this.load.image('botao_album', './assets/ui/botao_album.png');
     this.load.spritesheet('gato', './assets/sprites/gato_prateleira.png', { frameWidth: CONFIG.QUARTO.GATO_LARGURA, frameHeight: CONFIG.QUARTO.GATO_ALTURA });  // v0.0.56: 10 quadros 19×20 (animação do autor reduzida), toca em loop
