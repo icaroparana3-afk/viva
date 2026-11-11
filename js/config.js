@@ -103,6 +103,7 @@ const CONFIG = {
     maozinha: true,               // assets/ui/maozinha.png 36×18 (2 quadros 18×18, apontando para a esquerda) — do autor
     sinais: false,                // Etapa 8.2 (ficam provisórios por decisão do autor): em assets/ui selos.png 32×8 e
                                   //   balao_pedido.png 26×24; em assets/sprites bebe_choro.png e bebe_esgotado.png 32×32
+    selo_esgotado: true,           // v0.0.61: assets/ui/selo_esgotado.png — 8×8, do autor (substitui só o 4º selo de selos.png)
     painel_necessidades: true,    // assets/ui: painel_necessidades 164×196, linha_necessidade(_sel) 156×32, moldura_icone 22×22,
                                   //   botao_fechar 16×16 — redesenhados no tamanho do jogo a partir do modelo do autor
                                   //   (assets/originais/painel_necessidades_modelo.png) (v0.0.46)

@@ -429,8 +429,13 @@ function criarSinaisProvisorios(cena) {
   pintarPixels(c, marcar(marcar(selo('b'), [[2, 3], [5, 3], [3, 5], [4, 5]], 'k'), [[1, 4], [6, 4]], 'l'), pal, 8, 0);   // chorando
   pintarPixels(c, marcar(marcar(selo('v'), [[2, 2], [5, 2], [3, 4], [4, 4], [3, 5], [4, 5]], 'k'),
     [[1, 3], [1, 4], [1, 5], [6, 3], [6, 4], [6, 5]], 'l'), pal, 16, 0);                                      // chorando forte
-  pintarPixels(c, marcar(marcar(marcar(selo('a'), [[1, 2], [3, 2], [2, 3], [1, 4], [3, 4], [4, 2], [6, 2], [5, 3], [4, 4], [6, 4]], 'k'),
-    [[4, 6]], 'p'), [[7, 0], [7, 1]], 'l'), pal, 24, 0);                                                      // esgotado (X, língua, suor)
+  // esgotado: desenho do autor (v0.0.61) se já carregado, senão o provisório (X, língua, suor)
+  if (cena.textures.exists('selo_esgotado')) {
+    c.drawImage(cena.textures.get('selo_esgotado').getSourceImage(), 24, 0);
+  } else {
+    pintarPixels(c, marcar(marcar(marcar(selo('a'), [[1, 2], [3, 2], [2, 3], [1, 4], [3, 4], [4, 2], [6, 2], [5, 3], [4, 4], [6, 4]], 'k'),
+      [[4, 6]], 'p'), [[7, 0], [7, 1]], 'l'), pal, 24, 0);
+  }
   registrarQuadros(t, 8, 8, 4);
   t.refresh();
   }

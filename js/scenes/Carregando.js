@@ -80,6 +80,7 @@ class Carregando extends Phaser.Scene {
     if (P.humor) this.load.spritesheet('humor', './assets/ui/humor.png', { frameWidth: 12, frameHeight: 12 });
     if (P.x_nao) this.load.image('x_nao', './assets/ui/x_nao.png');
     if (P.maozinha) this.load.spritesheet('maozinha', './assets/ui/maozinha.png', { frameWidth: 18, frameHeight: 18 });
+    if (P.selo_esgotado) this.load.image('selo_esgotado', './assets/ui/selo_esgotado.png');   // v0.0.61: 1 selo só, 8×8 (do autor)
     if (P.sinais) {   // Etapa 8.2: sinais de cuidado
       this.load.spritesheet('selos', './assets/ui/selos.png', { frameWidth: 8, frameHeight: 8 });
       this.load.image('balao_pedido', './assets/ui/balao_pedido.png');

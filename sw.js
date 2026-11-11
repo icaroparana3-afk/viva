@@ -122,6 +122,7 @@ const ARQUIVOS = [
   './assets/ui/painel_necessidades.png',
   './assets/ui/quarto_menina.png',
   './assets/ui/quarto_menino.png',
+  './assets/ui/selo_esgotado.png',
   './assets/ui/seta_direita.png',
   './assets/ui/seta_direita_off.png',
   './assets/ui/seta_esquerda.png',
