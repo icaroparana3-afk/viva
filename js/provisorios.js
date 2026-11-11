@@ -684,3 +684,115 @@ function criarClimaProvisorio(cena) {
     'oVvwvvpvvvwvvo', 'oVvwvvvvvvwvvo', 'oVvwwwwwwwwvvo', 'oVvvvvvvvvvvvo', 'oVvvvvvvvvvvvo', 'oVVVVVVVVVVVVo',
     'owwwwwwwwwwwwo', '.oooooooooooo.']]);
 }
+
+// ---------- Brincadeiras e câmera (v0.0.62) ----------
+// Provisórios até o autor mandar os PNGs (ver ARTES_PRONTAS em config.js):
+//   bolha 24×12 (2 quadros 12×12: inteira, estourando)
+//   mao_achou 28×34 (a mão esquerda; o jogo espelha para a direita)
+//   livro_aberto 150×96 (o livro aberto, páginas em branco)
+//   bloco_brinquedo 42×14 (3 quadros 14×14: A vermelho, B azul, C amarelo)
+//   icones_atividades 48×12 (4 quadros 12×12: bolhas, cadê-achou, livro, blocos)
+//   botao_camera 14×14, moldura_camera 84×84, botao_foto 26×26
+function criarAtividadesProvisorio(cena) {
+  const falta = (nome) => !cena.textures.exists(nome);
+  const pal = {
+    o: '#2a1838', w: '#ffffff', W: '#e8eef8', b: '#9ad8ff', B: '#4a9ad8', k: '#141414', n: '#7a4a2a',
+    s: '#f6cfa8', S: '#d9a77c', c: '#fff4dc', C: '#e6d2a8', r: '#e04848', R: '#a02828', u: '#3d8ad0', U: '#24578a',
+    y: '#ffd860', Y: '#c89a20', v: '#8a5ad0', V: '#6a3aa8', p: '#ff8aa8', g: '#8ce07a', a: '#9aa0b0', A: '#5a6070'
+  };
+  const pintar = (nome, w, h, mapas, qw) => {
+    if (!falta(nome)) return;
+    const t = cena.textures.createCanvas(nome, w, h);
+    mapas.forEach((m, i) => pintarPixels(t.getContext(), m, pal, i * (qw || w), 0));
+    if (mapas.length > 1) registrarQuadros(t, qw, h, mapas.length);
+    t.refresh();
+  };
+  pintar('bolha', 24, 12, [
+    ['....bbbb....', '..bb....bb..', '.b..ww....b.', '.b.w......b.', 'b..w.......b', 'b..........b',
+     'b..........b', 'b.........Bb', '.b.......B.b', '.b......BB..', '..bb..BB.b..', '....bbbb....'],
+    ['.....w......', '..w.....w...', '....b.b.....', '.w.b...b..w.', '...........b', 'wb.........w',
+     '...........b', '.w.b...b....', '....b.b..w..', '..w.........', '......w.....', '............']], 12);
+  pintar('mao_achou', 28, 34, [[
+    '..........nn................', '.........nssn..nn...........', '.........nssn.nssn..........', '.....nn..nssn.nssn..........',
+    '....nssn.nssn.nssn..nn......', '....nssn.nssn.nssn.nssn.....', '....nssn.nssn.nssn.nssn.....', '....nssn.nssn.nssn.nssn.....',
+    '....nssn.nssn.nssn.nssn.....', '....nssnnssnnnssnnnssn......', '....nssssssssssssssssn......', '....nssssssssssssssssn..nn..',
+    '....nssssssssssssssssn.nssn.', '....nsssssssssssssssssnsssn.', '....nssssssssssssssssssssn..', '....nssssssssssssssssssSn...',
+    '....nsssssssssssssssssSn....', '....nSssssssssssssssssSn....', '.....nsssssssssssssssSn.....', '.....nSsssssssssssssSn......',
+    '......nsssssssssssssn.......', '......nSssssssssssSSn.......', '.......nsssssssssssn........', '.......nsssssssssssn........',
+    '.......nsssssssssssn........', '.......nsssssssssssn........', '.......nsssssssssssn........', '.......nSSSSSSSSSSSn........',
+    '.......nnnnnnnnnnnnn........', '.......nppppppppppppn.......', '.......npppppppppppn........', '.......npppppppppppn........',
+    '.......npppppppppppn........', '.......nnnnnnnnnnnnn........']]);
+  if (falta('livro_aberto')) {
+    const t = cena.textures.createCanvas('livro_aberto', 150, 96);
+    const c = t.getContext();
+    c.fillStyle = '#7a3a2a'; c.fillRect(0, 4, 150, 92);                 // capa
+    c.fillStyle = '#5a2418'; c.fillRect(0, 92, 150, 4);
+    c.fillStyle = '#fff4dc'; c.fillRect(4, 0, 69, 90); c.fillRect(77, 0, 69, 90);   // páginas
+    c.fillStyle = '#e6d2a8'; c.fillRect(67, 0, 6, 90); c.fillRect(77, 0, 6, 90);    // sombra da dobra
+    c.fillStyle = '#c8b088'; c.fillRect(73, 0, 4, 92);                              // lombada
+    c.fillStyle = '#e6d2a8'; c.fillRect(4, 88, 69, 2); c.fillRect(77, 88, 69, 2);
+    t.refresh();
+  }
+  if (falta('bloco_brinquedo')) {
+    const t = cena.textures.createCanvas('bloco_brinquedo', 42, 14);
+    const c = t.getContext();
+    const letras = {
+      A: ['.www.', 'w...w', 'wwwww', 'w...w', 'w...w'],
+      B: ['wwww.', 'w...w', 'wwww.', 'w...w', 'wwww.'],
+      C: ['.wwww', 'w....', 'w....', 'w....', '.wwww']
+    };
+    [['A', '#e04848', '#a02828', '#ff8080'], ['B', '#3d8ad0', '#24578a', '#7ab8f0'], ['C', '#ffd860', '#c89a20', '#fff0a0']]
+      .forEach(([l, cor, esc, clara], i) => {
+        const x = i * 14;
+        c.fillStyle = '#2a1838'; c.fillRect(x, 0, 14, 14);
+        c.fillStyle = esc; c.fillRect(x + 1, 1, 12, 12);
+        c.fillStyle = cor; c.fillRect(x + 1, 1, 11, 11);
+        c.fillStyle = clara; c.fillRect(x + 1, 1, 11, 1); c.fillRect(x + 1, 1, 1, 11);
+        pintarPixels(c, letras[l], { w: '#ffffff' }, x + 4, 4);
+      });
+    registrarQuadros(t, 14, 14, 3);
+    t.refresh();
+  }
+  pintar('icones_atividades', 48, 12, [
+    ['............', '..bbb.......', '.b.wwb......', '.bw..b..bb..', '.b...b.bwwb.', '..bbb..b..b.',
+     '........bb..', '...bb.......', '..bwwb......', '..b..b......', '...bb.......', '............'],
+    ['..n.n.n.....', '.nsnsnsn....', '.nsnsnsn.n..', '.nsssssnnsn.', '.nssssssssn.', '.nssssssssn.',
+     '..nsssssssn.', '..nssssssn..', '...nssssn...', '...nssssn...', '...nnnnnn...', '............'],
+    ['............', '.nnnn..nnnn.', 'nccccnnccccn', 'ncnncnncnncn', 'nccccnnccccn', 'ncnncnncnccn',
+     'nccccnnccccn', 'ncnncnncnncn', 'nccccnnccccn', '.nnnnnnnnnn.', '............', '............'],
+    ['....ooooo...', '....orrro...', '....orwro...', '....orrro...', '.oooooooooo.', '.ouuuuoyyyo.',
+     '.ouwwuoywyo.', '.ouwuuoywyo.', '.ouwwuoyyyo.', '.ouuuuoyyyo.', '.oooooooooo.', '............']], 12);
+  pintar('botao_camera', 14, 14, [[
+    '.oooooooooooo.', 'oVvvvvvvvvvvvo', 'oVvvvaaavvvvvo', 'oVvaaaaaaaavvo', 'oVvaAAAAAAavvo', 'oVvaAwwwwAavvo',
+    'oVvaAwkkwAavvo', 'oVvaAwkkwAavvo', 'oVvaAwwwwAavvo', 'oVvaAAAAAAavvo', 'oVvaaaaaaaavvo', 'oVVVVVVVVVVVVo',
+    'owwwwwwwwwwwwo', '.oooooooooooo.']]);
+  if (falta('moldura_camera')) {
+    const t = cena.textures.createCanvas('moldura_camera', 84, 84);
+    const c = t.getContext();
+    const canto = (x, y, dx, dy) => {
+      c.fillStyle = '#2a1838';
+      c.fillRect(x, y, 12 * dx || 1, 3); c.fillRect(x, y, 3, 12 * dy || 1);
+    };
+    // cantos brancos com contorno escuro
+    [[0, 0], [72, 0], [0, 72], [72, 72]].forEach(([x, y]) => {
+      const h = x === 0 ? 0 : 9, v = y === 0 ? 0 : 9;
+      c.fillStyle = '#2a1838'; c.fillRect(x, y + v, 12, 3); c.fillRect(x + h, y, 3, 12);
+      c.fillStyle = '#ffffff'; c.fillRect(x + 1, y + v + 1, 10, 1); c.fillRect(x + h + 1, y + 1, 1, 10);
+    });
+    c.fillStyle = '#ffffff'; c.fillRect(41, 39, 2, 6); c.fillRect(39, 41, 6, 2);   // mira no meio
+    t.refresh();
+  }
+  if (falta('botao_foto')) {
+    const t = cena.textures.createCanvas('botao_foto', 26, 26);
+    const c = t.getContext();
+    const disco = (r, cor) => {
+      c.fillStyle = cor;
+      for (let y = 0; y < 26; y++) for (let x = 0; x < 26; x++) {
+        const dx = x - 12.5, dy = y - 12.5;
+        if (dx * dx + dy * dy <= r * r) c.fillRect(x, y, 1, 1);
+      }
+    };
+    disco(13, '#2a1838'); disco(12, '#ffffff'); disco(10, '#2a1838'); disco(9, '#e8eef8'); disco(7, '#ffffff');
+    t.refresh();
+  }
+}

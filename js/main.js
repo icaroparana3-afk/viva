@@ -18,7 +18,7 @@ const jogo = new Phaser.Game({
     mode: Phaser.Scale.FIT,               // amplia até caber na tela, sem cortar
     autoCenter: Phaser.Scale.CENTER_BOTH  // centraliza
   },
-  scene: [Boot, Carregando, Menu, Perfil, Regiao, Cegonha, Quarto, Album, Configuracoes, TesteBebe] // lista de cenas (vai crescer a cada etapa)
+  scene: [Boot, Carregando, Menu, Perfil, Regiao, Cegonha, Quarto, Album, Brincadeira, Configuracoes, TesteBebe] // lista de cenas (vai crescer a cada etapa)
 });
 
 // Guarda "a última vez que o jogador esteve aqui" e percebe quando ele volta (js/tempo.js)

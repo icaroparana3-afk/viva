@@ -24,15 +24,21 @@ class Album extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO
     }).setOrigin(0.5, 0);
     if (CONFIG.VINCULO.TESTE_MOSTRAR) {
-      escrever(this, CONFIG.LARGURA / 2, 20, '(teste) vínculo: ' + Math.round(VINCULO.valor()), {
-        fontFamily: 'monospace', fontSize: '7px', color: '#8a7f96'
-      }).setOrigin(0.5, 0);
+      escrever(this, CONFIG.LARGURA - 2, 1, '(teste) vínculo ' + Math.round(VINCULO.valor()), {
+        fontFamily: 'monospace', fontSize: '6px', color: '#8a7f96'
+      }).setOrigin(1, 0);
     }
 
     this.momentos = MOMENTOS.lista().slice().sort((a, b) => (b.dia - a.dia) || (b.em - a.em));   // o mais novo primeiro
+    this.fotos = FOTOS.lista().slice().reverse();                                               // v0.0.62: a mais nova primeiro
+    this.modo = 'momentos';
+    this.vendoFoto = null;
     this.pagina = 0;
-    this.paginas = Math.max(1, Math.ceil(this.momentos.length / A.POR_PAGINA));
     this.itens = [];
+
+    // v0.0.62: abas "Momentos" e "Fotos"
+    this.abaMomentos = criarOpcao(this, 28, 19, 60, 13, 'Momentos', () => this.mudarModo('momentos'), 8);
+    this.abaFotos = criarOpcao(this, 92, 19, 60, 13, 'Fotos (' + this.fotos.length + ')', () => this.mudarModo('fotos'), 8);
 
     if (this.textures.exists('botao_voltar_album')) {
       // v0.0.60: botões desenhados pelo autor (a seta apagada tem o próprio desenho)
@@ -71,6 +77,13 @@ class Album extends Phaser.Scene {
     return obj;
   }
 
+  mudarModo(modo) {
+    if (this.vendoFoto) return;
+    this.modo = modo;
+    this.pagina = 0;
+    this.mostrarPagina();
+  }
+
   mudarPagina(d) {
     const p = this.pagina + d;
     if (p < 0 || p >= this.paginas) return;
@@ -82,9 +95,15 @@ class Album extends Phaser.Scene {
     const U = CONFIG.UI, A = CONFIG.ALBUM;
     this.itens.forEach(o => o.destroy());
     this.itens = [];
+    const porPagina = this.modo === 'fotos' ? CONFIG.FOTOS.POR_PAGINA : A.POR_PAGINA;
+    const total = this.modo === 'fotos' ? this.fotos.length : this.momentos.length;
+    this.paginas = Math.max(1, Math.ceil(total / porPagina));
     this.textoPagina.setText((this.pagina + 1) + '/' + this.paginas);
     this.anterior.ativar(this.pagina > 0);
     this.proxima.ativar(this.pagina < this.paginas - 1);
+    this.abaMomentos.marcar(this.modo === 'momentos');
+    this.abaFotos.marcar(this.modo === 'fotos');
+    if (this.modo === 'fotos') { this.mostrarFotos(); return; }
 
     if (!this.momentos.length) {
       this.itens.push(escrever(this, CONFIG.LARGURA / 2, 140, 'Nenhum momento ainda.\nCuide do bebê e volte aqui!', {
@@ -115,5 +134,60 @@ class Album extends Phaser.Scene {
         fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6'
       }));
     });
+  }
+
+  // ---------- v0.0.62: fotos (4 colunas × 5 linhas de miniaturas 40×40) ----------
+  mostrarFotos() {
+    const F = CONFIG.FOTOS;
+    if (!this.fotos.length) {
+      this.itens.push(escrever(this, CONFIG.LARGURA / 2, 140, 'Nenhuma foto ainda.\nToque na câmera no quarto!', {
+        fontFamily: 'monospace', fontSize: '8px', color: '#b07ad6', align: 'center', lineSpacing: 3
+      }).setOrigin(0.5));
+      return;
+    }
+    const pagina = this.pagina;
+    const lista = this.fotos.slice(pagina * F.POR_PAGINA, (pagina + 1) * F.POR_PAGINA);
+    lista.forEach((foto, i) => {
+      const x = 8 + (i % 4) * 42, y = 38 + Math.floor(i / 4) * 49;
+      const moldura = this.add.rectangle(x - 1, y - 1, 42, 42, 0x3d2752, 1).setOrigin(0, 0).setStrokeStyle(1, CONFIG.UI.CAIXA_ESCOLHIDA);
+      const dia = escrever(this, x + 20, y + 41, 'Dia ' + foto.dia, { fontFamily: 'monospace', fontSize: '6px', color: '#b07ad6' }).setOrigin(0.5, 0);
+      this.itens.push(moldura, dia);
+      FOTOS.textura(this, foto, (chave) => {
+        if (this.modo !== 'fotos' || this.pagina !== pagina || !moldura.active) return;   // já mudou de página
+        const img = this.add.image(x, y, chave).setOrigin(0, 0).setScale(40 / F.TAMANHO).setInteractive();
+        img.on('pointerup', () => this.verFoto(foto, chave));
+        this.itens.push(img);
+      });
+    });
+  }
+
+  // A foto grande (2×), com o dia e a idade; dá para apagar
+  verFoto(foto, chave) {
+    if (this.vendoFoto) return;
+    const U = CONFIG.UI, F = CONFIG.FOTOS;
+    const tela = [];
+    this.vendoFoto = tela;
+    const lado = F.TAMANHO * 2;
+    const x = Math.round((CONFIG.LARGURA - lado) / 2), y = 40;
+    tela.push(this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x1b1225, 1).setOrigin(0, 0).setInteractive().setDepth(70));
+    tela.push(this.add.rectangle(x - 3, y - 3, lado + 6, lado + 6, 0xfff4dc, 1).setOrigin(0, 0).setDepth(71));
+    tela.push(this.add.image(x, y, chave).setOrigin(0, 0).setScale(lado / F.TAMANHO).setDepth(72));
+    tela.push(escrever(this, CONFIG.LARGURA / 2, y + lado + 8, 'Dia ' + foto.dia + ' · ' + foto.idade, {
+      fontFamily: 'monospace', fontSize: '8px', color: U.TEXTO
+    }).setOrigin(0.5, 0).setDepth(72));
+    const fechar = () => { tela.forEach(o => o.destroy()); this.vendoFoto = null; };
+    const voltar = criarOpcao(this, 24, 252, 60, 16, 'Voltar', fechar, 8);
+    let certeza = false;
+    const apagar = criarOpcao(this, 96, 252, 60, 16, 'Apagar', () => {
+      if (!certeza) { certeza = true; apagar.rotulo.setText('Apagar?'); apagar.marcar(true); return; }
+      FOTOS.apagar(foto.id);
+      if (this.textures.exists(chave)) this.textures.remove(chave);
+      this.fotos = this.fotos.filter(f => f.id !== foto.id);
+      this.abaFotos.rotulo.setText('Fotos (' + this.fotos.length + ')');
+      fechar();
+      if (this.pagina > 0 && this.pagina * F.POR_PAGINA >= this.fotos.length) this.pagina--;
+      this.mostrarPagina();
+    }, 8);
+    [voltar, apagar].forEach(b => { b.caixa.setDepth(73); b.rotulo.setDepth(74); tela.push(b.caixa, b.rotulo); });
   }
 }

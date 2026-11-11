@@ -684,6 +684,9 @@ const EVENTOS = {
       .setVisible(false).play('maozinha_aponta');
     q.maoBrinquedo = q.add.sprite(T.MAO_BRINQUEDO_X, T.MAO_BRINQUEDO_Y, 'maozinha', 0).setOrigin(0, 0)
       .setVisible(false).play('maozinha_aponta');
+    // v0.0.62: aponta para o baú das brincadeiras (depois de aprender os brinquedos)
+    q.maoBau = q.add.sprite(T.MAO_BAU_X, T.MAO_BAU_Y, 'maozinha', 0).setOrigin(0, 0)
+      .setVisible(false).play('maozinha_aponta');
   },
 
   conferirTutorial(q) {
@@ -703,11 +706,15 @@ const EVENTOS = {
     if (!vistos.mao_brinquedo && !ocupada && !q.maoPainel.visible && n.diversao < T.BRINQUEDO_ABAIXO_DE && !q.painelAberto) {
       q.maoBrinquedo.setVisible(true);
     }
+    if (q.maoBau && !vistos.mao_bau && vistos.mao_brinquedo && !ocupada && !q.maoPainel.visible && !q.maoBrinquedo.visible
+      && n.diversao < T.BAU_ABAIXO_DE && !q.painelAberto && !q.cameraAberta) {
+      q.maoBau.setVisible(true);
+    }
   },
 
   // O jogador fez o que a mãozinha mostrava: some para sempre
   aprendeu(q, qual) {
-    const mao = qual === 'painel' ? q.maoPainel : q.maoBrinquedo;
+    const mao = qual === 'painel' ? q.maoPainel : qual === 'bau' ? q.maoBau : q.maoBrinquedo;
     if (mao) mao.setVisible(false);
     const s = Estado.carregar();
     if (!s || (s.sinais && s.sinais['mao_' + qual])) return;

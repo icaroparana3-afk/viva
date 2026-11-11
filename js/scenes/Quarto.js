@@ -45,6 +45,7 @@ class Quarto extends Phaser.Scene {
     this.festaAgora = false; this.dodoi = false; this.brincando = false;
     this.olhosDoToque = false; this.pulsando = false;
     this.visita = null; this.avisoJanela = null;
+    this.cameraAberta = false; this.tirandoFoto = false; this.itensCamera = null; this.itensBrincar = null;
   }
 
   create() {
@@ -130,6 +131,13 @@ class Quarto extends Phaser.Scene {
     criarBotaoImg(this, 4, 4, 'botao_menu', () => irPara(this, 'Menu'));   // botão do autor (34×14)
     // v0.0.58: álbum de momentos (botão 14×14 ao lado do MENU)
     criarBotaoImg(this, CONFIG.ALBUM.BOTAO_X, CONFIG.ALBUM.BOTAO_Y, 'botao_album', () => { if (!this.painelAberto) irPara(this, 'Album'); });
+    // v0.0.62: câmera de fotos (botão ao lado do álbum) e baú de brinquedos (abre as brincadeiras)
+    criarBotaoImg(this, CONFIG.FOTOS.BOTAO_X, CONFIG.FOTOS.BOTAO_Y, 'botao_camera', () => this.abrirCamera());
+    const BAU = CONFIG.ATIVIDADES.BAU;
+    this.add.zone(BAU.X, BAU.Y, BAU.LARGURA, BAU.ALTURA).setOrigin(0, 0).setInteractive()
+      .on('pointerup', () => this.abrirBrincadeiras());
+    this.events.off('resume', this.voltouDaBrincadeira, this);
+    this.events.on('resume', this.voltouDaBrincadeira, this);
 
     // Versão no rodapé (à esquerda: no canto direito fica o botão de necessidades)
     escrever(this, 3, CONFIG.ALTURA - 2, 'v' + CONFIG.VERSAO, {
@@ -592,6 +600,142 @@ class Quarto extends Phaser.Scene {
   }
 
   // Toque no bebê: fecha os olhos (sorrindo), dá um pulinho e solta um coração
+  // =============================================================
+  // v0.0.62: BRINCADEIRAS DO BAÚ e CÂMERA DE FOTOS
+  // =============================================================
+  podeBrincar() {
+    if (this.painelAberto || this.fechandoPainel || this.mamando || this.festaAgora) return false;
+    if (this.cameraAberta || this.itensBrincar || (this.ev && this.ev.ativo)) return false;
+    return true;
+  }
+
+  abrirBrincadeiras() {
+    if (!this.podeBrincar()) return;
+    EVENTOS.aprendeu(this, 'bau');
+    // Chorando por FOME, SEDE, SONO ou HIGIENE: cuide disso primeiro.
+    // Chorando só por falta de DIVERSÃO: pode brincar (é justamente o remédio).
+    const outros = SINAIS.pedidos().filter(p => p.k !== 'diversao' && SINAIS.gravidade(p.faixa) >= SINAIS.gravidade('chorando'));
+    if (this.dodoi || outros.length) {
+      mostrarAvisoCaixa(this, 'Cuide do bebê\nprimeiro!', 60, 2);
+      return;
+    }
+    const n = NEC.atuais();
+    if (n && n.energia < CONFIG.ATIVIDADES.ENERGIA_MINIMA) {
+      mostrarAvisoCaixa(this, 'O bebê está com\nmuito sono agora...', 60, 2);
+      return;
+    }
+    tocarSom(this, 'abrir');
+    const U = CONFIG.UI;
+    const itens = this.itensBrincar = [];
+    const fundo = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x000000, 0.5).setOrigin(0, 0).setDepth(85).setInteractive();
+    fundo.on('pointerup', () => this.fecharBrincadeiras());     // tocar fora fecha
+    const caixa = this.add.rectangle(20, 84, 140, 154, U.CAIXA, 1).setOrigin(0, 0).setStrokeStyle(1, U.DESTAQUE)
+      .setDepth(86).setInteractive();
+    const titulo = escrever(this, 90, 91, 'Vamos brincar?', { fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO })
+      .setOrigin(0.5, 0).setDepth(87);
+    itens.push(fundo, caixa, titulo);
+    [['bolhas', 'Bolhas', 0], ['achou', 'Cadê-achou', 1], ['livro', 'Livro', 2], ['blocos', 'Blocos', 3]].forEach(([qual, nome, quadro], i) => {
+      const x = 28 + (i % 2) * 64, y = 108 + Math.floor(i / 2) * 48;
+      const bt = this.add.rectangle(x, y, 60, 44, U.CAIXA_ESCOLHIDA, 1).setOrigin(0, 0).setStrokeStyle(1, U.BORDA)
+        .setDepth(87).setInteractive();
+      const ic = this.add.image(x + 30, y + 16, 'icones_atividades', quadro).setScale(2).setDepth(88);
+      const tx = escrever(this, x + 30, y + 31, nome, { fontFamily: 'monospace', fontSize: '8px', color: '#ffffff' })
+        .setOrigin(0.5, 0).setDepth(88);
+      bt.on('pointerdown', () => bt.setFillStyle(U.CAIXA));
+      bt.on('pointerout', () => bt.setFillStyle(U.CAIXA_ESCOLHIDA));
+      bt.on('pointerup', () => { this.fecharBrincadeiras(); this.comecarBrincadeira(qual); });
+      itens.push(bt, ic, tx);
+    });
+    const fechar = criarOpcao(this, 60, 214, 60, 16, 'Fechar', () => this.fecharBrincadeiras(), 8);
+    fechar.caixa.setDepth(87); fechar.rotulo.setDepth(88);
+    itens.push(fechar.caixa, fechar.rotulo);
+  }
+
+  fecharBrincadeiras() {
+    if (!this.itensBrincar) return;
+    this.itensBrincar.forEach(o => o.destroy());
+    this.itensBrincar = null;
+  }
+
+  comecarBrincadeira(qual) {
+    this.scene.launch('Brincadeira', { qual });
+    this.scene.pause();
+  }
+
+  // Voltou da brincadeira (o quarto estava pausado)
+  voltouDaBrincadeira(sys, dados) {
+    this.atualizarNecessidades();
+    if (dados && dados.aviso) mostrarAvisoCaixa(this, dados.aviso, 60, 2);
+  }
+
+  abrirCamera() {
+    if (!this.podeBrincar()) return;
+    const T = CONFIG.FOTOS.TAMANHO, Q = CONFIG.QUARTO;
+    this.cameraAberta = true;
+    tocarSom(this, 'abrir');
+    const itens = this.itensCamera = [];
+    // segura os toques no quarto enquanto a câmera está aberta
+    itens.push(this.add.zone(0, 0, CONFIG.LARGURA, CONFIG.ALTURA).setOrigin(0, 0).setInteractive().setDepth(89));
+    // o visor começa no bebê
+    this.visorX = Phaser.Math.Clamp(Q.BEBE_X + 16 - T / 2, 0, CONFIG.LARGURA - T);
+    this.visorY = Phaser.Math.Clamp(Q.BEBE_Y + 16 - T / 2, 0, CONFIG.ALTURA - T);
+    const moldura = this.add.image(this.visorX - 2, this.visorY - 2, 'moldura_camera').setOrigin(0, 0).setDepth(91);
+    const zona = this.add.zone(this.visorX - 2, this.visorY - 2, T + 4, T + 4).setOrigin(0, 0)
+      .setInteractive({ draggable: true }).setDepth(92);
+    let dx = 0, dy = 0;
+    zona.on('dragstart', (p) => { dx = p.worldX - this.visorX; dy = p.worldY - this.visorY; });
+    zona.on('drag', (p) => {
+      this.visorX = Math.round(Phaser.Math.Clamp(p.worldX - dx, 0, CONFIG.LARGURA - T));
+      this.visorY = Math.round(Phaser.Math.Clamp(p.worldY - dy, 0, CONFIG.ALTURA - T));
+      moldura.setPosition(this.visorX - 2, this.visorY - 2);
+      zona.setPosition(this.visorX - 2, this.visorY - 2);
+    });
+    const dica = escrever(this, 90, 36, 'Arraste o visor e\ntoque no botão', {
+      fontFamily: 'monospace', fontSize: '8px', color: '#ffffff', align: 'center',
+      backgroundColor: '#1b1225', padding: { x: 3, y: 2 }
+    }).setOrigin(0.5, 0).setDepth(92);
+    const botao = this.add.image(77, 286, 'botao_foto').setOrigin(0, 0).setDepth(92).setInteractive();
+    botao.on('pointerdown', () => botao.y = 287);
+    botao.on('pointerout', () => botao.y = 286);
+    botao.on('pointerup', () => { botao.y = 286; this.tirarFoto(); });
+    const sair = criarOpcao(this, 134, 291, 40, 16, 'Sair', () => this.fecharCamera(), 8);
+    sair.caixa.setDepth(92); sair.rotulo.setDepth(93);
+    itens.push(moldura, zona, dica, botao, sair.caixa, sair.rotulo);
+  }
+
+  fecharCamera() {
+    if (!this.itensCamera || this.tirandoFoto) return;
+    this.itensCamera.forEach(o => o.destroy());
+    this.itensCamera = null;
+    this.cameraAberta = false;
+  }
+
+  tirarFoto() {
+    if (this.tirandoFoto || !this.itensCamera) return;
+    this.tirandoFoto = true;
+    const T = CONFIG.FOTOS.TAMANHO;
+    const x = this.visorX, y = this.visorY;
+    // o bebê sorri para a foto
+    const sorria = !this.dodoi && ['nada', 'triste'].includes(this.sinalBebe) && !this.mamando;
+    if (sorria) this.visual.piscar(true, true);
+    this.itensCamera.forEach(o => o.setVisible(false));   // a moldura e os botões não saem na foto
+    tocarSom(this, 'obturador');
+    FOTOS.tirar(this, x, y, (dados) => {
+      if (sorria && this.visual) this.time.delayedCall(400, () => this.visual && this.visual.piscar(false));
+      if (this.itensCamera) this.itensCamera.forEach(o => o.setVisible(true));
+      const flash = this.add.rectangle(x, y, T, T, 0xffffff, 0.9).setOrigin(0, 0).setDepth(95);
+      this.tweens.add({ targets: flash, alpha: 0, duration: 300, onComplete: () => flash.destroy() });
+      const foto = FOTOS.adicionar(dados);
+      this.tirandoFoto = false;
+      if (foto) {
+        MOMENTOS.registrar('primeira_foto');
+        mostrarAvisoCaixa(this, 'Foto guardada\nno álbum!', 60, 1.5);
+      } else {
+        mostrarAvisoCaixa(this, 'Não deu para\ntirar a foto.', 60, 2);
+      }
+    });
+  }
+
   tocarBebe() {
     const Q = CONFIG.QUARTO;
     if (this.dodoi && !this.painelAberto && !this.mamando) { EVENTOS.cuidarDodoi(this); return; }   // v0.0.57: põe o curativo

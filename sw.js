@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.61';
+const VERSAO = '0.0.62';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -29,6 +29,7 @@ const ARQUIVOS = [
   './js/clima.js',
   './js/config.js',
   './js/eventos.js',
+  './js/fotos.js',
   './js/janela.js',
   './js/main.js',
   './js/mapa.js',
@@ -135,6 +136,7 @@ const ARQUIVOS = [
   './assets/ui/x_nao.png',
   './js/scenes/Album.js',
   './js/scenes/Boot.js',
+  './js/scenes/Brincadeira.js',
   './js/scenes/Carregando.js',
   './js/scenes/Cegonha.js',
   './js/scenes/Configuracoes.js',
@@ -144,6 +146,7 @@ const ARQUIVOS = [
   './js/scenes/Regiao.js',
   './js/scenes/TesteBebe.js',
   './assets/audio/provisorios/abrir.wav',
+  './assets/audio/provisorios/achou.wav',
   './assets/audio/provisorios/beijinho.wav',
   './assets/audio/provisorios/chocalho.wav',
   './assets/audio/provisorios/choro.wav',
@@ -154,8 +157,12 @@ const ARQUIVOS = [
   './assets/audio/provisorios/estouro.wav',
   './assets/audio/provisorios/festa.wav',
   './assets/audio/provisorios/hic.wav',
+  './assets/audio/provisorios/obturador.wav',
+  './assets/audio/provisorios/pagina.wav',
   './assets/audio/provisorios/risada.wav',
+  './assets/audio/provisorios/sopro.wav',
   './assets/audio/provisorios/toc.wav',
+  './assets/audio/provisorios/tombo.wav',
   './assets/audio/provisorios/trovao.wav'
 ];
 

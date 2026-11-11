@@ -145,6 +145,27 @@ Textos completos do autor (guardados para uma futura tela de detalhes):
 - Sul: mais frio, menos calor.
 - Sudeste e Centro-Oeste: um pouco mais frio que o Nordeste, menos que o Sul.
 
+## Brincadeiras, câmera e o plano para prender o jogador (v0.0.62)
+Objetivo do autor: o jogador ficar mais tempo no jogo e ter motivos para voltar. Regra: recompensa, nunca castigo; nada de obrigação com hora marcada.
+Ordem combinada (Etapa 8, bebê):
+1. **Pacote 1 (v0.0.62, feito):** brincadeiras do baú (bolhas de sabão, cadê-achou, livro de figuras, torre de blocos) e câmera de fotos.
+2. **Marcos do desenvolvimento** que cabem no bebê (pular os que forem de etapas futuras).
+3. **3 tarefinhas do dia** (sem castigo se não fizer).
+4. **Estrelinhas e lojinha** (roupas, decoração, brinquedos).
+- Banho: fica para OUTRO cômodo (banheiro), para não juntar tudo no quarto.
+- Visita da família: decidir antes do "aprovado" da Etapa 8. Ideia do autor: os presentes viram decoração, roupa ou brinquedo.
+
+Como funciona:
+- **Baú de brinquedos** (no quarto, embaixo do urso): tocar abre "Vamos brincar?" com as 4 brincadeiras. Uma mãozinha ensina o baú uma vez (depois de aprender os brinquedos, com a diversão abaixo de 85).
+- Não dá para brincar com o bebê chorando por fome, sede, sono ou higiene, nem com dodói ("Cuide do bebê primeiro!"). Chorando só por falta de diversão pode, porque brincar é o remédio. Com energia abaixo de 15: "está com muito sono".
+- A brincadeira abre por cima do quarto (que fica pausado e escurecido) e mostra o bebê de perto. Ganha diversão e vínculo, gasta 2 de energia. Sair no meio também ganha o que já brincou.
+- **Bolhas:** 30 s; tocar nas bolhas antes de sumirem (+1; a dourada +3); até +18 de diversão.
+- **Cadê-achou:** 5 rodadas. Tocar esconde o rosto com as mãos; tocar de novo quando aparecer o "!" → "ACHOU!" (+4, risada). Cedo demais: +1. Demorou: +0.
+- **Livro de figuras:** 8 páginas com as figuras dos pensamentos (gato, passarinho, sol, lua, estrela, mamadeira, bola, coração) e a palavra. Tocar na figura: o bebê "fala" a primeira sílaba ("ga-ga!"); conta as palavras ouvidas (`save.atividades.palavras`, base para a primeira palavra, decisão 9). Livro todo: +10.
+- **Torre de blocos:** o bloco anda no alto; tocar solta. Precisa ficar 45% em cima do outro, senão a torre cai (o bebê ri do mesmo jeito). Com 8 blocos, o bebê derruba tudo rindo. +2 por bloco, +4 ao derrubar.
+- **Câmera** (botão ao lado do álbum): um visor 80×80 que dá para arrastar pelo quarto; o bebê sorri para a foto. As fotos (até 40) ficam no álbum, na aba "Fotos": miniaturas, foto grande com dia e idade, e dá para apagar. Ficam no localStorage `viva_fotos`, fora do save.
+- Contagens e recordes em `save.atividades` (servem para as tarefas do dia e os marcos).
+
 ## Ausência
 - Bebê: mais de 1 dia real sem entrar = aviso. De novo = adoção e fim da história. (Decisão do autor, 2026-11-05: 12 h reais viram 1 dia real.)
 - Criança: mais de 1 dia real = triste e chorando no quarto, suja, sem conseguir comer; tenta brincar/assistir, nem sempre funciona.

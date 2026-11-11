@@ -39,6 +39,11 @@ const MOMENTOS = {
     visita_borboleta:    ['Viu uma borboleta', 'borboleta', 0],
     visita_abelha:       ['Viu uma abelha', 'abelha', 0],
     visita_balao:        ['Viu um balão passar', 'balao_visita', null],
+    primeiras_bolhas:    ['Brincou de bolhas de sabão', 'icones_atividades', 0],
+    primeiro_achou:      ['Primeiro "cadê? achou!"', 'icones_atividades', 1],
+    primeiro_livro:      ['Ouviu a primeira história', 'icones_atividades', 2],
+    primeira_torre:      ['Derrubou a primeira torre', 'icones_atividades', 3],
+    primeira_foto:       ['Primeira foto', 'botao_camera', null],
     mesversario:         ['Fez {n} {meses}!', 'icones_album', 5],
     aniversario:         ['Fez {n} {anos}! Feliz aniversário!', 'icones_album', 5]
   },

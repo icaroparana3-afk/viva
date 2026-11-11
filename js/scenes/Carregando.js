@@ -129,6 +129,13 @@ class Carregando extends Phaser.Scene {
     if (EV.icones_album_autor) ['dodoi', 'primavera', 'soluco'].forEach(n => this.load.image('album_' + n, './assets/ui/album_' + n + '.png'));
     if (EV.botoes_album) ['botao_voltar_album', 'seta_esquerda', 'seta_esquerda_off', 'seta_direita', 'seta_direita_off'].forEach(n =>
       this.load.image(n, './assets/ui/' + n + '.png'));
+    // v0.0.62: brincadeiras e câmera (só quando o autor mandar; senão, provisórios)
+    if (EV.bolha) this.load.spritesheet('bolha', './assets/sprites/bolha.png', { frameWidth: 12, frameHeight: 12 });
+    if (EV.mao_achou) this.load.image('mao_achou', './assets/sprites/mao_achou.png');
+    if (EV.livro_aberto) this.load.image('livro_aberto', './assets/ui/livro_aberto.png');
+    if (EV.bloco_brinquedo) this.load.spritesheet('bloco_brinquedo', './assets/sprites/bloco_brinquedo.png', { frameWidth: 14, frameHeight: 14 });
+    if (EV.icones_atividades) this.load.spritesheet('icones_atividades', './assets/ui/icones_atividades.png', { frameWidth: 12, frameHeight: 12 });
+    ['botao_camera', 'moldura_camera', 'botao_foto'].forEach(n => { if (EV[n]) this.load.image(n, './assets/ui/' + n + '.png'); });
     if (EV.icones_album) this.load.spritesheet('icones_album', './assets/ui/icones_album.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.botao_album) this.load.image('botao_album', './assets/ui/botao_album.png');
     this.load.spritesheet('gato', './assets/sprites/gato_prateleira.png', { frameWidth: CONFIG.QUARTO.GATO_LARGURA, frameHeight: CONFIG.QUARTO.GATO_ALTURA });  // v0.0.56: 10 quadros 19×20 (animação do autor reduzida), toca em loop
@@ -195,6 +202,7 @@ class Carregando extends Phaser.Scene {
       frameRate: 3, repeat: -1 });
     criarPainelNecessidadesProvisorio(this);   // só cria as peças que ainda não chegaram
     criarClimaProvisorio(this);      // v0.0.58: sol, raio, visitas, folha seca, bolo, ícones do álbum
+    criarAtividadesProvisorio(this); // v0.0.62: bolhas, mãos, livro, blocos, ícones e câmera
     criarEventosProvisorios(this);   // v0.0.57: nuvem, pensamentos, chocalho, curativo, galo (só os que faltam)
     criarLuzAbajur(this);       // brilho do abajur (feito por código)
     criarEstrelinha(this);      // estrelinha da festa de chegada

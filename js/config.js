@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.61',
+  VERSAO: '0.0.62',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -87,6 +87,15 @@ const CONFIG = {
     gato_susto: true,         // v0.0.60: assets/sprites/gato_susto.png — 42×29 (o gato pulando de susto)
     icones_album_autor: true, // v0.0.60: assets/ui/album_dodoi.png, album_primavera.png, album_soluco.png — 12×12
     botoes_album: true,       // v0.0.60: assets/ui/botao_voltar_album.png 52×16 e seta_esquerda/direita(_off).png 18×16
+    // v0.0.62: brincadeiras e câmera (provisórios feitos por código até o autor mandar)
+    bolha: false,             // assets/sprites/bolha.png — 24×12 (2 quadros 12×12: inteira, estourando)
+    mao_achou: false,         // assets/sprites/mao_achou.png — 28×34 (a mão ESQUERDA, dedos para cima; o jogo espelha a direita)
+    livro_aberto: false,      // assets/ui/livro_aberto.png — 150×96 (livro aberto com as páginas em branco)
+    bloco_brinquedo: false,   // assets/sprites/bloco_brinquedo.png — 42×14 (3 quadros 14×14: A vermelho, B azul, C amarelo)
+    icones_atividades: false, // assets/ui/icones_atividades.png — 48×12 (4 quadros 12×12: bolhas, cadê-achou, livro, blocos)
+    botao_camera: false,      // assets/ui/botao_camera.png — 14×14 (ao lado do botão do álbum)
+    moldura_camera: false,    // assets/ui/moldura_camera.png — 84×84 (só os 4 cantos do visor, meio transparente)
+    botao_foto: false,        // assets/ui/botao_foto.png — 26×26 (o botão redondo de tirar a foto)
     icones_album: false,      // assets/ui/icones_album.png — 8 quadros 12×12 (96×12): chuva, neve, raio, folha, flor, bolo, soluço, espirro
     botao_album: false,       // assets/ui/botao_album.png — 14×14
     botoes_som: true,  // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada (do autor)
@@ -569,13 +578,54 @@ const CONFIG = {
     PAINEL_ABAIXO_DE: 50,         // alguma barra abaixo disso: aponta para o botão das necessidades
     BRINQUEDO_ABAIXO_DE: 60,      // diversão abaixo disso: aponta para os brinquedos
     MAO_PAINEL_X: 130, MAO_PAINEL_Y: 291,
-    MAO_BRINQUEDO_X: 40, MAO_BRINQUEDO_Y: 256
+    MAO_BRINQUEDO_X: 40, MAO_BRINQUEDO_Y: 256,
+    BAU_ABAIXO_DE: 85,            // v0.0.62: diversão abaixo disso (e já sabe usar os brinquedos): aponta para o baú
+    MAO_BAU_X: 44, MAO_BAU_Y: 220
   },
 
   // ---------- SONS PROVISÓRIOS (v0.0.58) ----------
   // Sons sintetizados (assets/audio/provisorios/*.wav) até chegarem os do autor.
   SONS_PROVISORIOS: ['clique', 'abrir', 'choro', 'choro_forte', 'risada', 'chocalho', 'toc', 'estouro',
-                     'hic', 'espirro', 'trovao', 'chuva', 'festa', 'beijinho'],
+                     'hic', 'espirro', 'trovao', 'chuva', 'festa', 'beijinho',
+                     'obturador', 'pagina', 'achou', 'sopro', 'tombo'],   // v0.0.62: brincadeiras e câmera
+
+  // ---------- BRINCADEIRAS (v0.0.62) ----------
+  // Tocar no BAÚ de brinquedos do quarto abre o menu das brincadeiras.
+  // Cada uma é um minijogo curto, sem perder nada: só ganha diversão e vínculo.
+  ATIVIDADES: {
+    BAU: { X: 5, Y: 212, LARGURA: 42, ALTURA: 34 },   // área de toque do baú (abaixo do urso e do robô)
+    ENERGIA: -2,                  // brincar cansa um pouquinho
+    ENERGIA_MINIMA: 15,           // abaixo disso: "está com muito sono"
+    ESCALA_BEBE: 2,               // o bebê de perto (32×32 × 2)
+    BOLHAS: {
+      SEGUNDOS: 30, INTERVALO: [0.45, 0.9], SUBIDA: [18, 30],  // pixels por segundo
+      VIDA: 6, DOURADA: 0.08,     // chance de uma bolha dourada (vale 3)
+      DIVERSAO_POR_BOLHA: 1, DIVERSAO_MAX: 18, VINCULO: 1
+    },
+    ACHOU: {
+      RODADAS: 5, ESPERA: [0.8, 2.4], JANELA: 0.9,   // segundos até o "!" e quanto tempo ele fica
+      DIVERSAO_ACERTO: 4, DIVERSAO_CEDO: 1, VINCULO_ACERTO: 0.5
+    },
+    LIVRO: {
+      // As figuras são os quadros da folha 'pensamentos' (12×12, ampliados 3×)
+      PAGINAS: [['GATO', 0], ['PASSARINHO', 1], ['SOL', 2], ['LUA', 3], ['ESTRELA', 4], ['MAMADEIRA', 5], ['BOLA', 6], ['CORAÇÃO', 7]],
+      DIVERSAO: 10, VINCULO: 1.5
+    },
+    BLOCOS: {
+      MAXIMO: 8, VELOCIDADE: 45, ACELERA: 8,   // pixels por segundo do bloco no alto; + a cada andar
+      SOBRA_MINIMA: 0.45,         // o bloco precisa ficar pelo menos 45% em cima do outro
+      DIVERSAO_POR_BLOCO: 2, DIVERSAO_DERRUBAR: 4, VINCULO: 1
+    }
+  },
+
+  // ---------- CÂMERA E FOTOS (v0.0.62) ----------
+  FOTOS: {
+    BOTAO_X: 60, BOTAO_Y: 4,      // botão 14×14 ao lado do álbum
+    TAMANHO: 80,                  // a foto é um quadrado de 80×80 pixels do jogo
+    MAXIMO: 40,                   // fotos guardadas (a mais antiga sai)
+    POR_PAGINA: 20,               // no álbum: 4 colunas × 5 linhas de miniaturas 40×40
+    CHAVE: 'viva_fotos'           // localStorage (fora do save, para o save continuar pequeno)
+  },
 
   // ---------- BEBÊ (Etapa 3) ----------
   // Regras do sorteio do bebê que a cegonha traz.
