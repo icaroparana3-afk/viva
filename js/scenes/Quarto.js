@@ -27,7 +27,29 @@ class Quarto extends Phaser.Scene {
     this.chegou = !!(dados && dados.chegou);
   }
 
+  // v0.0.61: o Phaser reaproveita esta mesma cena toda vez que você volta ao quarto,
+  // e o que ficou da visita anterior continuava guardado. Se você saía com o painel
+  // aberto (ou mamando, com susto, festa, dodói...), na volta o quarto ficava meio
+  // montado (sem MENU, sem álbum, sem relógio) e os brinquedos não respondiam.
+  // Agora tudo isso é zerado ao abrir e ao sair do quarto.
+  zerarEstado() {
+    // Esquece todos os objetos da visita anterior (ver esquecerObjetos em botao.js)
+    esquecerObjetos(this);
+    this.textoInfo = null;
+    this.painelAberto = false; this.fechandoPainel = false;
+    this.painel = null; this.painelFundo = null; this.linhas = null; this.linhaSel = null;
+    this.mamando = false; this.mamarEvento = null;
+    this.pulando = false; this.pulo = 0;
+    this.recusando = false; this.recusaDx = 0;
+    this.susto = false; this.timerSusto = null;
+    this.festaAgora = false; this.dodoi = false; this.brincando = false;
+    this.olhosDoToque = false; this.pulsando = false;
+    this.visita = null; this.avisoJanela = null;
+  }
+
   create() {
+    this.zerarEstado();
+    this.events.once('shutdown', () => this.zerarEstado());
     prepararCamera(this);
     const Q = CONFIG.QUARTO;
 
@@ -762,7 +784,7 @@ class Quarto extends Phaser.Scene {
   atualizarPainel() {
     const N = CONFIG.NECESSIDADES;
     const n = NEC.atuais();
-    if (!n || !this.linhas) return;
+    if (!n || !this.linhas || !this.painel || !this.painel.active) return;   // painel fechado (ou de uma visita anterior)
     for (const k of NEC.LISTA) {
       const L = this.linhas[k], v = n[k];
       const parada = N.QUEDA_POR_HORA[k] === 0;

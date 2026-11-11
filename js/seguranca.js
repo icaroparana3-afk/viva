@@ -24,12 +24,15 @@
 //    pulado e o jogo segue. Só aparece o aviso se o erro se repetir sem parar
 //    (QUADROS_COM_ERRO seguidos). O aviso agora mostra também a coluna, a tela
 //    aberta e o começo da pilha do erro, para achar a causa pela foto.
+//    v0.0.61: se o erro acontece na montagem de uma tela, ela é montada de novo
+//    (até 2 vezes em 30 s); antes ela ficava pela metade, sem botões.
 // =============================================================
 
 const SEGURANCA = {
   ultimoErro: '',
   QUADROS_COM_ERRO: 90,    // ~1,5 s de erro em todo quadro = travou de verdade
   errosPulados: 0,         // quantos quadros com erro já foram pulados (teste)
+  remontagens: {},         // tela → { vezes, em }: quantas vezes foi montada de novo depois de um erro
 
   // Texto curto do erro: mensagem, arquivo:linha:coluna, tela aberta e pilha
   descreverErro(e, arquivo, linha, coluna) {
@@ -63,6 +66,19 @@ const SEGURANCA = {
         if (seguidos === 1) console.error('[viva] erro num quadro (pulado):', e);
         // O desenho pode ter parado no meio: devolve o renderizador ao normal
         try { if (this.renderer && this.renderer.gl === undefined && this.renderer.gameContext) this.renderer.gameContext.setTransform(1, 0, 0, 1, 0, 0); } catch (x) { /* nada */ }
+        // v0.0.61: se o erro foi na MONTAGEM de uma tela (ela ficou pela metade, sem
+        // botões), monta a tela de novo. Duas tentativas; na terceira, mostra o aviso.
+        try {
+          const presa = this.scene && this.scene.scenes.find(c => c.sys.settings.status === Phaser.Scenes.CREATING);
+          if (presa) {
+            const k = presa.sys.settings.key, agora = Date.now();
+            const r = SEGURANCA.remontagens[k] = SEGURANCA.remontagens[k] && agora - SEGURANCA.remontagens[k].em < 30000
+              ? SEGURANCA.remontagens[k] : { vezes: 0, em: agora };
+            r.vezes++;
+            if (r.vezes <= 2) presa.scene.restart();
+            else SEGURANCA.mostrarTravou();
+          }
+        } catch (x) { SEGURANCA.mostrarTravou(); }
         if (seguidos >= SEGURANCA.QUADROS_COM_ERRO) SEGURANCA.mostrarTravou();
       }
     };

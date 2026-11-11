@@ -3,10 +3,32 @@
 // botões de imagem, opções provisórias, avisos e confirmação.
 // =============================================================
 
+// ---------- Esquecer os objetos da visita anterior (v0.0.61) ----------
+// O Phaser reaproveita a mesma cena toda vez que você volta a uma tela. Os
+// textos, imagens e botões da visita anterior já foram destruídos, mas a cena
+// ainda guardava esses objetos (ex.: this.infoHora). Usar um deles de novo dava
+// "Cannot read properties of null (reading 'drawImage')" e a tela ficava pela
+// metade (sem MENU, sem álbum, brinquedos parados). Chamado no começo de toda
+// tela, por prepararCamera().
+function esquecerObjetos(cena) {
+  const ehObjeto = (v) => v instanceof Phaser.GameObjects.GameObject;
+  const simples = (v) => v && typeof v === 'object' && Object.getPrototypeOf(v) === Object.prototype;
+  for (const k of Object.keys(cena)) {
+    const v = cena[k];
+    if (!v || typeof v !== 'object' || k === 'sys' || k === 'game') continue;
+    if (ehObjeto(v)) cena[k] = null;                                        // um objeto
+    else if (Array.isArray(v)) { if (v.some(ehObjeto)) cena[k] = []; }      // uma lista de objetos
+    else if (simples(v) && Object.values(v).some(x => ehObjeto(x) || (simples(x) && Object.values(x).some(ehObjeto)))) {
+      cena[k] = null;                                                       // um grupo com objetos dentro
+    }
+  }
+}
+
 // ---------- Câmera de cada tela ----------
 // Chame no começo de toda cena. Ela amplia a câmera pela ESCALA
 // e enquadra a área 180 x 320 do jogo.
 function prepararCamera(cena) {
+  esquecerObjetos(cena);
   const cam = cena.cameras.main;
   cam.setZoom(CONFIG.ESCALA);
   cam.centerOn(CONFIG.LARGURA / 2, CONFIG.ALTURA / 2);
