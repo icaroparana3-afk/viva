@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.65: avisos em fila, um de cada vez, e atalho de teste do bico; v0.0.64: bico com vício, cortinas, resfriado, segundo livro e tarefas do dia; v0.0.63: marcos do desenvolvimento, bolhas vermelhas e fim do mesversário; v0.0.62: brincadeiras do baú e câmera de fotos; v0.0.61: corrigido o quarto que ficava "meio montado", sem MENU e com brinquedos parados; v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.66: lojinha das estrelinhas — roupas, cores e enfeites do quarto, brinquedos novos; v0.0.65: avisos em fila, um de cada vez, e atalho de teste do bico; v0.0.64: bico com vício, cortinas, resfriado, segundo livro e tarefas do dia; v0.0.63: marcos do desenvolvimento, bolhas vermelhas e fim do mesversário; v0.0.62: brincadeiras do baú e câmera de fotos; v0.0.61: corrigido o quarto que ficava "meio montado", sem MENU e com brinquedos parados; v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -150,6 +150,16 @@
   - Arte provisória feita por código (`criarEventosProvisorios` em `provisorios.js`): `balao_pensamento` 34×30, `pensamentos` 96×12 (8 quadros 12×12), `chocalho` 22×12 (2 quadros 11×12), `curativo` 7×4, `galo` 4×3 e `icone_curativo` 16×16. Cada uma tem uma chave em `ARTES_PRONTAS` (false até o autor mandar).
   - TESTE: tocar nos quadros da parede dispara imaginação → chocalho → dodói (`EVENTOS.TESTE_TOQUE_QUADROS`). Tirar antes de lançar.
   - Testado no navegador: os 3 eventos, a bolha estourando, o curativo, o curativo depois de recarregar, o sorteio automático e nenhum evento com o bebê chorando, sem erros.
+- **v0.0.66 — lojinha das estrelinhas** (regras em DESIGN.md, "Lojinha"):
+  - **Botão:** sacolinha 14×14 em (20, 22), ao lado da prancheta (`CONFIG.LOJA.BOTAO_X/Y`). Abre a tela nova `Lojinha` (`js/scenes/Lojinha.js`); na volta o quarto se monta de novo já com as compras.
+  - **Tela:** vitrine em cima (o bebê vestido em tamanho 2, um pedaço do quarto com a cor, o enfeite ou o brinquedo), nome, descrição, preço e o botão (Comprar / Vestir / Tirar / Usar / Pôr no quarto). Embaixo, abas Roupas, Quarto e Brinquedos, 9 por página, com "Usando", "É seu" ou o preço (vermelho se faltar).
+  - **Regras e save** (`js/loja.js`): `save.loja = { tem, roupa, parede, tapete, enfeites, compras }`; as estrelinhas saem de `save.estrelas`. Comprou, é seu para sempre e já começa a usar. Momento novo no álbum: "Primeira compra na lojinha".
+  - **Roupas (8):** feitas por código a partir das camadas do bebê (`LOJA.texturaRoupa`): pinta o tronco, a fralda e, se tiver, mangas e pernas, sem cobrir o contorno escuro. Camada nova `roupa` em `bebe_visual.js` (`v.roupa(id)`), no quarto e nas brincadeiras. "Só a fralda" é de graça.
+  - **Cores do quarto:** parede e tapete em 6 cores (rosa, azul, menta, amarela, lilás, pêssego). Feitas por código (`LOJA.texturaQuarto`): muda só o que é diferente entre o quarto da menina e o do menino, mantendo claro e escuro; rosa e azul usam as cores do outro quarto do autor. A cor original do quarto é de graça.
+  - **Enfeites:** móbile em cima do berço (tocar faz girar: +3 de diversão), varal de luzinhas e estrelas na parede (acendem à noite, por cima do escuro), plantinha. Dá para tirar e pôr de volta.
+  - **Brinquedos (4):** bola, patinho, pião e xilofone, no chão na frente do tapete; funcionam como os outros (tocar mexe; arrastar até o berço dá para o bebê).
+  - **Arte provisória nova** (`ARTES_PRONTAS`, false; `criarLojaProvisorio`): `botao_loja` 14×14, `deco_mobile` 64×24 (2 quadros 32×24), `deco_varal` e `deco_varal_luz` 48×12, `deco_estrela` 5×5, `deco_planta` 16×24, `loja_bola`/`loja_patinho`/`loja_piao` 12×12, `loja_xilofone` 16×10.
+  - Testado (menina e menino): comprar roupas, enfeites, parede, tapete e brinquedos; estrelinhas descontadas; aviso quando faltam; vestir e tirar; quarto com as compras de dia e de noite; móbile; bola no berço; roupa nas brincadeiras; parede azul na menina e rosa no menino; testes antigos sem erros.
 - **v0.0.65 — avisos em fila e teste do bico:**
   - **Avisos em fila** (`mostrarAvisoCaixa` em `botao.js`): chegando mais de um, cada um espera o anterior sumir (antes o novo tirava o anterior). Mesmo texto já na tela ou esperando não repete; fila de no máximo 4 esperando (o mais antigo sai); `cancelarAvisoCaixa(cena, lista)` tira um aviso da tela ou da fila (usado pela janela); a fila recomeça a cada abertura da cena (`prepararCamera`).
   - **TESTE do bico:** o sétimo toque nos quadros da parede (depois de imaginação, chocalho, dodói, soluço, espirro, beijinho) faz o bebê pedir o bico na hora (`TESTE_ORDEM`, `EVENTOS.iniciar`). Se ele já estiver com o bico, tira e pede de novo. Tirar antes de lançar, junto com os outros testes.
@@ -164,7 +174,7 @@
   - **Consertos:** soltar um brinquedo em cima do bebê não conta mais como carinho; um aviso por vez (`mostrarAvisoCaixa`).
   - **Arte provisória nova** (`ARTES_PRONTAS`, false): `icone_chupeta` 16×16, `bebe_boca` 96×32, `cortina_fechada` 36×62, `figuras_livro2` 96×12, `botao_tarefas` 14×14, `estrela_tarefa` 7×7.
   - Testado: pedido e bico (tocando e arrastando), fim do minuto, vício subindo e descendo, manha e carinho, troca sem vício (brinca), resfriado com a cortina aberta e sem resfriado com ela fechada, clarão fraco e sem susto, segundo livro completo, tarefas feitas e pegas (3 + 2 de bônus = 5), e todos os testes anteriores, sem erros.
-  - **Próximo pacote:** estrelinhas e lojinha.
+  - **Próximo pacote:** estrelinhas e lojinha (feito na v0.0.66).
 - **v0.0.63 — marcos do desenvolvimento, bolhas vermelhas e fim do mesversário:**
   - **Bolhas vermelhas** (pedido do autor): 18% das bolhas (`ATIVIDADES.BOLHAS.VERMELHA`) tiram 2 pontos (`PERDE_VERMELHA`), nunca abaixo de zero. O bebê faz careta e a tela treme. Uma rodada que termina em 0 por causa delas ainda conta como brincadeira.
   - **Mesversário saiu** (decisão do autor: o bebê fica ~1 mês mais velho a cada visita, e a festa aparecia sempre). Só aniversário, a cada ano completo, mesmo que a volta pule o mês exato (`EVENTOS.conferirFesta`).

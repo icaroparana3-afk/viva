@@ -138,6 +138,13 @@ class Carregando extends Phaser.Scene {
     if (EV.icones_marcos) this.load.spritesheet('icones_marcos', './assets/ui/icones_marcos.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.mao_tchau) this.load.image('mao_tchau', './assets/sprites/mao_tchau.png');
     ['botao_tarefas', 'estrela_tarefa'].forEach(n => { if (EV[n]) this.load.image(n, './assets/ui/' + n + '.png'); });
+    // v0.0.66: lojinha (só quando o autor mandar; senão, provisórios)
+    if (EV.botao_loja) this.load.image('botao_loja', './assets/ui/botao_loja.png');
+    if (EV.deco_mobile) this.load.spritesheet('deco_mobile', './assets/sprites/deco_mobile.png', { frameWidth: 32, frameHeight: 24 });
+    if (EV.deco_varal) ['deco_varal', 'deco_varal_luz'].forEach(n => this.load.image(n, './assets/sprites/' + n + '.png'));
+    if (EV.deco_estrela) this.load.image('deco_estrela', './assets/sprites/deco_estrela.png');
+    if (EV.deco_planta) this.load.image('deco_planta', './assets/sprites/deco_planta.png');
+    if (EV.brinquedos_loja) CONFIG.LOJA.BRINQUEDOS.forEach(b => this.load.image(b.textura, './assets/sprites/' + b.textura + '.png'));
     if (EV.figuras_livro2) this.load.spritesheet('figuras_livro2', './assets/ui/figuras_livro2.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.cortina_fechada) this.load.image('cortina_fechada', './assets/sprites/cortina_fechada.png');
     if (EV.icone_chupeta) this.load.image('icone_chupeta', './assets/ui/icone_chupeta.png');
@@ -210,6 +217,7 @@ class Carregando extends Phaser.Scene {
     criarPainelNecessidadesProvisorio(this);   // só cria as peças que ainda não chegaram
     criarClimaProvisorio(this);      // v0.0.58: sol, raio, visitas, folha seca, bolo, ícones do álbum
     criarTarefasProvisorio(this);    // v0.0.64: prancheta e estrelinha
+    criarLojaProvisorio(this);       // v0.0.66: sacolinha, enfeites e brinquedos da lojinha
     criarLivro2Provisorio(this);     // v0.0.64: figuras do segundo livro
     criarCortinaProvisorio(this);    // v0.0.64: a cortina fechada
     criarChupetaProvisorio(this);    // v0.0.64: ícone do bico no balão

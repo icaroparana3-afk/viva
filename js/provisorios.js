@@ -1012,3 +1012,94 @@ function criarTarefasProvisorio(cena) {
     t.refresh();
   }
 }
+
+// ---------- Lojinha (v0.0.66) ----------
+// Sacolinha do botão, enfeites do quarto e os brinquedos novos. Só cria o que o autor ainda não mandou.
+function criarLojaProvisorio(cena) {
+  const P = CONFIG.ARTES_PRONTAS;
+  const novo = (chave, w, h) => cena.textures.exists(chave) ? null : cena.textures.createCanvas(chave, w, h);
+  const px = (c, cor, x, y, w = 1, h = 1) => { c.fillStyle = cor; c.fillRect(x, y, w, h); };
+  let t;
+  // sacolinha 14×14 (roxa, alça e estrelinha)
+  if (!P.botao_loja && (t = novo('botao_loja', 14, 14))) {
+    pintarPixels(t.getContext(), [
+      '....oooooo....', '...o......o...', '...o......o...', '.oooooooooooo.', 'oVvvvvvvvvvvvo', 'oVvvvvYvvvvvvo',
+      'oVvvvYyYvvvvvo', 'oVvYYyyyYYvvvo', 'oVvvYyyyYvvvvo', 'oVvvvyyyvvvvvo', 'oVvvYyvyYvvvvo', 'oVvvvvvvvvvvvo',
+      'oVVVVVVVVVVVVo', '.oooooooooooo.'], { o: '#2a1838', V: '#6a3aa8', v: '#8a5ad0', Y: '#c89a20', y: '#ffd860' });
+    t.refresh();
+  }
+  // móbile 64×24 (2 quadros 32×24): haste presa no pé do berço, 3 bichinhos pendurados
+  if (!P.deco_mobile && (t = novo('deco_mobile', 64, 24))) {
+    const c = t.getContext();
+    [0, 1].forEach(q => {
+      const o = q * 32, bal = q ? 1 : -1;
+      px(c, '#e8d8b8', o + 29, 2, 1, 22); px(c, '#b89a70', o + 30, 3, 1, 21);   // haste
+      px(c, '#e8d8b8', o + 4, 1, 26, 1); px(c, '#b89a70', o + 4, 2, 26, 1);     // braço
+      px(c, '#ffd860', o + 27, 0, 3, 2);                                        // pino
+      const bichos = [[6, 8, '#ffd860'], [15, 11, '#f48aa8'], [24, 7, '#7ac8f0']];
+      bichos.forEach(([x, comp, cor], i) => {
+        const d = (i % 2 ? -bal : bal);
+        px(c, '#d8d0e0', o + x, 3, 1, comp - 3);                                // fio
+        const bx = o + x + d, by = comp;
+        px(c, cor, bx - 2, by, 5, 3); px(c, cor, bx - 1, by - 1, 3, 1); px(c, cor, bx - 1, by + 3, 3, 1);
+        px(c, '#2a1838', bx - 1, by + 1, 1, 1); px(c, '#2a1838', bx + 1, by + 1, 1, 1);
+      });
+    });
+    registrarQuadros(t, 32, 24, 2);
+    t.refresh();
+  }
+  // varal de luzinhas 48×12 (apagado) e o brilho (aceso)
+  const lampadas = [];
+  for (let i = 0; i < 7; i++) {
+    const x = 3 + i * 7;
+    const y = Math.round(2 + 4 * Math.sin(Math.PI * x / 48));   // o fio cai no meio
+    lampadas.push([x, y, ['#ff6a6a', '#ffd860', '#7ae07a', '#6ab0ff', '#ff8ad8'][i % 5]]);
+  }
+  if (!P.deco_varal && (t = novo('deco_varal', 48, 12))) {
+    const c = t.getContext();
+    for (let x = 0; x < 48; x++) px(c, '#5a4a3a', x, Math.round(1 + 4 * Math.sin(Math.PI * x / 48)), 1, 1);
+    lampadas.forEach(([x, y, cor]) => { px(c, '#3a3040', x, y + 1, 2, 1); c.globalAlpha = 0.7; px(c, cor, x, y + 2, 2, 3); c.globalAlpha = 1; });
+    t.refresh();
+  }
+  if (!P.deco_varal && (t = novo('deco_varal_luz', 48, 12))) {
+    const c = t.getContext();
+    lampadas.forEach(([x, y, cor]) => {
+      c.globalAlpha = 0.35; px(c, cor, x - 1, y + 1, 4, 5);
+      c.globalAlpha = 1; px(c, cor, x, y + 2, 2, 3); px(c, '#ffffff', x, y + 2, 1, 1);
+    });
+    c.globalAlpha = 1;
+    t.refresh();
+  }
+  // estrela adesiva 5×5
+  if (!P.deco_estrela && (t = novo('deco_estrela', 5, 5))) {
+    pintarPixels(t.getContext(), ['..a..', '.aaa.', 'aabaa', '.aaa.', '.a.a.'], { a: '#f4ecc0', b: '#ffffff' });
+    t.refresh();
+  }
+  // plantinha 16×24
+  if (!P.deco_planta && (t = novo('deco_planta', 16, 24))) {
+    pintarPixels(t.getContext(), [
+      '.......g........', '......gG...g....', '..g...gG..gG....', '..Gg..gG.gG.....', '...GggGGgG...g..', '.g..GgGGG...gG..',
+      '.Gg..GGGG.gGG...', '..GGg.GGGgGG....', '...GGGGGGGG..g..', '....GGGGGG..gG..', '..g..GGGGGgGG...', '..GgggGGGGGG....',
+      '...GGGGGGGG.....', '.....GGGG.......', '......GG........', '......GG........', '..oooooooooooo..', '..oTTTTTTTTTTo..',
+      '...otttttttto...', '...otttttttto...', '...otttttttto...', '....otttttto....', '....otttttto....', '....oooooooo....'],
+      { g: '#7ad06a', G: '#3e9a4a', o: '#5a2a1a', T: '#e0885a', t: '#c06a40' });
+    t.refresh();
+  }
+  // brinquedos 12×12 (xilofone 16×10)
+  if (!P.brinquedos_loja) {
+    const pal = { o: '#2a1838', r: '#e05050', w: '#ffffff', b: '#5b8fd8', y: '#ffd860', Y: '#e0a020', l: '#f08a2a', p: '#c070d0', g: '#6cc07a', m: '#a07040', M: '#6a4a2a' };
+    const desenhos = {
+      loja_bola: ['...oooooo...', '..owwrrrbo..', '.owwwrrrbbo.', 'owwwwrrrbbbo', 'owwwwrrrbbbo', 'oyyyyyyyyyyo', 'oyyyyyyyyyyo', 'orrrbbbwwwwo', 'orrrbbbwwwwo', '.orrrbbbwwo.', '..orrbbbwo..', '...oooooo...'],
+      loja_patinho: ['............', '.....ooo....', '....oyyyo...', '....oyoyol..', '....oyyyoll.', '.oo..oyyo...', 'oyyooyyyyo..', 'oyyyyyyyyyo.', 'oyyYyyyyyyo.', '.oyyYYYyyo..', '..oyyyyyo...', '...ooooo....'],
+      loja_piao: ['.....oo.....', '.....om.....', '...oooooo...', '..orrrrrro..', '.orwwwwwwro.', 'orrrrrrrrrro', 'obbbbbbbbbbo', '.obbbbbbbbo.', '..oyyyyyyo..', '...oyyyyo...', '....oyyo....', '.....oo.....'],
+      loja_xilofone: ['oooooooooooooooo', 'orrRllLyyYggGbbo', 'orrRllLyyYggGbbo', 'orrRllLyyYggGbb.', 'oMrrRllLyyYggGbo', 'oMMMllLyyYggGbbo', 'oMMMMMMyyYggGbbo', 'oMMMMMMMMMMMMMMo', '.mm..........mm.', '.oo..........oo.']
+    };
+    const pal2 = Object.assign({}, pal, { R: '#a03030', L: '#c06a10', Y: '#c89a20', G: '#3e9a4a', B: '#3a6ab0' });
+    Object.entries(desenhos).forEach(([chave, mapa]) => {
+      if (cena.textures.exists(chave)) return;
+      const tt = cena.textures.createCanvas(chave, mapa[0].length, mapa.length);
+      pintarPixels(tt.getContext(), mapa, pal2);
+      tt.refresh();
+    });
+  }
+}

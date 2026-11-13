@@ -64,7 +64,7 @@ class Brincadeira extends Phaser.Scene {
 
   // ---------- Bebê de perto ----------
   criarBebe(x, y, escala) {
-    this.bebe = criarBebeVisual(this, x, y, escala).mostrar(this.bebeDados).dentinho(MARCOS.tem('dentinho'));
+    this.bebe = criarBebeVisual(this, x, y, escala).mostrar(this.bebeDados).dentinho(MARCOS.tem('dentinho')).roupa(LOJA.roupaId());
     this.bebeX = x; this.bebeY = y; this.bebeEscala = escala;
     return this.bebe;
   }

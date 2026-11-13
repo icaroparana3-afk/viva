@@ -44,6 +44,7 @@ const MOMENTOS = {
     primeiro_livro:      ['Ouviu a primeira história', 'icones_atividades', 2],
     primeira_torre:      ['Derrubou a primeira torre', 'icones_atividades', 3],
     primeira_foto:       ['Primeira foto', 'botao_camera', null],
+    primeira_compra:     ['Primeira compra na lojinha', 'botao_loja', null],   // v0.0.66
     primeiro_bico:       ['Pediu o bico pela primeira vez', 'icone_chupeta', null],
     trocou_bico:         ['Trocou o bico por um brinquedo', 'icone_chupeta', null],
     primeiro_resfriado:  ['Primeiro resfriado', 'icones_album', 7],

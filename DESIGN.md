@@ -151,7 +151,7 @@ Ordem combinada (Etapa 8, bebê):
 1. **Pacote 1 (v0.0.62, feito):** brincadeiras do baú (bolhas de sabão, cadê-achou, livro de figuras, torre de blocos) e câmera de fotos.
 2. **Marcos do desenvolvimento** (v0.0.63, feito).
 3. **3 tarefinhas do dia** (v0.0.64, feito).
-4. **Estrelinhas e lojinha** (roupas, decoração, brinquedos).
+4. **Estrelinhas e lojinha** (roupas, decoração, brinquedos) (v0.0.66, feito).
 - Banho: fica para OUTRO cômodo (banheiro), para não juntar tudo no quarto.
 - Visita da família: decidir antes do "aprovado" da Etapa 8. Ideia do autor: os presentes viram decoração, roupa ou brinquedo.
 
@@ -186,6 +186,16 @@ Caderneta: a aba "Marcos" do álbum mostra os que chegaram (com dia e idade) e, 
 - **Segundo livro:** ao abrir o livro, escolhe entre "Coisas do bebê" e "Bichos e coisas" (vaca, cachorro, pato, peixe, flor, árvore, casa, carro).
 - **3 tarefinhas do dia:** por dia REAL (trocam à meia-noite), sorteadas entre 9: ler um livro inteiro, estourar 15 bolhas, 3 "achou!", torre de 5 blocos, tirar uma foto, 5 carinhos, dar a mamadeira, dar um brinquedo no berço, tudo acima de 70%. Feita: "Pegar" dá 1 estrelinha; as 3: +2 de bônus. Não fazer não tira nada. Prancheta embaixo do MENU, com bolinha amarela quando tem estrelinha para pegar. As estrelinhas serão usadas na lojinha (próximo pacote).
 - **Avisos:** um por vez, em fila (v0.0.65): se chegar outro com um na tela, ele espera a vez. O mesmo texto não repete e esperam no máximo 4.
+
+## Lojinha (v0.0.66)
+- **Moeda:** as estrelinhas das tarefas do dia (1 por tarefa, +2 com as 3: até 5 por dia real).
+- **Onde:** sacolinha ao lado da prancheta, no quarto. Tela própria com vitrine e 3 abas.
+- **Comprou, é seu para sempre**, e já começa a usar. Dá para trocar de roupa, voltar à cor original ou tirar um enfeite sem perder nada.
+- **Roupas** (4 a 10 estrelinhas): bodies, macacões e pijamas, feitos por código em cima do desenho do bebê (o contorno do autor continua por cima). O bebê aparece vestido no quarto e nas brincadeiras.
+- **Quarto:** parede (8) e tapete (5) em rosa, azul, menta, amarela, lilás ou pêssego; a cor original do quarto é de graça. Enfeites: móbile (10, tocar faz girar e diverte o bebê), varal de luzinhas (8) e estrelas na parede (6), que acendem à noite, e plantinha (5).
+- **Brinquedos** (4 a 8): bola, patinho, pião e xilofone, no chão do quarto; dá para dar ao bebê no berço como os outros.
+- Tudo junto custa ~160 estrelinhas (cerca de 1 mês jogando todo dia).
+- Depois: mais itens a cada etapa (roupas de criança, móveis dos outros cômodos), e a arte do autor substitui os provisórios.
 
 ## Ausência
 - Bebê: mais de 1 dia real sem entrar = aviso. De novo = adoção e fim da história. (Decisão do autor, 2026-11-05: 12 h reais viram 1 dia real.)

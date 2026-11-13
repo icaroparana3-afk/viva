@@ -50,6 +50,7 @@ class Quarto extends Phaser.Scene {
     this.chupetaAte = null; this.manha = false; this.timerManha = null; this.zonaBico = null; this.chupetaVoando = null;
     this.bicoConferir = undefined; this.bicoDescanso = 0;
     this.dicaCortinaDada = false; this.itensTarefas = null; this.proximoEspirroResfriado = null; this.ultimaHoraResfriado = null;
+    this.enfeites = null; this.brilhos = null; this.mobileGirando = false;   // v0.0.66: lojinha
   }
 
   create() {
@@ -68,6 +69,7 @@ class Quarto extends Phaser.Scene {
 
     // ---------- Quarto e berço ----------
     this.add.image(0, 0, this.bebe.sexo === 'F' ? 'quarto_menina' : 'quarto_menino').setOrigin(0, 0);
+    LOJA.aplicarQuarto(this);          // v0.0.66: cor da parede e do tapete compradas na lojinha
     JANELA_VIVA.criarCortinas(this);   // v0.0.64: as cortinas fechadas (se estiverem)
 
     // ---------- Quadros e gato da parede (v0.0.50) ----------
@@ -84,6 +86,9 @@ class Quarto extends Phaser.Scene {
     this.add.zone(Q.GATO_X - 3, Q.GATO_Y - 3, Q.GATO_LARGURA + 6, Q.GATO_ALTURA + 6).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => this.mexerBrinquedo(this.gatoBrinq));
 
+    // v0.0.66: enfeites da lojinha (móbile, varal, estrelas, plantinha)
+    LOJA.criarEnfeites(this);
+
     // ---------- Brinquedos do chão (tocáveis) ----------
     this.criarBrinquedos();
 
@@ -94,7 +99,7 @@ class Quarto extends Phaser.Scene {
     this.bercoTras = this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_tras').setOrigin(0, 0);
 
     // ---------- Bebê (camadas do autor) ----------
-    this.visual = criarBebeVisual(this, Q.BEBE_X, Q.BEBE_Y, 1).mostrar(this.bebe).dentinho(MARCOS.tem('dentinho'));
+    this.visual = criarBebeVisual(this, Q.BEBE_X, Q.BEBE_Y, 1).mostrar(this.bebe).dentinho(MARCOS.tem('dentinho')).roupa(LOJA.roupaId());
     // Área de toque do bebê (um pouco maior que ele, fácil de acertar com o dedo)
     const toque = this.add.zone(Q.BEBE_X - 2, Q.BEBE_Y - 2, 36, 36).setOrigin(0, 0).setInteractive();
     // v0.0.64: soltar um brinquedo (ou o bico) em cima do bebê não conta como carinho
@@ -123,6 +128,7 @@ class Quarto extends Phaser.Scene {
 
     // ---------- Abajur: acende e apaga (só luz, sem ligação com o sono) ----------
     this.criarAbajur(save);
+    LOJA.criarBrilhos(this);           // v0.0.66: varal e estrelas acendem à noite (por cima do escuro)
 
     // v0.0.58: luz do sol, sombra dos dias fechados, clarão do raio e toque na janela
     JANELA_VIVA.criarLuz(this);
@@ -145,6 +151,8 @@ class Quarto extends Phaser.Scene {
     this.seloTarefa = this.add.circle(T.BOTAO_X + 13, T.BOTAO_Y + 1, 2.5, 0xffd860).setStrokeStyle(1, 0x2a1838).setVisible(false);
     this.tweens.add({ targets: this.seloTarefa, scale: 1.4, duration: 450, yoyo: true, repeat: -1 });
     this.atualizarSeloTarefa();
+    // v0.0.66: lojinha das estrelinhas (sacolinha ao lado da prancheta)
+    criarBotaoImg(this, CONFIG.LOJA.BOTAO_X, CONFIG.LOJA.BOTAO_Y, 'botao_loja', () => this.abrirLoja());
     const BAU = CONFIG.ATIVIDADES.BAU;
     this.add.zone(BAU.X, BAU.Y, BAU.LARGURA, BAU.ALTURA).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => this.abrirBrincadeiras());
@@ -456,8 +464,11 @@ class Quarto extends Phaser.Scene {
   criarBrinquedos() {
     this.input.dragDistanceThreshold = 4;   // mexer o dedo 4 px = arrastar (menos que isso = toque)
     const quarto = this.bebe.sexo === 'F' ? 'menina' : 'menino';
-    this.brinquedos = CONFIG.BRINQUEDOS[quarto].map(b => {
-      const img = this.add.image(b.x, b.y, 'brinquedo_' + quarto + '_' + b.nome).setOrigin(0, 0);
+    // v0.0.66: + os brinquedos comprados na lojinha (no chão, na frente do tapete)
+    const lista = CONFIG.BRINQUEDOS[quarto].map(b => Object.assign({ textura: 'brinquedo_' + quarto + '_' + b.nome }, b))
+      .concat(LOJA.brinquedosComprados());
+    this.brinquedos = lista.map(b => {
+      const img = this.add.image(b.x, b.y, b.textura).setOrigin(0, 0);
       const brinq = { img, x: b.x, y: b.y, acao: b.acao, dx: 0, dy: 0, ocupado: false };
       // v0.0.58: tocar mexe o brinquedo; ARRASTAR até o berço dá o brinquedo para o bebê
       const zona = this.add.zone(b.x - 2, b.y - 2, img.width + 4, img.height + 4).setOrigin(0, 0)
@@ -560,6 +571,7 @@ class Quarto extends Phaser.Scene {
       else this.tweens.add({ targets: obj, alpha: a, duration: segundos * 1000 });
     }
     JANELA_VIVA.conferir(this, true);   // véu do céu e luz do sol mudam com o dia e a noite
+    LOJA.periodo(this, noite, segundos); // v0.0.66: luzinhas e estrelas da lojinha
   }
 
   update(time, delta) {
@@ -780,6 +792,14 @@ class Quarto extends Phaser.Scene {
     this.atualizarNecessidades();
     this.atualizarSeloTarefa();
     if (dados && dados.aviso) mostrarAvisoCaixa(this, dados.aviso, 60, 2);
+  }
+
+  // v0.0.66: lojinha (tela própria; na volta o quarto se monta de novo com as compras)
+  abrirLoja() {
+    if (!this.podeBrincar()) return;
+    this.fecharTarefas();
+    tocarSom(this, 'abrir');
+    irPara(this, 'Lojinha');
   }
 
   abrirCamera() {

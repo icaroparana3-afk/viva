@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.65',
+  VERSAO: '0.0.66',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -102,6 +102,13 @@ const CONFIG = {
     bebe_boca: false,         // v0.0.64: assets/sprites/bebe_boca.png — 96×32 (3 quadros 32×32: neutra, sorriso, sorriso com dentinho)
     botao_tarefas: false,     // v0.0.64: assets/ui/botao_tarefas.png — 14×14 (a prancheta das tarefas do dia)
     estrela_tarefa: false,    // v0.0.64: assets/ui/estrela_tarefa.png — 7×7 (a moeda das tarefas e da lojinha)
+    // v0.0.66: lojinha (enquanto false, o jogo desenha um provisório em js/provisorios.js)
+    botao_loja: false,        // assets/ui/botao_loja.png — 14×14 (a sacolinha da lojinha, no quarto)
+    deco_mobile: false,       // assets/sprites/deco_mobile.png — 64×24 (2 quadros 32×24: o móbile balançando)
+    deco_varal: false,        // assets/sprites/deco_varal.png — 48×12 (varal de luzinhas apagado) e deco_varal_luz.png 48×12 (só o brilho, aceso à noite)
+    deco_estrela: false,      // assets/sprites/deco_estrela.png — 5×5 (adesivo de estrela na parede; à noite brilha)
+    deco_planta: false,       // assets/sprites/deco_planta.png — 16×24 (vaso com plantinha)
+    brinquedos_loja: false,   // assets/sprites/loja_bola.png 12×12, loja_patinho.png 12×12, loja_piao.png 12×12, loja_xilofone.png 16×10
     figuras_livro2: false,    // v0.0.64: assets/ui/figuras_livro2.png — 96×12 (8 quadros 12×12: vaca, cachorro, pato, peixe, flor, árvore, casa, carro)
     cortina_fechada: false,   // v0.0.64: assets/sprites/cortina_fechada.png — 36×62 (a metade ESQUERDA fechada; o jogo espelha a direita)
     icone_chupeta: false,     // v0.0.64: assets/ui/icone_chupeta.png — 16×16 (o bico no balão de pedido; dá para arrastar)
@@ -669,6 +676,58 @@ const CONFIG = {
       { tipo: 'mamadeira', texto: 'Dê a mamadeira',          alvo: 1,  icone: ['icones_necessidades16', 0] },
       { tipo: 'brinquedo', texto: 'Dê um brinquedo no berço', alvo: 1, icone: ['pensamentos', 6] },
       { tipo: 'cuidado',   texto: 'Tudo acima de 70%',       alvo: 1,  icone: ['humor', 0], maximo: true }
+    ]
+  },
+
+  // ---------- LOJINHA (v0.0.66) ----------
+  // As estrelinhas das tarefas do dia compram roupas, cores e enfeites do quarto e brinquedos.
+  // Comprou, é seu para sempre: dá para trocar de roupa, voltar à cor original ou tirar um enfeite.
+  // Roupas e cores do quarto são feitas por código a partir dos desenhos do autor (não precisam de arte nova).
+  LOJA: {
+    BOTAO_X: 20, BOTAO_Y: 22,     // sacolinha 14×14 ao lado da prancheta
+    POR_PAGINA: 9,                // 3 × 3 na vitrine
+    // Roupas: cor1 (fundo), cor2 (desenho), padrao: liso | listras | bolinhas | estrelas;
+    // mangas: 'curta' | 'longa' (sem = regata); pernas: cobre as pernas (macacão/pijama)
+    ROUPAS: [
+      { id: 'roupa_amarela',   nome: 'Body amarelo',        preco: 4,  cor1: '#ffd860', cor2: '#ffd860', padrao: 'liso' },
+      { id: 'roupa_vermelha',  nome: 'Body vermelho',       preco: 4,  cor1: '#e05050', cor2: '#e05050', padrao: 'liso', mangas: 'curta' },
+      { id: 'roupa_listrada',  nome: 'Body listrado',       preco: 6,  cor1: '#ffffff', cor2: '#5b8fd8', padrao: 'listras', mangas: 'curta' },
+      { id: 'roupa_bolinhas',  nome: 'Body de bolinhas',    preco: 6,  cor1: '#f4a0c0', cor2: '#ffffff', padrao: 'bolinhas', mangas: 'curta' },
+      { id: 'roupa_macacao',   nome: 'Macacão verde',       preco: 8,  cor1: '#6cc07a', cor2: '#6cc07a', padrao: 'liso', mangas: 'curta', pernas: true },
+      { id: 'roupa_jardineira', nome: 'Macacão jeans',      preco: 8,  cor1: '#4a6aa8', cor2: '#6a8ac8', padrao: 'listras', pernas: true },
+      { id: 'roupa_pijama',    nome: 'Pijama de estrelas',  preco: 10, cor1: '#2c3a78', cor2: '#ffd860', padrao: 'estrelas', mangas: 'longa', pernas: true },
+      { id: 'roupa_lilas',     nome: 'Pijama lilás',        preco: 10, cor1: '#b48ae0', cor2: '#d8bcf4', padrao: 'listras', mangas: 'longa', pernas: true }
+    ],
+    // Cores do quarto (parede e tapete): a cor original do quarto é de graça.
+    // h = matiz (0–360), s = quanto aumenta a saturação. 'rosa' e 'azul' usam o outro quarto do autor.
+    CORES: [
+      { id: 'rosa',    nome: 'rosa',    original: 'F' },
+      { id: 'azul',    nome: 'azul',    original: 'M' },
+      { id: 'menta',   nome: 'menta',   h: 152, s: 1.1 },
+      { id: 'amarela', nome: 'amarela', h: 46,  s: 1.5 },
+      { id: 'lilas',   nome: 'lilás',   h: 272, s: 1.1 },
+      { id: 'pessego', nome: 'pêssego', h: 16,  s: 1.3 }
+    ],
+    PRECO_PAREDE: 8, PRECO_TAPETE: 5,
+    // Partes do desenho do quarto que mudam de cor (o que é diferente entre o quarto da menina e o do menino)
+    PAREDE_ATE_Y: 212,                                  // a parede vai até aqui
+    PAREDE_SEM: { X: 0, Y: 186, LARGURA: 44, ALTURA: 26 },   // em cima do baú (os enfeites de cada quarto são diferentes)
+    TAPETE: { X: 28, Y: 250, LARGURA: 124, ALTURA: 38 },
+    // Enfeites (ligar e desligar depois de comprar)
+    ENFEITES: [
+      { id: 'mobile',   nome: 'Móbile',               preco: 10, textura: 'deco_mobile', x: 98, y: 164, texto: 'Gira em cima do berço. Toque nele!' },
+      { id: 'varal',    nome: 'Varal de luzinhas',    preco: 8,  textura: 'deco_varal',  x: 2,  y: 112, texto: 'Acende à noite.' },
+      { id: 'estrelas', nome: 'Estrelas na parede',   preco: 6,  textura: 'deco_estrela', x: 0, y: 0, texto: 'Brilham no escuro.' },
+      { id: 'planta',   nome: 'Plantinha',            preco: 5,  textura: 'deco_planta', x: 130, y: 226, texto: 'Um verdinho no quarto.' }
+    ],
+    ESTRELAS_POS: [[8, 46], [24, 58], [38, 42], [12, 80], [40, 74], [26, 96], [136, 80], [152, 94], [168, 84], [146, 106], [171, 104]],
+    MOBILE_FPS: 2, MOBILE_FPS_TOQUE: 8, MOBILE_DIVERSAO: 3,
+    // Brinquedos novos: ficam no chão, na frente do tapete (tocar mexe; arrastar até o berço dá para o bebê)
+    BRINQUEDOS: [
+      { id: 'bola',     nome: 'Bola',     preco: 4, textura: 'loja_bola',     x: 46,  y: 291, acao: 'pulo' },
+      { id: 'patinho',  nome: 'Patinho',  preco: 4, textura: 'loja_patinho',  x: 66,  y: 291, acao: 'balanca' },
+      { id: 'piao',     nome: 'Pião',     preco: 6, textura: 'loja_piao',     x: 86,  y: 291, acao: 'pulinhos' },
+      { id: 'xilofone', nome: 'Xilofone', preco: 8, textura: 'loja_xilofone', x: 104, y: 293, acao: 'balanca' }
     ]
   },
 

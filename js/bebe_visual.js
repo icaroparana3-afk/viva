@@ -10,6 +10,7 @@
 //   v.piscar(true);       // fecha os olhos (false abre); v.piscar(true, true) = olhos fechados sorrindo (^ ^)
 //   v.sinal('choro');     // Etapa 8.2: 'choro' (lágrimas e boca aberta, olhos apertados),
 //                         // 'esgotado' (olhos fechados) ou null (normal)
+//   v.roupa('roupa_amarela');  // v0.0.66: roupa da lojinha (null tira)
 //   v.olharBaixo(true);   // olhos 1 px para baixo (bebê tristinho)
 //   v.setAngle(-90);      // deitado (giro de 90°, sem deformar os pixels)
 //   v.setVisible(false);  v.setDepth(10);  v.setAlpha(0.5);  v.destroy();
@@ -20,10 +21,11 @@ function criarBebeVisual(cena, x, y, escala = 1) {
   // → choro → esgotado → extra
   // (pálpebras e olho fechado só aparecem quando o bebê pisca; choro e esgotado, nos sinais de cuidado)
   // v0.0.64: boca (neutra / sorriso / sorriso com dentinho) e chupeta, que agora sai e volta
-  const nomes = ['corpo', 'brilho', 'cabelo', 'olhos', 'contorno', 'boca', 'chupeta', 'palpebras', 'olhos_fechados', 'choro', 'esgotado', 'extra'];
+  const nomes = ['corpo', 'brilho', 'cabelo', 'olhos', 'contorno', 'roupa', 'boca', 'chupeta', 'palpebras', 'olhos_fechados', 'choro', 'esgotado', 'extra'];
   const camadas = {};
   for (const n of nomes) {
-    const textura = n === 'extra' ? 'bebe_extra_vampiro' : 'bebe_' + n;
+    // v0.0.66: a roupa da lojinha (por cima do contorno, sem cobrir as linhas escuras; js/loja.js)
+    const textura = n === 'extra' ? 'bebe_extra_vampiro' : n === 'roupa' ? 'bebe_contorno' : 'bebe_' + n;
     camadas[n] = cena.add.image(x, y, textura).setOrigin(0, 0).setScale(escala);
   }
   camadas.extra.setVisible(false);
@@ -32,6 +34,8 @@ function criarBebeVisual(cena, x, y, escala = 1) {
   camadas.choro.setVisible(false);
   camadas.esgotado.setVisible(false);
   camadas.chupeta.setVisible(false);
+  camadas.roupa.setVisible(false);
+  let roupaAtual = null;
   let desvioOlhos = 0, sinalAtual = null, fechadoAtual = false;
   let comChupeta = false, comDentinho = false, felizAtual = false;
   const separada = () => !!(CONFIG.BEBE.CHUPETA && CONFIG.BEBE.CHUPETA.SEPARADA);
@@ -74,6 +78,14 @@ function criarBebeVisual(cena, x, y, escala = 1) {
       return obj;
     },
     // v0.0.64: o bebê com ou sem a chupeta; e o dentinho (marco) no sorriso
+    // v0.0.66: veste uma roupa da lojinha (id de CONFIG.LOJA.ROUPAS) ou tira (null)
+    roupa(id) {
+      const chave = id && typeof LOJA !== 'undefined' ? LOJA.texturaRoupa(cena, id) : null;
+      roupaAtual = chave;
+      if (chave) camadas.roupa.setTexture(chave);
+      camadas.roupa.setVisible(!!chave && camadas.corpo.visible);
+      return obj;
+    },
     chupeta(sim) { comChupeta = !!sim; atualizarBoca(); return obj; },
     temChupeta() { return comChupeta; },
     dentinho(sim) { comDentinho = !!sim; atualizarBoca(); return obj; },
@@ -98,6 +110,7 @@ function criarBebeVisual(cena, x, y, escala = 1) {
       camadas.choro.setVisible(v && sinalAtual === 'choro');
       camadas.esgotado.setVisible(v && sinalAtual === 'esgotado');
       if (v && obj.bebe) camadas.extra.setVisible(!!obj.bebe.especial);
+      camadas.roupa.setVisible(v && !!roupaAtual);
       atualizarBoca();
       return obj;
     },
