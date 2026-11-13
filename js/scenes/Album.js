@@ -24,7 +24,7 @@ class Album extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO
     }).setOrigin(0.5, 0);
     if (CONFIG.VINCULO.TESTE_MOSTRAR) {
-      escrever(this, CONFIG.LARGURA - 2, 1, '(teste) vínculo ' + Math.round(VINCULO.valor()), {
+      escrever(this, CONFIG.LARGURA - 2, 1, '(teste) vínculo ' + Math.round(VINCULO.valor()) + ' · vício ' + EVENTOS.dadosBico().vicio, {
         fontFamily: 'monospace', fontSize: '6px', color: '#8a7f96'
       }).setOrigin(1, 0);
     }

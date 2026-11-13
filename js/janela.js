@@ -62,8 +62,66 @@ const JANELA_VIVA = {
     // Tocar na janela: estação, temperatura e tempo (no TESTE, troca o tempo a cada toque)
     q.add.zone(J.X, J.Y, J.LARGURA, J.ALTURA).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => JANELA_VIVA.tocarJanela(q));
+    JANELA_VIVA.criarToqueCortinas(q);   // v0.0.64: por cima do vidro
     q.events.once('shutdown', () => { if (q.somChuva) q.somChuva.stop(); });
     JANELA_VIVA.conferir(q, true);
+  },
+
+  // ---------- Cortinas (v0.0.64) ----------
+  // As metades fechadas ficam logo acima do desenho do quarto (escurecem à noite junto)
+  criarCortinas(q) {
+    const C = CONFIG.CORTINA;
+    const s = Estado.dados || Estado.carregar();
+    q.cortinaFechada = !!(s && s.cortinaFechada);
+    q.cortinaE = q.add.image(C.X, C.Y, 'cortina_fechada').setOrigin(0, 0);
+    q.cortinaD = q.add.image(C.X + C.LARGURA / 2, C.Y, 'cortina_fechada').setOrigin(0, 0).setFlipX(true);
+    [q.cortinaE, q.cortinaD].forEach(c => c.setVisible(q.cortinaFechada));
+  },
+
+  criarToqueCortinas(q) {
+    const C = CONFIG.CORTINA;
+    const zona = (r) => q.add.zone(r.X, r.Y, r.LARGURA, r.ALTURA).setOrigin(0, 0).setInteractive()
+      .on('pointerup', () => JANELA_VIVA.alternarCortina(q));
+    q.toqueCortinaE = zona(C.TOQUE_E);
+    q.toqueCortinaD = zona(C.TOQUE_D);
+    // fechadas: tocar em qualquer lugar delas abre
+    q.toqueCortinaFechada = zona({ X: C.X, Y: C.Y, LARGURA: C.LARGURA, ALTURA: C.ALTURA });
+    q.toqueCortinaFechada.input.enabled = q.cortinaFechada;
+  },
+
+  alternarCortina(q) {
+    if (q.painelAberto || q.cameraAberta || q.itensBrincar) return;
+    q.cortinaFechada = !q.cortinaFechada;
+    const s = Estado.carregar();
+    if (s) { s.cortinaFechada = q.cortinaFechada; Estado.salvar(); }
+    tocarSom(q, 'sopro', { volume: 0.6 });
+    const C = CONFIG.CORTINA;
+    const metade = C.LARGURA / 2;
+    // as metades correm do lado para o meio (ou do meio para os lados)
+    [[q.cortinaE, C.X, C.X - 14], [q.cortinaD, C.X + metade, C.X + metade + 14]].forEach(([img, fechada, aberta]) => {
+      q.tweens.killTweensOf(img);
+      if (q.cortinaFechada) {
+        img.setVisible(true).setAlpha(0).setX(aberta);
+        q.tweens.add({ targets: img, x: fechada, alpha: 1, duration: 260, ease: 'Sine.easeOut' });
+      } else {
+        q.tweens.add({ targets: img, x: aberta, alpha: 0, duration: 220, ease: 'Sine.easeIn', onComplete: () => img.setVisible(false).setX(fechada) });
+      }
+    });
+    q.toqueCortinaFechada.input.enabled = q.cortinaFechada;
+    if (q.cortinaFechada && q.avisoJanela) { q.avisoJanela.forEach(o => o.destroy()); q.avisoJanela = null; }
+    JANELA_VIVA.conferir(q, true);
+  },
+
+  // Frio ou temporal com a cortina aberta: um aviso (uma vez por visita ao quarto)
+  dicaCortina(q, c) {
+    if (q.cortinaFechada || q.dicaCortinaDada || CLIMA.forcado && !CONFIG.CLIMA.TESTE_TOQUE_JANELA) return;
+    const frio = c.temperatura <= CONFIG.RESFRIADO.FRIO_ATE;
+    if (!frio && !c.raios) return;
+    q.dicaCortinaDada = true;
+    q.time.delayedCall(1500, () => {
+      if (q.cortinaFechada || q.painelAberto) return;
+      mostrarAvisoCaixa(q, (frio ? 'Está frio lá fora!' : 'Vem temporal!') + '\nToque na cortina para fechar.', 44, 3);
+    });
   },
 
   tocarJanela(q) {
@@ -86,7 +144,7 @@ const JANELA_VIVA = {
     const C = CONFIG.CLIMA;
     const c = CLIMA.agora();
     q.clima = c;
-    const chave = [c.estacao, c.ceu, c.chuva, c.neve, c.folhas, c.sol, q.noite, Opcoes.som].join('|');
+    const chave = [c.estacao, c.ceu, c.chuva, c.neve, c.folhas, c.sol, q.noite, Opcoes.som, q.cortinaFechada].join('|');
     if (chave === q.climaChave && !forcar) return;
     q.climaChave = chave;
     const tipo = c.neve ? 'neve' : c.chuva || c.ceu;
@@ -95,8 +153,10 @@ const JANELA_VIVA = {
     q.tweens.add({ targets: q.veuJanela, alpha: F ? F[2] : 0, duration: 800 });
     // Sol e luz do quarto
     q.solJanela.setVisible(c.sol > 0).setAlpha(0.5 + c.sol * 0.5);
-    q.tweens.add({ targets: q.luzSol, alpha: q.noite ? 0 : c.sol * C.LUZ_SOL_MAX, duration: 800 });
-    q.tweens.add({ targets: q.sombraClima, alpha: C.SOMBRA_QUARTO[tipo] || 0, duration: 800 });
+    const fechada = !!q.cortinaFechada;   // v0.0.64: cortinas fechadas: sem sol entrando e o quarto mais escuro
+    q.tweens.add({ targets: q.luzSol, alpha: q.noite || fechada ? 0 : c.sol * C.LUZ_SOL_MAX, duration: 800 });
+    q.tweens.add({ targets: q.sombraClima, alpha: Math.max(C.SOMBRA_QUARTO[tipo] || 0, fechada && !q.noite ? CONFIG.CORTINA.SOMBRA : 0), duration: 800 });
+    JANELA_VIVA.dicaCortina(q, c);
     // Nuvens cinza com tempo fechado
     const cinza = c.ceu === 'nublado';
     q.nuvens.forEach(n => cinza ? n.setTint(0x9aa0b0) : n.clearTint());
@@ -190,7 +250,7 @@ const JANELA_VIVA = {
     const J = CONFIG.JANELA;
     q.raioJanela.setPosition(J.X + Phaser.Math.Between(4, J.LARGURA - 12), J.Y + 2).setVisible(true).setAlpha(1);
     q.time.delayedCall(130, () => q.raioJanela.setVisible(false));
-    q.flash.setAlpha(0.55);
+    q.flash.setAlpha(q.cortinaFechada ? CONFIG.CORTINA.FLASH_RAIO : 0.55);   // v0.0.64: cortina fechada, quase não clareia
     q.tweens.add({ targets: q.flash, alpha: 0, duration: 320 });
     q.time.delayedCall(450, () => {
       tocarSom(q, 'trovao', { volume: 0.7 });

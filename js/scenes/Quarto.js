@@ -47,6 +47,9 @@ class Quarto extends Phaser.Scene {
     this.visita = null; this.avisoJanela = null;
     this.cameraAberta = false; this.tirandoFoto = false; this.itensCamera = null; this.itensBrincar = null;
     this.marcoAgora = false; this.esperaMarco = 2.5;
+    this.chupetaAte = null; this.manha = false; this.timerManha = null; this.zonaBico = null; this.chupetaVoando = null;
+    this.bicoConferir = undefined; this.bicoDescanso = 0;
+    this.dicaCortinaDada = false; this.itensTarefas = null; this.proximoEspirroResfriado = null; this.ultimaHoraResfriado = null;
   }
 
   create() {
@@ -65,6 +68,7 @@ class Quarto extends Phaser.Scene {
 
     // ---------- Quarto e berço ----------
     this.add.image(0, 0, this.bebe.sexo === 'F' ? 'quarto_menina' : 'quarto_menino').setOrigin(0, 0);
+    JANELA_VIVA.criarCortinas(this);   // v0.0.64: as cortinas fechadas (se estiverem)
 
     // ---------- Quadros e gato da parede (v0.0.50) ----------
     this.add.image(Q.QUADROS_X, Q.QUADROS_Y, 'quadros_parede').setOrigin(0, 0);
@@ -90,10 +94,11 @@ class Quarto extends Phaser.Scene {
     this.bercoTras = this.add.image(Q.BERCO_X, Q.BERCO_Y, 'berco_tras').setOrigin(0, 0);
 
     // ---------- Bebê (camadas do autor) ----------
-    this.visual = criarBebeVisual(this, Q.BEBE_X, Q.BEBE_Y, 1).mostrar(this.bebe);
+    this.visual = criarBebeVisual(this, Q.BEBE_X, Q.BEBE_Y, 1).mostrar(this.bebe).dentinho(MARCOS.tem('dentinho'));
     // Área de toque do bebê (um pouco maior que ele, fácil de acertar com o dedo)
     const toque = this.add.zone(Q.BEBE_X - 2, Q.BEBE_Y - 2, 36, 36).setOrigin(0, 0).setInteractive();
-    toque.on('pointerup', () => this.tocarBebe());
+    // v0.0.64: soltar um brinquedo (ou o bico) em cima do bebê não conta como carinho
+    toque.on('pointerup', (p) => { if (p.getDistance() > 6) return; this.tocarBebe(); });
     // Lágrimas que caem quando ele chora (Etapa 8.2)
     this.lagrimas = this.add.container(0, 0);
     this.sinalBebe = 'nada';        // faixa da pior barra (js/sinais.js)
@@ -134,6 +139,12 @@ class Quarto extends Phaser.Scene {
     criarBotaoImg(this, CONFIG.ALBUM.BOTAO_X, CONFIG.ALBUM.BOTAO_Y, 'botao_album', () => { if (!this.painelAberto) irPara(this, 'Album'); });
     // v0.0.62: câmera de fotos (botão ao lado do álbum) e baú de brinquedos (abre as brincadeiras)
     criarBotaoImg(this, CONFIG.FOTOS.BOTAO_X, CONFIG.FOTOS.BOTAO_Y, 'botao_camera', () => this.abrirCamera());
+    // v0.0.64: tarefas do dia (prancheta); a bolinha amarela avisa que tem estrelinha para pegar
+    const T = CONFIG.TAREFAS;
+    criarBotaoImg(this, T.BOTAO_X, T.BOTAO_Y, 'botao_tarefas', () => this.abrirTarefas());
+    this.seloTarefa = this.add.circle(T.BOTAO_X + 13, T.BOTAO_Y + 1, 2.5, 0xffd860).setStrokeStyle(1, 0x2a1838).setVisible(false);
+    this.tweens.add({ targets: this.seloTarefa, scale: 1.4, duration: 450, yoyo: true, repeat: -1 });
+    this.atualizarSeloTarefa();
     const BAU = CONFIG.ATIVIDADES.BAU;
     this.add.zone(BAU.X, BAU.Y, BAU.LARGURA, BAU.ALTURA).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => this.abrirBrincadeiras());
@@ -270,7 +281,11 @@ class Quarto extends Phaser.Scene {
   conferirHora() {
     if (this.ehNoite() !== this.noite) this.aplicarPeriodo(!this.noite);
     JANELA_VIVA.conferir(this);
-    if (this.ev) EVENTOS.conferirFesta(this);   // v0.0.58: mesversário / aniversário
+    if (this.ev) EVENTOS.conferirFesta(this);   // aniversário (o mesversário saiu na v0.0.63)
+    // v0.0.64: a cada hora nova do jogo, o frio com a cortina aberta pode resfriar o bebê
+    const hora = TEMPO.agora().hora;
+    if (this.ev && this.ultimaHoraResfriado !== null && hora !== this.ultimaHoraResfriado) EVENTOS.conferirResfriado(this);
+    this.ultimaHoraResfriado = hora;
     this.atualizarInfo();
     this.atualizarNecessidades();
   }
@@ -465,7 +480,11 @@ class Quarto extends Phaser.Scene {
         if (brinq.semArrastar) return;
         const S = CONFIG.EVENTOS.BRINQUEDO.SOLTAR;
         const noBerco = p.worldX >= S.X && p.worldX <= S.X + S.LARGURA && p.worldY >= S.Y && p.worldY <= S.Y + S.ALTURA;
-        if (noBerco && EVENTOS.podeBrinquedo(this)) { EVENTOS.iniciarBrinquedo(this, brinq); return; }
+        // v0.0.64: pedindo o bico? o brinquedo vai no lugar
+        if (noBerco && this.ev && this.ev.ativo === 'bico') {
+          if (EVENTOS.trocarBico(this, brinq)) return;   // brincou com ele
+          // viciado: faz manha e o brinquedo volta para o chão (abaixo)
+        } else if (noBerco && EVENTOS.podeBrinquedo(this)) { EVENTOS.iniciarBrinquedo(this, brinq); return; }
         // Soltou fora (ou o bebê não pode agora): volta para o lugar
         brinq.ocupado = true;
         this.tweens.add({ targets: img, x: brinq.x, y: brinq.y, duration: 300, ease: 'Sine.easeOut',
@@ -605,11 +624,101 @@ class Quarto extends Phaser.Scene {
 
   // Toque no bebê: fecha os olhos (sorrindo), dá um pulinho e solta um coração
   // =============================================================
+  // v0.0.64: TAREFAS DO DIA
+  // =============================================================
+  tarefa(tipo, n = 1, maximo = false) {
+    const pronta = maximo ? TAREFAS.maximo(tipo, n) : TAREFAS.contar(tipo, n);
+    if (pronta && !this.itensTarefas) mostrarAvisoCaixa(this, 'Tarefa feita!\nPegue sua estrelinha.', 44, 2.5);
+    this.atualizarSeloTarefa();
+  }
+
+  atualizarSeloTarefa() {
+    if (this.seloTarefa) this.seloTarefa.setVisible(TAREFAS.prontas() > 0);
+  }
+
+  abrirTarefas() {
+    if (this.painelAberto || this.fechandoPainel || this.itensBrincar || this.cameraAberta || this.itensTarefas) return;
+    tocarSom(this, 'abrir');
+    this.itensTarefas = [];
+    this.mostrarTarefas();
+  }
+
+  mostrarTarefas() {
+    const U = CONFIG.UI, T = CONFIG.TAREFAS;
+    const itens = this.itensTarefas;
+    itens.forEach(o => o.destroy());
+    itens.length = 0;
+    const st = TAREFAS.estado();
+    const fundo = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x000000, 0.5).setOrigin(0, 0).setDepth(85).setInteractive();
+    fundo.on('pointerup', () => this.fecharTarefas());
+    const caixa = this.add.rectangle(10, 66, 160, 196, U.CAIXA, 1).setOrigin(0, 0).setStrokeStyle(1, U.DESTAQUE).setDepth(86).setInteractive();
+    const titulo = escrever(this, 90, 73, 'Tarefas do dia', { fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO }).setOrigin(0.5, 0).setDepth(87);
+    itens.push(fundo, caixa, titulo);
+    st.lista.forEach((t, i) => {
+      const def = TAREFAS.tipo(t.tipo);
+      const y = 92 + i * 44;
+      const fundoLinha = this.add.rectangle(16, y, 148, 40, t.pega ? 0x24183a : U.CAIXA_ESCOLHIDA, 1).setOrigin(0, 0)
+        .setStrokeStyle(1, t.feita && !t.pega ? U.DESTAQUE : U.BORDA).setDepth(87);
+      const moldura = this.add.rectangle(20, y + 10, 20, 20, 0x3d2752, 1).setOrigin(0, 0).setDepth(87);
+      const [tx, q] = def.icone;
+      const ic = (q === null ? this.add.image(30, y + 20, tx) : this.add.image(30, y + 20, tx, q)).setDepth(88);
+      if (ic.width > 18) ic.setScale(0.5);
+      const nome = escrever(this, 44, y + 5, def.texto, { fontFamily: 'monospace', fontSize: '8px', color: t.pega ? '#8a7f96' : '#ffffff', wordWrap: { width: 116 } }).setDepth(88);
+      itens.push(fundoLinha, moldura, ic, nome);
+      if (t.pega) {
+        itens.push(escrever(this, 44, y + 27, 'Feita!', { fontFamily: 'monospace', fontSize: '8px', color: '#8ce07a' }).setDepth(88));
+      } else if (t.feita) {
+        const b = criarOpcao(this, 106, y + 22, 52, 14, 'Pegar', () => this.pegarEstrela(i, b), 8);
+        b.caixa.setDepth(88); b.rotulo.setDepth(89);
+        const est = this.add.image(150, y + 29, 'estrela_tarefa').setDepth(90);
+        itens.push(b.caixa, b.rotulo, est);
+      } else {
+        // barra de progresso
+        const larg = 56;
+        itens.push(this.add.rectangle(44, y + 29, larg, 4, 0x1b1225, 1).setOrigin(0, 0).setDepth(88));
+        itens.push(this.add.rectangle(44, y + 29, Math.round(larg * t.prog / def.alvo), 4, 0xb07ad6, 1).setOrigin(0, 0).setDepth(89));
+        itens.push(escrever(this, 104, y + 26, t.prog + '/' + def.alvo, { fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6' }).setDepth(88));
+      }
+    });
+    // estrelinhas e o bônus
+    const todas = st.lista.every(t => t.pega);
+    itens.push(this.add.image(22, 230, 'estrela_tarefa').setDepth(88));
+    itens.push(escrever(this, 29, 226, '× ' + TAREFAS.estrelas(), { fontFamily: 'monospace', fontSize: '8px', color: '#ffd860' }).setDepth(88));
+    itens.push(escrever(this, 164, 226, todas ? 'Amanhã tem mais!' : 'As 3: +' + T.BONUS_TODAS + ' de bônus', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6' }).setOrigin(1, 0).setDepth(88));
+    const fechar = criarOpcao(this, 60, 242, 60, 14, 'Fechar', () => this.fecharTarefas(), 8);
+    fechar.caixa.setDepth(88); fechar.rotulo.setDepth(89);
+    itens.push(fechar.caixa, fechar.rotulo);
+  }
+
+  pegarEstrela(i, botao) {
+    const ganho = TAREFAS.pegar(i);
+    if (!ganho) return;
+    tocarSom(this, 'achou');
+    // a estrelinha voa até o contador
+    const [x, y] = [150, 92 + i * 44 + 29];
+    for (let k = 0; k < ganho; k++) {
+      const e = this.add.image(x, y, 'estrela_tarefa').setDepth(95).setScale(2);
+      this.tweens.add({ targets: e, x: 22, y: 230, scale: 1, delay: k * 120, duration: 450, ease: 'Sine.easeIn', onComplete: () => e.destroy() });
+    }
+    if (ganho > CONFIG.TAREFAS.ESTRELAS_POR_TAREFA) mostrarAvisoCaixa(this, 'As 3 tarefas!\n+' + CONFIG.TAREFAS.BONUS_TODAS + ' estrelinhas de bônus!', 30, 2.5);
+    this.time.delayedCall(500 + ganho * 120, () => { if (this.itensTarefas) this.mostrarTarefas(); });
+    this.atualizarSeloTarefa();
+    void botao;
+  }
+
+  fecharTarefas() {
+    if (!this.itensTarefas) return;
+    this.itensTarefas.forEach(o => o.destroy());
+    this.itensTarefas = null;
+  }
+
+  // =============================================================
   // v0.0.62: BRINCADEIRAS DO BAÚ e CÂMERA DE FOTOS
   // =============================================================
   podeBrincar() {
     if (this.painelAberto || this.fechandoPainel || this.mamando || this.festaAgora) return false;
-    if (this.cameraAberta || this.itensBrincar || (this.ev && this.ev.ativo)) return false;
+    if (this.cameraAberta || this.itensBrincar || this.itensTarefas || (this.ev && this.ev.ativo)) return false;
     return true;
   }
 
@@ -669,11 +778,13 @@ class Quarto extends Phaser.Scene {
   // Voltou da brincadeira (o quarto estava pausado)
   voltouDaBrincadeira(sys, dados) {
     this.atualizarNecessidades();
+    this.atualizarSeloTarefa();
     if (dados && dados.aviso) mostrarAvisoCaixa(this, dados.aviso, 60, 2);
   }
 
   abrirCamera() {
     if (!this.podeBrincar()) return;
+    this.fecharTarefas();
     const T = CONFIG.FOTOS.TAMANHO, Q = CONFIG.QUARTO;
     this.cameraAberta = true;
     tocarSom(this, 'abrir');
@@ -733,6 +844,7 @@ class Quarto extends Phaser.Scene {
       this.tirandoFoto = false;
       if (foto) {
         MOMENTOS.registrar('primeira_foto');
+        this.tarefa('foto');
         mostrarAvisoCaixa(this, 'Foto guardada\nno álbum!', 60, 1.5);
       } else {
         mostrarAvisoCaixa(this, 'Não deu para\ntirar a foto.', 60, 2);
@@ -743,15 +855,18 @@ class Quarto extends Phaser.Scene {
   tocarBebe() {
     const Q = CONFIG.QUARTO;
     if (this.dodoi && !this.painelAberto && !this.mamando) { EVENTOS.cuidarDodoi(this); return; }   // v0.0.57: põe o curativo
+    if (this.ev && this.ev.ativo === 'bico' && !this.painelAberto && !this.mamando) { EVENTOS.darBico(this); return; }   // v0.0.64: dá o bico
     if (this.pulando || this.mamando || this.painelAberto) return;
     EVENTOS.cuidarSoluco(this);       // v0.0.58: carinho faz o soluço passar
     this.susto = false;               // e acalma o susto do trovão
+    EVENTOS.acalmarManha(this);       // v0.0.64: e a manha de quem queria o bico
     this.pulando = true;
     NEC.mudar('diversao', CONFIG.NECESSIDADES.DIVERSAO_TOQUE_BEBE);
     VINCULO.mudar(CONFIG.VINCULO.TOQUE);
     tocarSom(this, 'risada', { volume: 0.5 });
     if (VINCULO.valor() >= CONFIG.VINCULO.DOIS_CORACOES_MIN) this.time.delayedCall(200, () => EVENTOS.coracao(this, 7));
     this.atualizarNecessidades();
+    this.tarefa('carinho');           // v0.0.64: tarefa do dia
     this.olhosDoToque = true;
     this.visual.piscar(true, true);     // olhos fechados sorrindo (^ ^)
     this.time.delayedCall(Q.OLHOS_FECHADOS_TOQUE * 1000, () => {
@@ -853,6 +968,8 @@ class Quarto extends Phaser.Scene {
     const N = CONFIG.NECESSIDADES;
     const n = NEC.atuais();
     if (!n || !this.botaoNec) return;
+    // v0.0.64: tarefa "Tudo acima de 70%"
+    if (this.seloTarefa && NEC.ativas().every(k => n[k] > 70)) this.tarefa('cuidado', 1, true);
     this.atualizarBotaoNec(n);
     this.pulsando = SINAIS.alerta(n);
     this.alertaNec.setVisible(this.pulsando);
@@ -986,8 +1103,10 @@ class Quarto extends Phaser.Scene {
     if (!n) return;
     if (n.fome >= N.MAMADEIRA_RECUSA && n.sede >= N.MAMADEIRA_RECUSA) { this.recusar(); return; }
     this.mamando = true;
+    EVENTOS.tirarChupeta(this);       // v0.0.64: tira o bico para mamar
     VINCULO.mudar(CONFIG.VINCULO.MAMADEIRA);
     MOMENTOS.registrar('primeira_mamadeira');
+    this.tarefa('mamadeira');         // v0.0.64: tarefa do dia
     this.olhosDoToque = true;
     this.visual.piscar(true, true);       // olhos fechados, contente
     this.mamadeira.setVisible(true);
@@ -1029,6 +1148,7 @@ class Quarto extends Phaser.Scene {
     const S = CONFIG.SINAIS, N = CONFIG.NECESSIDADES;
     if (this.recusando) return;                       // o "X" está na tela
     if (this.dodoi) { EVENTOS.balaoDodoi(this); return; }   // v0.0.57: dodói, o balão pede um curativo
+    if (this.ev && this.ev.ativo === 'bico') { EVENTOS.balaoBico(this); return; }   // v0.0.64: pede o bico
     if (this.balaoIcone.texture.key !== 'icones_necessidades16') this.balaoIcone.setTexture('icones_necessidades16', 0);
     const g = this.grupoBalao;
     if (this.mamando || !g.length) { this.balao.setVisible(false); this.balao.x = N.BALAO_X; return; }
@@ -1062,7 +1182,7 @@ class Quarto extends Phaser.Scene {
     const Q = CONFIG.QUARTO, S = CONFIG.SINAIS;
     let pose = (this.mamando || this.recusando || this.olhosDoToque || this.brincando) ? 'nada' : this.sinalBebe;
     if (this.dodoi && !this.mamando && !this.olhosDoToque) pose = 'forte';   // v0.0.57: dodói, chora forte
-    else if (this.susto && (pose === 'nada' || pose === 'triste')) pose = 'chorando';   // v0.0.58: susto do trovão
+    else if ((this.susto || this.manha) && (pose === 'nada' || pose === 'triste')) pose = 'chorando';   // susto do trovão; manha do bico (v0.0.64)
     if (pose !== this.poseAtual) {
       this.poseAtual = pose;
       const chora = pose === 'chorando' || pose === 'forte';

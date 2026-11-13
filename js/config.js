@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.63',
+  VERSAO: '0.0.64',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -98,7 +98,15 @@ const CONFIG = {
     botao_foto: false,        // assets/ui/botao_foto.png — 26×26 (o botão redondo de tirar a foto)
     // v0.0.63: marcos
     icones_marcos: false,     // assets/ui/icones_marcos.png — 120×12 (10 quadros 12×12, na ordem de CONFIG.MARCOS.LISTA)
-    mao_tchau: false,         // assets/sprites/mao_tchau.png — 10×11 (a mãozinha do bebê acenando; o jogo balança)
+    mao_tchau: false,
+    bebe_boca: false,         // v0.0.64: assets/sprites/bebe_boca.png — 96×32 (3 quadros 32×32: neutra, sorriso, sorriso com dentinho)
+    botao_tarefas: false,     // v0.0.64: assets/ui/botao_tarefas.png — 14×14 (a prancheta das tarefas do dia)
+    estrela_tarefa: false,    // v0.0.64: assets/ui/estrela_tarefa.png — 7×7 (a moeda das tarefas e da lojinha)
+    figuras_livro2: false,    // v0.0.64: assets/ui/figuras_livro2.png — 96×12 (8 quadros 12×12: vaca, cachorro, pato, peixe, flor, árvore, casa, carro)
+    cortina_fechada: false,   // v0.0.64: assets/sprites/cortina_fechada.png — 36×62 (a metade ESQUERDA fechada; o jogo espelha a direita)
+    icone_chupeta: false,     // v0.0.64: assets/ui/icone_chupeta.png — 16×16 (o bico no balão de pedido; dá para arrastar)
+    bebe_chupeta: false,      // v0.0.64: (opcional) assets/sprites/bebe_chupeta.png 32×32; sem ela, a chupeta sai do contorno do autor
+         // assets/sprites/mao_tchau.png — 10×11 (a mãozinha do bebê acenando; o jogo balança)
     icones_album: false,      // assets/ui/icones_album.png — 8 quadros 12×12 (96×12): chuva, neve, raio, folha, flor, bolo, soluço, espirro
     botao_album: false,       // assets/ui/botao_album.png — 14×14
     botoes_som: true,  // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada (do autor)
@@ -465,6 +473,21 @@ const CONFIG = {
       CHANCE_DODOI: 0.15,         // 15% de se machucar (decisão do autor em v0.0.59)
       PULO_PIXELS: 3, PULO_SEGUNDOS: 0.45
     },
+    // v0.0.64: o bebê pede o bico (chupeta). Dar sempre = vício (pede mais vezes).
+    // Trocar por um brinquedo (arrastar até o berço) diminui o vício; viciado, ele chora
+    // um pouco com a troca, e um carinho faz parar.
+    BICO: {
+      CHANCE_DIA: 0.20,           // chance de pedir em cada dia do jogo (1 dia ≈ 13,8 min reais)
+      VICIO_POR_NIVEL: 0.12,      // + chance por nível de vício (vício 5 → 80% por dia)
+      VICIO_MAX: 5, VICIADO_A_PARTIR: 3,
+      CONFERIR_SEGUNDOS: 15,      // de quanto em quanto tempo sorteia (a chance é dividida pelo dia)
+      SEGUNDOS_COM_BICO: 60,      // fica com o bico 1 minuto
+      ESPERA_SEGUNDOS: 45,        // ninguém deu nada: o pedido some (−2 de diversão)
+      DESCANSO_SEGUNDOS: 90,      // depois de um pedido, não pede de novo antes disso
+      MANHA_SEGUNDOS: 15,         // viciado, ao ganhar o brinquedo no lugar: chora até um carinho (ou isso)
+      VINCULO_TROCA: 1, VINCULO_CARINHO_MANHA: 1,
+      TESTE_MOSTRAR_VICIO: true   // TESTE: o álbum mostra o nível de vício
+    },
     SOLUCO: {
       SEGUNDOS: 20,               // se ninguém fizer nada, passa sozinho depois disso
       INTERVALO: 1.3,             // um "hic" a cada...
@@ -613,7 +636,13 @@ const CONFIG = {
     },
     LIVRO: {
       // As figuras são os quadros da folha 'pensamentos' (12×12, ampliados 3×)
-      PAGINAS: [['GATO', 0], ['PASSARINHO', 1], ['SOL', 2], ['LUA', 3], ['ESTRELA', 4], ['MAMADEIRA', 5], ['BOLA', 6], ['CORAÇÃO', 7]],
+      // v0.0.64: dois livros; ao abrir, o jogador escolhe qual ler
+      LIVROS: [
+        { nome: 'Coisas do bebê', textura: 'pensamentos',
+          paginas: [['GATO', 0], ['PASSARINHO', 1], ['SOL', 2], ['LUA', 3], ['ESTRELA', 4], ['MAMADEIRA', 5], ['BOLA', 6], ['CORAÇÃO', 7]] },
+        { nome: 'Bichos e coisas', textura: 'figuras_livro2',
+          paginas: [['VACA', 0], ['CACHORRO', 1], ['PATO', 2], ['PEIXE', 3], ['FLOR', 4], ['ÁRVORE', 5], ['CASA', 6], ['CARRO', 7]] }
+      ],
       DIVERSAO: 10, VINCULO: 1.5
     },
     BLOCOS: {
@@ -621,6 +650,44 @@ const CONFIG = {
       SOBRA_MINIMA: 0.45,         // o bloco precisa ficar pelo menos 45% em cima do outro
       DIVERSAO_POR_BLOCO: 2, DIVERSAO_DERRUBAR: 4, VINCULO: 1
     }
+  },
+
+  // ---------- TAREFAS DO DIA (v0.0.64) ----------
+  // 3 tarefinhas por dia REAL (trocam à meia-noite). Cada uma feita: tocar em "Pegar"
+  // dá estrelinhas (para a lojinha, no próximo pacote). As 3: bônus. Sem castigo.
+  TAREFAS: {
+    BOTAO_X: 4, BOTAO_Y: 22,      // prancheta 14×14 embaixo do MENU (em cima ela encostava na carinha de humor)
+    POR_DIA: 3, ESTRELAS_POR_TAREFA: 1, BONUS_TODAS: 2,
+    // tipo, texto, alvo, ícone [textura, quadro]; maximo: vale o maior valor do dia (não soma)
+    LISTA: [
+      { tipo: 'livro',     texto: 'Leia um livro inteiro',   alvo: 1,  icone: ['icones_atividades', 2] },
+      { tipo: 'bolhas',    texto: 'Estoure 15 bolhas',       alvo: 15, icone: ['icones_atividades', 0] },
+      { tipo: 'achou',     texto: 'Faça 3 "achou!"',         alvo: 3,  icone: ['icones_atividades', 1] },
+      { tipo: 'torre',     texto: 'Torre de 5 blocos',       alvo: 5,  icone: ['icones_atividades', 3], maximo: true },
+      { tipo: 'foto',      texto: 'Tire uma foto do bebê',   alvo: 1,  icone: ['botao_camera', null] },
+      { tipo: 'carinho',   texto: 'Faça 5 carinhos',         alvo: 5,  icone: ['coracao', null] },
+      { tipo: 'mamadeira', texto: 'Dê a mamadeira',          alvo: 1,  icone: ['icones_necessidades16', 0] },
+      { tipo: 'brinquedo', texto: 'Dê um brinquedo no berço', alvo: 1, icone: ['pensamentos', 6] },
+      { tipo: 'cuidado',   texto: 'Tudo acima de 70%',       alvo: 1,  icone: ['humor', 0], maximo: true }
+    ]
+  },
+
+  // ---------- CORTINAS E RESFRIADO (v0.0.64) ----------
+  // Tocar numa cortina fecha as duas (tocar de novo abre). Fechadas: o raio quase
+  // não clareia e não assusta o bebê, e no frio ele não fica resfriado.
+  CORTINA: {
+    X: 54, Y: 68, LARGURA: 72, ALTURA: 62,       // as duas metades fechadas (36×62 cada)
+    TOQUE_E: { X: 52, Y: 64, LARGURA: 20, ALTURA: 68 },   // cortina esquerda (aberta)
+    TOQUE_D: { X: 104, Y: 64, LARGURA: 24, ALTURA: 68 },  // cortina direita (aberta)
+    SOMBRA: 0.16,                 // o quarto fica um pouco mais escuro com elas fechadas
+    FLASH_RAIO: 0.1               // clarão do raio com as cortinas fechadas (aberta: 0.55)
+  },
+  RESFRIADO: {
+    FRIO_ATE: 12,                 // °C: daqui para baixo é frio
+    CHANCE_HORA: 0.06,            // a cada hora do jogo no frio com as cortinas abertas
+    HORAS: 36,                    // quanto dura (horas do jogo; 1 hora ≈ 35 s reais)
+    ESPIRRO_INTERVALO: [18, 35],  // resfriado espirra bem mais (segundos reais)
+    NARIZ_X: 15, NARIZ_Y: 14      // o narizinho vermelho (no bebê de 32×32)
   },
 
   // ---------- MARCOS DO DESENVOLVIMENTO (v0.0.63) ----------
@@ -666,6 +733,15 @@ const CONFIG = {
   // Listas: cada valor tem a mesma chance. Para um valor sair mais,
   // repita ele na lista (ex.: ['liso', 'liso', 'cacheado'] = liso 2x mais).
   BEBE: {
+    // v0.0.64: a chupeta do desenho do autor vira uma camada que sai (ver prepararChupeta em provisorios.js)
+    CHUPETA: {
+      PIXELS: [[14, 15], [15, 15], [16, 15], [17, 15],
+               [13, 16], [14, 16], [15, 16], [16, 16], [17, 16], [18, 16],
+               [14, 17], [15, 17], [16, 17], [17, 17]],
+      CONFERE_BRANCO: [15, 16], CONFERE_BICO: [15, 17],   // para conferir que o desenho é o mesmo
+      PELE: [13, 15],              // um pixel de pele do corpo, para tapar o buraco
+      BOCA: [15, 16]               // onde fica a boquinha (2 pixels de largura)
+    },
     // Nome do bebê (escolhido pelo jogador quando a cegonha entrega)
     NOME_MAX: 12,
     NOME_MIN: 2,

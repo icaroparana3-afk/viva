@@ -150,7 +150,7 @@ Objetivo do autor: o jogador ficar mais tempo no jogo e ter motivos para voltar.
 Ordem combinada (Etapa 8, bebê):
 1. **Pacote 1 (v0.0.62, feito):** brincadeiras do baú (bolhas de sabão, cadê-achou, livro de figuras, torre de blocos) e câmera de fotos.
 2. **Marcos do desenvolvimento** (v0.0.63, feito).
-3. **3 tarefinhas do dia** (sem castigo se não fizer).
+3. **3 tarefinhas do dia** (v0.0.64, feito).
 4. **Estrelinhas e lojinha** (roupas, decoração, brinquedos).
 - Banho: fica para OUTRO cômodo (banheiro), para não juntar tudo no quarto.
 - Visita da família: decidir antes do "aprovado" da Etapa 8. Ideia do autor: os presentes viram decoração, roupa ou brinquedo.
@@ -173,6 +173,19 @@ Na ordem: sorriso para você (1 mês, carinho), primeira gargalhada (3 meses, 15
 Os marcos que mudam o jogo: gargalhada (o bebê ri mais nas brincadeiras, +1 coração), bate palminhas (bate palmas no fim das brincadeiras) e dá tchauzinho (acena quando você volta ao jogo).
 Ficaram de fora (são de etapas futuras): engatinhar, ficar em pé e andar (varanda), primeira palavra (Etapa 14), papinha (cozinha) e dormir (etapa do sono). O dentinho é só comemoração: a chupeta cobre a boca.
 Caderneta: a aba "Marcos" do álbum mostra os que chegaram (com dia e idade) e, nos outros, a idade e o que falta ("Falta: chocalho 1/3"). O carinho aparece sem número ("mais carinho"), porque o vínculo é escondido.
+
+## Bico, cortinas, resfriado e tarefas do dia (v0.0.64)
+- **Bico (chupeta):** não é mais permanente. A chupeta do desenho do autor virou uma camada que sai; embaixo apareceu uma boquinha (neutra, sorriso, e sorriso com o dentinho depois do marco "primeiro dentinho").
+  - O bebê pede o bico num balão. Chance de 20% por dia do jogo, +12% por nível de vício (até 80%).
+  - Dar: tocar no bebê, tocar no balão ou arrastar o bico do balão até ele. Fica 1 minuto com o bico. Cada vez que dá, o vício sobe 1 (até 5).
+  - Trocar: arrastar um brinquedo do chão até o berço enquanto ele pede. O vício desce 1. Se ele já estiver viciado (3 ou mais), chora um pouco (manha) e o brinquedo volta para o chão; um carinho faz parar.
+  - Ninguém deu nada em 45 s: o pedido some (−2 de diversão).
+  - Mamar tira o bico.
+- **Cortinas:** tocar numa cortina fecha as duas (tocar de novo abre); a escolha fica guardada. Fechadas: o sol não entra, o quarto fica um pouco mais escuro, o raio quase não clareia e não assusta o bebê. Com frio ou temporal e a cortina aberta, um aviso sugere fechar.
+- **Resfriado** (primeira parte das doenças): no frio (12 °C ou menos) com a cortina aberta, a cada hora do jogo há 6% de chance. Dura 36 horas do jogo: o bebê espirra bem mais e fica com o narizinho vermelho. Cortina fechada no frio evita. Remédio e médico entram com as doenças.
+- **Segundo livro:** ao abrir o livro, escolhe entre "Coisas do bebê" e "Bichos e coisas" (vaca, cachorro, pato, peixe, flor, árvore, casa, carro).
+- **3 tarefinhas do dia:** por dia REAL (trocam à meia-noite), sorteadas entre 9: ler um livro inteiro, estourar 15 bolhas, 3 "achou!", torre de 5 blocos, tirar uma foto, 5 carinhos, dar a mamadeira, dar um brinquedo no berço, tudo acima de 70%. Feita: "Pegar" dá 1 estrelinha; as 3: +2 de bônus. Não fazer não tira nada. Prancheta embaixo do MENU, com bolinha amarela quando tem estrelinha para pegar. As estrelinhas serão usadas na lojinha (próximo pacote).
+- **Avisos:** um por vez (o novo substitui o anterior).
 
 ## Ausência
 - Bebê: mais de 1 dia real sem entrar = aviso. De novo = adoção e fim da história. (Decisão do autor, 2026-11-05: 12 h reais viram 1 dia real.)

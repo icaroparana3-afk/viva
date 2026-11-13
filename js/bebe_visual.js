@@ -19,7 +19,8 @@ function criarBebeVisual(cena, x, y, escala = 1) {
   // Ordem de baixo para cima: corpo → brilho → cabelo → olhos → contorno → pálpebras → olho fechado
   // → choro → esgotado → extra
   // (pálpebras e olho fechado só aparecem quando o bebê pisca; choro e esgotado, nos sinais de cuidado)
-  const nomes = ['corpo', 'brilho', 'cabelo', 'olhos', 'contorno', 'palpebras', 'olhos_fechados', 'choro', 'esgotado', 'extra'];
+  // v0.0.64: boca (neutra / sorriso / sorriso com dentinho) e chupeta, que agora sai e volta
+  const nomes = ['corpo', 'brilho', 'cabelo', 'olhos', 'contorno', 'boca', 'chupeta', 'palpebras', 'olhos_fechados', 'choro', 'esgotado', 'extra'];
   const camadas = {};
   for (const n of nomes) {
     const textura = n === 'extra' ? 'bebe_extra_vampiro' : 'bebe_' + n;
@@ -30,7 +31,18 @@ function criarBebeVisual(cena, x, y, escala = 1) {
   camadas.olhos_fechados.setVisible(false);
   camadas.choro.setVisible(false);
   camadas.esgotado.setVisible(false);
+  camadas.chupeta.setVisible(false);
   let desvioOlhos = 0, sinalAtual = null, fechadoAtual = false;
+  let comChupeta = false, comDentinho = false, felizAtual = false;
+  const separada = () => !!(CONFIG.BEBE.CHUPETA && CONFIG.BEBE.CHUPETA.SEPARADA);
+  // A boca some quando a camada de choro/esgotado (que já tem boca) aparece; a chupeta cobre a boca
+  const atualizarBoca = () => {
+    const visivel = camadas.corpo.visible;
+    const semSinal = sinalAtual === null;
+    camadas.chupeta.setVisible(visivel && semSinal && comChupeta && separada());
+    camadas.boca.setVisible(visivel && semSinal && !comChupeta && separada());
+    if (camadas.boca.visible) camadas.boca.setFrame(felizAtual ? (comDentinho ? 2 : 1) : 0);
+  };
 
   const hex = (h) => parseInt(h.slice(1), 16);
   const todas = () => nomes.map(n => camadas[n]);
@@ -53,12 +65,18 @@ function criarBebeVisual(cena, x, y, escala = 1) {
     },
     piscar(fechado, feliz = false) {
       fechadoAtual = fechado;
+      felizAtual = fechado && feliz;
       camadas.olhos_fechados.setTexture(fechado && feliz ? 'bebe_olhos_felizes' : 'bebe_olhos_fechados');
       camadas.palpebras.setVisible(fechado || sinalAtual !== null);
       // Esgotado: a camada dele já traz os olhos fechados; chorando: olhos apertados (◡ ◡)
       camadas.olhos_fechados.setVisible(fechado || sinalAtual === 'choro');
+      atualizarBoca();
       return obj;
     },
+    // v0.0.64: o bebê com ou sem a chupeta; e o dentinho (marco) no sorriso
+    chupeta(sim) { comChupeta = !!sim; atualizarBoca(); return obj; },
+    temChupeta() { return comChupeta; },
+    dentinho(sim) { comDentinho = !!sim; atualizarBoca(); return obj; },
     // Sinais de cuidado (Etapa 8.2): null, 'choro' ou 'esgotado'
     sinal(nome) {
       sinalAtual = nome;
@@ -80,6 +98,7 @@ function criarBebeVisual(cena, x, y, escala = 1) {
       camadas.choro.setVisible(v && sinalAtual === 'choro');
       camadas.esgotado.setVisible(v && sinalAtual === 'esgotado');
       if (v && obj.bebe) camadas.extra.setVisible(!!obj.bebe.especial);
+      atualizarBoca();
       return obj;
     },
     setDepth(d) { todas().forEach(c => c.setDepth(d)); return obj; },

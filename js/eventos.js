@@ -99,7 +99,7 @@ const EVENTOS = {
   // O bebê está bem o bastante para um evento?
   pode(q) {
     return !q.mamando && !q.painelAberto && !q.recusando && !q.pulando && !q.dodoi
-      && !q.marcoAgora && !q.cameraAberta && !q.itensBrincar
+      && !q.marcoAgora && !q.cameraAberta && !q.itensBrincar && !q.manha
       && ['nada', 'triste'].includes(q.sinalBebe);
   },
 
@@ -123,6 +123,8 @@ const EVENTOS = {
     else if (ev.ativo === 'dodoi') EVENTOS.passoDodoi(q, seg);
     else if (ev.ativo === 'soluco') EVENTOS.passoSoluco(q, seg);
     else if (ev.ativo === 'brinquedo') EVENTOS.passoBrinquedo(q, seg);
+    EVENTOS.passoBico(q, seg);           // v0.0.64: bico (pedido, tempo com o bico, manha)
+    EVENTOS.passoResfriado(q, seg);      // v0.0.64: resfriado espirra mais
     EVENTOS.passoVinculo(q, seg);
     EVENTOS.conferirTutorial(q);
     if (ev.ativo) return;
@@ -355,6 +357,10 @@ const EVENTOS = {
     const temCurativo = ev.curativoAte > Date.now();
     q.galo.setPosition(x + D.GALO_X, y + D.GALO_Y).setVisible(!!temGalo && !temCurativo && !deitado);
     q.curativo.setPosition(x + D.CURATIVO_X, y + D.CURATIVO_Y).setVisible(temCurativo && !deitado);
+    if (q.narizResfriado) {   // v0.0.64: narizinho vermelho do resfriado
+      const R = CONFIG.RESFRIADO;
+      q.narizResfriado.setPosition(x + R.NARIZ_X, y + R.NARIZ_Y).setVisible(EVENTOS.resfriado() && !deitado && q.visual.camadas.corpo.visible);
+    }
     // estrelinhas girando em volta da cabeça
     const giram = q.dodoi && ev.t < ev.estrelasAte;
     q.estrelasDodoi.forEach((e, i) => {
@@ -509,6 +515,7 @@ const EVENTOS = {
     if (!CLIMA.forcado) MOMENTOS.registrar('primeiro_trovao');
     EVENTOS.assustarGato(q);
     if (q.mamando || q.dodoi || q.poseAtual === 'esgotado' || q.ev.ativo === 'brinquedo') return;
+    if (q.cortinaFechada) return;      // v0.0.64: com a cortina fechada o bebê nem viu o raio
     EVENTOS.pulinho(q, 3, 80);
     q.susto = true;
     if (q.timerSusto) q.timerSusto.remove();
@@ -522,6 +529,7 @@ const EVENTOS = {
 
   iniciarBrinquedo(q, b) {
     const B = CONFIG.EVENTOS.BRINQUEDO, ev = q.ev;
+    if (q.tarefa) q.tarefa('brinquedo');   // v0.0.64: tarefa do dia
     ev.ativo = 'brinquedo';
     ev.t = 0;
     ev.brinquedo = b;
@@ -598,6 +606,189 @@ const EVENTOS = {
       onComplete: () => q.tweens.add({ targets: mao, alpha: 0, duration: 200, onComplete: () => mao.destroy() }) });
   },
 
+  // ---------- Bico / chupeta (v0.0.64) ----------
+  // O bebê pede o bico num balão. Dar (tocar no bebê, tocar no balão ou arrastar o
+  // bico até ele): fica com o bico 1 minuto e o vício sobe. Trocar por um brinquedo
+  // (arrastar até o berço): o vício desce; se já está viciado, chora um pouco (manha)
+  // até ganhar um carinho.
+  dadosBico() {
+    const s = Estado.dados || Estado.carregar();
+    return (s && s.bico) || { vicio: 0, dados: 0, trocas: 0 };
+  },
+
+  gravarBico(muda) {
+    const s = Estado.carregar();
+    if (!s) return;
+    s.bico = Object.assign({ vicio: 0, dados: 0, trocas: 0 }, s.bico || {});
+    muda(s.bico);
+    Estado.salvar();
+  },
+
+  chanceBico() {
+    const B = CONFIG.EVENTOS.BICO;
+    const porDia = Math.min(0.95, B.CHANCE_DIA + EVENTOS.dadosBico().vicio * B.VICIO_POR_NIVEL);
+    const segundosPorDia = CONFIG.TEMPO.DIAS_REAIS_POR_ANO * 86400 / 365;
+    return porDia * B.CONFERIR_SEGUNDOS / segundosPorDia;
+  },
+
+  passoBico(q, seg) {
+    const B = CONFIG.EVENTOS.BICO, ev = q.ev;
+    // acabou o minuto com o bico
+    if (q.chupetaAte && q.time.now >= q.chupetaAte) EVENTOS.tirarChupeta(q);
+    if (ev.ativo === 'bico') {
+      ev.t += seg;
+      if (ev.t >= B.ESPERA_SEGUNDOS) EVENTOS.bicoIgnorado(q);
+      return;
+    }
+    if (ev.ativo || q.chupetaAte || q.manha) return;
+    q.bicoDescanso = (q.bicoDescanso || 0) - seg;
+    q.bicoConferir = (q.bicoConferir === undefined ? B.CONFERIR_SEGUNDOS : q.bicoConferir) - seg;
+    if (q.bicoConferir > 0 || q.bicoDescanso > 0) return;
+    q.bicoConferir = B.CONFERIR_SEGUNDOS;
+    if (EVENTOS.pode(q) && Math.random() < EVENTOS.chanceBico()) EVENTOS.iniciarBico(q);
+  },
+
+  iniciarBico(q) {
+    if (!EVENTOS.pode(q) || q.ev.ativo) return false;
+    const N = CONFIG.NECESSIDADES, Q = CONFIG.QUARTO;
+    q.ev.ativo = 'bico';
+    q.ev.t = 0;
+    MOMENTOS.registrar('primeiro_bico');
+    tocarSom(q, 'choro', { volume: 0.25, rate: 1.5 });     // um "hmm" curtinho
+    q.mostrarBalao();
+    // o bico do balão: tocar dá o bico; arrastar até o bebê também
+    const zona = q.zonaBico = q.add.zone(N.BALAO_X - 2, N.BALAO_Y - 4, 32, 30).setOrigin(0, 0)
+      .setInteractive({ draggable: true }).setDepth(60);
+    let arrastou = false;
+    zona.on('dragstart', (p) => {
+      arrastou = true;
+      q.balao.setVisible(false);
+      q.chupetaVoando = q.add.image(p.worldX, p.worldY, 'icone_chupeta').setDepth(61);
+    });
+    zona.on('drag', (p) => { if (q.chupetaVoando) q.chupetaVoando.setPosition(Math.round(p.worldX), Math.round(p.worldY)); });
+    zona.on('dragend', (p) => {
+      if (q.chupetaVoando) { q.chupetaVoando.destroy(); q.chupetaVoando = null; }
+      const noBebe = p.worldX >= Q.BEBE_X - 6 && p.worldX <= Q.BEBE_X + 38 && p.worldY >= Q.BEBE_Y - 6 && p.worldY <= Q.BEBE_Y + 38;
+      if (noBebe) EVENTOS.darBico(q);
+      else { arrastou = false; q.mostrarBalao(); }
+    });
+    zona.on('pointerup', () => { if (!arrastou) EVENTOS.darBico(q); });
+    return true;
+  },
+
+  balaoBico(q) {
+    const N = CONFIG.NECESSIDADES;
+    if (q.chupetaVoando) { q.balao.setVisible(false); return; }
+    q.balao.setVisible(!q.mamando);
+    if (q.balaoIcone.texture.key !== 'icone_chupeta') q.balaoIcone.setTexture('icone_chupeta');
+    q.balaoSelo.setVisible(false);
+    q.balao.x = N.BALAO_X;
+  },
+
+  fimPedidoBico(q) {
+    if (q.zonaBico) { q.zonaBico.destroy(); q.zonaBico = null; }
+    if (q.chupetaVoando) { q.chupetaVoando.destroy(); q.chupetaVoando = null; }
+    q.ev.ativo = null;
+    q.bicoDescanso = CONFIG.EVENTOS.BICO.DESCANSO_SEGUNDOS;
+    q.ev.espera = Math.max(q.ev.espera, 10);
+    q.mostrarBalao();
+  },
+
+  darBico(q) {
+    if (q.ev.ativo !== 'bico') return;
+    const B = CONFIG.EVENTOS.BICO;
+    EVENTOS.fimPedidoBico(q);
+    EVENTOS.gravarBico(b => { b.vicio = Math.min(B.VICIO_MAX, b.vicio + 1); b.dados++; });
+    q.chupetaAte = q.time.now + B.SEGUNDOS_COM_BICO * 1000;
+    q.visual.chupeta(true);
+    tocarSom(q, 'beijinho', { volume: 0.5 });
+    EVENTOS.coracao(q, 0);
+    q.atualizarNecessidades();
+  },
+
+  tirarChupeta(q) {
+    q.chupetaAte = null;
+    if (q.visual) q.visual.chupeta(false);
+  },
+
+  // Brinquedo arrastado até o berço enquanto ele pede o bico
+  trocarBico(q, brinq) {
+    const B = CONFIG.EVENTOS.BICO;
+    const viciado = EVENTOS.dadosBico().vicio >= B.VICIADO_A_PARTIR;
+    EVENTOS.fimPedidoBico(q);
+    EVENTOS.gravarBico(b => { b.vicio = Math.max(0, b.vicio - 1); b.trocas++; });
+    VINCULO.mudar(B.VINCULO_TROCA);
+    MOMENTOS.registrar('trocou_bico');
+    if (!viciado) { EVENTOS.iniciarBrinquedo(q, brinq); return true; }
+    if (q.tarefa) q.tarefa('brinquedo');   // deu o brinquedo (mesmo com a manha)
+    // viciado: chora um pouco (manha); o brinquedo volta para o chão; um carinho faz parar
+    q.manha = true;
+    tocarSom(q, 'choro', { volume: 0.5 });
+    if (q.timerManha) q.timerManha.remove();
+    q.timerManha = q.time.delayedCall(B.MANHA_SEGUNDOS * 1000, () => { q.manha = false; });
+    return false;
+  },
+
+  acalmarManha(q) {
+    if (!q.manha) return;
+    q.manha = false;
+    if (q.timerManha) { q.timerManha.remove(); q.timerManha = null; }
+    VINCULO.mudar(CONFIG.EVENTOS.BICO.VINCULO_CARINHO_MANHA);
+    q.time.delayedCall(150, () => EVENTOS.coracao(q, -7));
+  },
+
+  bicoIgnorado(q) {
+    EVENTOS.fimPedidoBico(q);
+    NEC.mudar('diversao', -2);
+    q.visual.olharBaixo(true);
+    q.time.delayedCall(800, () => q.visual && q.visual.olharBaixo(false));
+    q.atualizarNecessidades();
+  },
+
+  // ---------- Resfriado (v0.0.64) ----------
+  // No frio (CONFIG.RESFRIADO.FRIO_ATE) com as cortinas ABERTAS, a cada hora do jogo
+  // há uma chance de o bebê ficar resfriado: espirra muito e fica com o narizinho
+  // vermelho por algumas horas do jogo. Fechar as cortinas no frio evita.
+  // (Remédio e médico entram com as doenças, numa etapa futura.)
+  resfriado() {
+    const s = Estado.dados || Estado.carregar();
+    return !!(s && s.saude && s.saude.resfriadoAte && TEMPO.minutosDeVida() < s.saude.resfriadoAte);
+  },
+
+  conferirResfriado(q) {
+    const R = CONFIG.RESFRIADO;
+    const c = q.clima;
+    if (!c || EVENTOS.resfriado() || q.cortinaFechada) return;
+    if (c.temperatura > R.FRIO_ATE) return;
+    if (Math.random() < R.CHANCE_HORA) EVENTOS.pegarResfriado(q);
+  },
+
+  pegarResfriado(q) {
+    const R = CONFIG.RESFRIADO;
+    const s = Estado.carregar();
+    if (!s) return;
+    s.saude = Object.assign({}, s.saude, { resfriadoAte: TEMPO.minutosDeVida() + R.HORAS * 60 });
+    Estado.salvar();
+    MOMENTOS.registrar('primeiro_resfriado');
+    mostrarAvisoCaixa(q, 'Ficou resfriado!\nNo frio, feche a cortina.', 44, 3.5);
+    q.proximoEspirroResfriado = 2;
+  },
+
+  passoResfriado(q, seg) {
+    const R = CONFIG.RESFRIADO;
+    const doente = EVENTOS.resfriado();
+    if (!q.narizResfriado) q.narizResfriado = q.add.rectangle(0, 0, 2, 1, 0xe8606e).setOrigin(0, 0).setVisible(false);
+    if (!doente) { q.narizResfriado.setVisible(false); return; }
+    if (q.proximoEspirroResfriado === null || q.proximoEspirroResfriado === undefined) {
+      q.proximoEspirroResfriado = Phaser.Math.FloatBetween(R.ESPIRRO_INTERVALO[0], R.ESPIRRO_INTERVALO[1]);
+    }
+    q.proximoEspirroResfriado -= seg;
+    if (q.proximoEspirroResfriado <= 0 && !q.ev.ativo && EVENTOS.pode(q)) {
+      q.proximoEspirroResfriado = Phaser.Math.FloatBetween(R.ESPIRRO_INTERVALO[0], R.ESPIRRO_INTERVALO[1]);
+      EVENTOS.espirro(q);
+    }
+  },
+
   // ---------- Marcos do desenvolvimento (v0.0.63) ----------
   // Chamado de tempos em tempos pelo quarto. Um marco por vez, com festinha.
   conferirMarco(q) {
@@ -607,6 +798,7 @@ const EVENTOS = {
     if (!m) return;
     const M = CONFIG.MARCOS, Q = CONFIG.QUARTO;
     q.marcoAgora = true;
+    if (m.id === 'dentinho') q.visual.dentinho(true);   // v0.0.64: aparece no sorriso
     const i = M.LISTA.indexOf(m);
     tocarSom(q, 'marco');
     mostrarAvisoCaixa(q, 'Novo marco!\n' + m.nome, 44, M.AVISO_SEGUNDOS);

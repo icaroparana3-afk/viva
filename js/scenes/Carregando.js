@@ -137,6 +137,11 @@ class Carregando extends Phaser.Scene {
     if (EV.icones_atividades) this.load.spritesheet('icones_atividades', './assets/ui/icones_atividades.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.icones_marcos) this.load.spritesheet('icones_marcos', './assets/ui/icones_marcos.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.mao_tchau) this.load.image('mao_tchau', './assets/sprites/mao_tchau.png');
+    ['botao_tarefas', 'estrela_tarefa'].forEach(n => { if (EV[n]) this.load.image(n, './assets/ui/' + n + '.png'); });
+    if (EV.figuras_livro2) this.load.spritesheet('figuras_livro2', './assets/ui/figuras_livro2.png', { frameWidth: 12, frameHeight: 12 });
+    if (EV.cortina_fechada) this.load.image('cortina_fechada', './assets/sprites/cortina_fechada.png');
+    if (EV.icone_chupeta) this.load.image('icone_chupeta', './assets/ui/icone_chupeta.png');
+    if (EV.bebe_boca) this.load.spritesheet('bebe_boca', './assets/sprites/bebe_boca.png', { frameWidth: 32, frameHeight: 32 });
     ['botao_camera', 'moldura_camera', 'botao_foto'].forEach(n => { if (EV[n]) this.load.image(n, './assets/ui/' + n + '.png'); });
     if (EV.icones_album) this.load.spritesheet('icones_album', './assets/ui/icones_album.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.botao_album) this.load.image('botao_album', './assets/ui/botao_album.png');
@@ -204,6 +209,11 @@ class Carregando extends Phaser.Scene {
       frameRate: 3, repeat: -1 });
     criarPainelNecessidadesProvisorio(this);   // só cria as peças que ainda não chegaram
     criarClimaProvisorio(this);      // v0.0.58: sol, raio, visitas, folha seca, bolo, ícones do álbum
+    criarTarefasProvisorio(this);    // v0.0.64: prancheta e estrelinha
+    criarLivro2Provisorio(this);     // v0.0.64: figuras do segundo livro
+    criarCortinaProvisorio(this);    // v0.0.64: a cortina fechada
+    criarChupetaProvisorio(this);    // v0.0.64: ícone do bico no balão
+    prepararChupeta(this);           // v0.0.64: a chupeta vira uma camada que sai; boquinha com dentinho
     criarMarcosProvisorio(this);     // v0.0.63: medalhas dos marcos e a mãozinha do tchau
     criarAtividadesProvisorio(this); // v0.0.62: bolhas, mãos, livro, blocos, ícones e câmera
     criarEventosProvisorios(this);   // v0.0.57: nuvem, pensamentos, chocalho, curativo, galo (só os que faltam)

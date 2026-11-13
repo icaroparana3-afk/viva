@@ -845,3 +845,170 @@ function criarMarcosProvisorio(cena) {
     t.refresh();
   }
 }
+
+// ---------- Chupeta que sai e boquinha (v0.0.64) ----------
+// A chupeta vinha desenhada no contorno do bebê (do autor). Aqui ela é separada:
+//   bebe_contorno  → sem a chupeta
+//   bebe_corpo     → o "buraco" embaixo da chupeta vira pele
+//   bebe_chupeta   → só a chupeta (32×32), aparece quando o bebê ganha o bico
+//   bebe_boca      → 96×32, 3 quadros 32×32: neutra, sorriso, sorriso com dentinho (provisória)
+// Só mexe se o desenho for o mesmo de antes (se o autor mandar o bebê novo, nada muda).
+function prepararChupeta(cena) {
+  const P = CONFIG.BEBE.CHUPETA;   // pixels da chupeta no desenho
+  const ler = (chave) => {
+    const img = cena.textures.get(chave).getSourceImage();
+    const c = document.createElement('canvas');
+    c.width = 32; c.height = 32;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    return { c, ctx, d: ctx.getImageData(0, 0, 32, 32) };
+  };
+  const px = (d, x, y) => { const i = (y * 32 + x) * 4; return [d.data[i], d.data[i + 1], d.data[i + 2], d.data[i + 3]]; };
+  const pintar = (d, x, y, cor) => { const i = (y * 32 + x) * 4; d.data[i] = cor[0]; d.data[i + 1] = cor[1]; d.data[i + 2] = cor[2]; d.data[i + 3] = cor[3]; };
+  const vazia = (nome, w) => { if (!cena.textures.exists(nome)) cena.textures.createCanvas(nome, w, 32).refresh(); };
+  const trocar = (chave, canvas, w) => {
+    cena.textures.remove(chave);
+    const t = cena.textures.createCanvas(chave, w, 32);
+    t.getContext().drawImage(canvas, 0, 0);
+    t.refresh();
+    return t;
+  };
+  try {
+    const cont = ler('bebe_contorno'), corpo = ler('bebe_corpo');
+    // confere: o meio da chupeta é branco e o bico é cinza escuro
+    const branco = px(cont.d, P.CONFERE_BRANCO[0], P.CONFERE_BRANCO[1]);
+    const bico = px(cont.d, P.CONFERE_BICO[0], P.CONFERE_BICO[1]);
+    if (!(branco[3] > 0 && branco[0] > 200 && bico[3] > 0 && bico[0] < 140)) {
+      vazia('bebe_chupeta', 32); vazia('bebe_boca', 96);
+      CONFIG.BEBE.CHUPETA.SEPARADA = false;
+      return;
+    }
+    // 1) a chupeta sozinha
+    const ch = document.createElement('canvas'); ch.width = 32; ch.height = 32;
+    const chx = ch.getContext('2d'); const chd = chx.createImageData(32, 32);
+    P.PIXELS.forEach(([x, y]) => { pintar(chd, x, y, px(cont.d, x, y)); pintar(cont.d, x, y, [0, 0, 0, 0]); });
+    chx.putImageData(chd, 0, 0);
+    trocar('bebe_chupeta', ch, 32);
+    // 2) contorno sem a chupeta
+    cont.ctx.putImageData(cont.d, 0, 0);
+    trocar('bebe_contorno', cont.c, 32);
+    // 3) corpo: o buraco vira pele (a cor clara do corpo; o jogo pinta com a cor da pele)
+    const pele = px(corpo.d, P.PELE[0], P.PELE[1]);
+    P.PIXELS.forEach(([x, y]) => { if (px(corpo.d, x, y)[3] === 0) pintar(corpo.d, x, y, pele); });
+    corpo.ctx.putImageData(corpo.d, 0, 0);
+    trocar('bebe_corpo', corpo.c, 32);
+    // 4) a boquinha: neutra, sorriso, sorriso com dentinho
+    if (!CONFIG.ARTES_PRONTAS.bebe_boca) {   // sem a boquinha do autor: provisória
+      if (cena.textures.exists('bebe_boca')) cena.textures.remove('bebe_boca');
+      const t = cena.textures.createCanvas('bebe_boca', 96, 32);
+      const c = t.getContext();
+      const k = '#3a1c1c', w = '#ffffff', r = '#c8505a';
+      const p = (q, x, y, cor) => { c.fillStyle = cor; c.fillRect(q * 32 + x, y, 1, 1); };
+      const [bx, by] = P.BOCA;                // canto esquerdo da boca (2 pixels de largura)
+      p(0, bx, by, k); p(0, bx + 1, by, k);                                              // neutra: —
+      p(1, bx - 1, by - 1, k); p(1, bx + 2, by - 1, k); p(1, bx, by, k); p(1, bx + 1, by, k);      // sorriso: ◡
+      p(2, bx - 1, by - 1, k); p(2, bx, by - 1, w); p(2, bx + 1, by - 1, r); p(2, bx + 2, by - 1, k); // boca aberta com o dentinho
+      p(2, bx, by, k); p(2, bx + 1, by, k);
+      registrarQuadros(t, 32, 32, 3);
+      t.refresh();
+    }
+    CONFIG.BEBE.CHUPETA.SEPARADA = true;
+  } catch (e) {
+    vazia('bebe_chupeta', 32); vazia('bebe_boca', 96);
+    CONFIG.BEBE.CHUPETA.SEPARADA = false;
+  }
+}
+
+// ---------- Ícone do bico no balão (v0.0.64) ----------
+//   icone_chupeta 16×16 (o mesmo tamanho dos ícones do balão de pedido)
+function criarChupetaProvisorio(cena) {
+  if (cena.textures.exists('icone_chupeta')) return;
+  const t = cena.textures.createCanvas('icone_chupeta', 16, 16);
+  pintarPixels(t.getContext(), [
+    '................', '......bbbb......', '.....b....b.....', '.....b....b.....', '......bbbb......',
+    '...kkkkkkkkkk...', '..kWWWWWWWWWWk..', '.kWWWWbbbbWWWWk.', '.kWWWWbbbbWWWWk.', '..kWWWWWWWWWWk..',
+    '...kkkkggkkkk...', '......kggk......', '......kggk......', '.......kk.......', '................', '................'
+  ], { k: '#2a1838', W: '#ffffff', b: '#7ab8f0', g: '#c8c8c8' }, 0, 0);
+  t.refresh();
+}
+
+// ---------- Cortina fechada (v0.0.64) ----------
+//   cortina_fechada 36×62 (a metade esquerda; o jogo espelha para a direita), nas cores da cortina do quarto
+function criarCortinaProvisorio(cena) {
+  if (cena.textures.exists('cortina_fechada')) return;
+  const t = cena.textures.createCanvas('cortina_fechada', 36, 62);
+  const c = t.getContext();
+  const cor = { claro: '#44bc9c', meio: '#3e968d', medio: '#448278', escuro: '#1a5f54', borda: '#214345' };
+  // dobras verticais: claro, meio, escuro, meio...
+  const dobra = ['claro', 'claro', 'meio', 'meio', 'medio', 'escuro'];
+  for (let x = 0; x < 36; x++) {
+    c.fillStyle = cor[dobra[x % 6]];
+    // a barra de baixo ondula com as dobras
+    const fim = 60 - (x % 6 < 2 ? 1 : 0);
+    c.fillRect(x, 1, 1, fim);
+  }
+  c.fillStyle = cor.borda;
+  c.fillRect(0, 0, 1, 62);                       // borda de fora
+  c.fillRect(0, 59, 36, 1); c.fillRect(0, 61, 36, 1);   // barra
+  for (let x = 2; x < 36; x += 8) c.fillRect(x, 0, 3, 2);   // argolas no varão
+  c.fillStyle = cor.claro; c.fillRect(35, 1, 1, 58);   // beirada do meio, mais clara
+  t.refresh();
+}
+
+// ---------- Segundo livro de figuras (v0.0.64) ----------
+//   figuras_livro2 96×12 (8 quadros 12×12): vaca, cachorro, pato, peixe, flor, árvore, casa, carro
+function criarLivro2Provisorio(cena) {
+  if (cena.textures.exists('figuras_livro2')) return;
+  const t = cena.textures.createCanvas('figuras_livro2', 96, 12);
+  const pal = {
+    k: '#2a1838', w: '#ffffff', p: '#ff9ab0', m: '#7a4a2a', M: '#b07a4a', y: '#ffd860', o: '#f08a30',
+    b: '#4a9ad8', B: '#9ad8ff', g: '#5ac85a', G: '#2e8a3a', r: '#e04848', R: '#a02828', c: '#c8c8c8', a: '#5a6070'
+  };
+  [
+    // vaca
+    ['............', '.k........k.', '.kkkkkkkkkk.', '.kwwkkwwwwk.', '.kwkwwwwkwk.', '.kwwwwwkkwk.',
+     '.kkpppppkkk.', '..kpkppkpk..', '..kkkkkkkk..', '............', '............', '............'],
+    // cachorro
+    ['............', '.mm....mm...', '.mMm..mMm...', '.mMMMMMMm...', '.MMkMMkMM...', '.MMMMMMMM...',
+     '..MMkkMM....', '..MMMMMM....', '...MppM.....', '....pp......', '............', '............'],
+    // pato
+    ['............', '....yyy.....', '...yykyy....', '...yyyyyoo..', '....yyy.....', '.y.yyyyy....',
+     '.yyyyyyyy...', '.yyyyyyyy...', '..yyyyyy....', '....oo.oo...', '............', '............'],
+    // peixe
+    ['............', '............', '.....bbb....', 'b...bbbbb...', 'bb.bbbbkbb..', 'bbbbbbbbbbb.',
+     'bb.bbBBBbb..', 'b...bbbbb...', '.....bbb....', '............', '............', '............'],
+    // flor
+    ['............', '....rr.rr...', '...rrrrrrr..', '....ryyyr...', '...rryyyrr..', '....rrrrr...',
+     '......g.....', '...gg.g.....', '....ggg.gg..', '......ggg...', '......g.....', '............'],
+    // árvore
+    ['....GGGG....', '..GGggggGG..', '.GggggggggG.', '.GggGgggGgG.', '.GggggggggG.', '..GGggggGG..',
+     '....GmmG....', '.....mm.....', '.....mm.....', '.....mm.....', '...mmmmmm...', '............'],
+    // casa
+    ['.....rr.....', '....rRRr....', '...rRRRRr...', '..rRRRRRRr..', '.rrrrrrrrrr.', '..cwwwwwwc..',
+     '..cwbbwmmc..', '..cwbbwmmc..', '..cwwwwmmc..', '..cccccccc..', '............', '............'],
+    // carro
+    ['............', '............', '....bbbb....', '...bBBbBb...', '..bbBBbBBb..', '.bbbbbbbbbbb',
+     '.bbbbbbbbbby', '.bbbbbbbbbbb', '..akka..akka', '...aa....aa.', '............', '............']
+  ].forEach((m, i) => pintarPixels(t.getContext(), m, pal, i * 12, 0));
+  registrarQuadros(t, 12, 12, 8);
+  t.refresh();
+}
+
+// ---------- Tarefas do dia (v0.0.64) ----------
+//   botao_tarefas 14×14 (prancheta), estrela_tarefa 7×7
+function criarTarefasProvisorio(cena) {
+  const pal = { o: '#2a1838', V: '#6a3aa8', v: '#8a5ad0', m: '#b07a4a', M: '#7a4a2a', w: '#ffffff', a: '#9aa0b0', y: '#ffd860', Y: '#c89a20' };
+  if (!cena.textures.exists('botao_tarefas')) {
+    const t = cena.textures.createCanvas('botao_tarefas', 14, 14);
+    pintarPixels(t.getContext(), [
+      '.oooooooooooo.', 'oVvvvaaaavvvvo', 'oVvMmaaaamMvvo', 'oVvmwwwwwwmvvo', 'oVvmwaawwwmvvo', 'oVvmwwwwwwmvvo',
+      'oVvmwaaawwmvvo', 'oVvmwwwwwwmvvo', 'oVvmwaawwwmvvo', 'oVvmwwwwwwmvvo', 'oVvMmmmmmmMvvo', 'oVVVVVVVVVVVVo',
+      'owwwwwwwwwwwwo', '.oooooooooooo.'], pal, 0, 0);
+    t.refresh();
+  }
+  if (!cena.textures.exists('estrela_tarefa')) {
+    const t = cena.textures.createCanvas('estrela_tarefa', 7, 7);
+    pintarPixels(t.getContext(), ['...Y...', '..YyY..', 'YYyyyYY', '.YyyyY.', '..yyy..', '.Yy.yY.', '.Y...Y.'], pal, 0, 0);
+    t.refresh();
+  }
+}

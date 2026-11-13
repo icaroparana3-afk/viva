@@ -64,7 +64,7 @@ class Brincadeira extends Phaser.Scene {
 
   // ---------- Bebê de perto ----------
   criarBebe(x, y, escala) {
-    this.bebe = criarBebeVisual(this, x, y, escala).mostrar(this.bebeDados);
+    this.bebe = criarBebeVisual(this, x, y, escala).mostrar(this.bebeDados).dentinho(MARCOS.tem('dentinho'));
     this.bebeX = x; this.bebeY = y; this.bebeEscala = escala;
     return this.bebe;
   }
@@ -124,6 +124,13 @@ class Brincadeira extends Phaser.Scene {
       Estado.salvar();
     }
     const momento = { bolhas: 'primeiras_bolhas', achou: 'primeiro_achou', livro: 'primeiro_livro', blocos: 'primeira_torre' }[this.qual];
+    // v0.0.64: tarefas do dia
+    let pronta = false;
+    if (this.qual === 'livro' && this.lidas && this.lidas.size === this.paginas.length) pronta = TAREFAS.contar('livro') || pronta;
+    if (this.qual === 'bolhas') pronta = TAREFAS.contar('bolhas', this.estouradas || 0) || pronta;
+    if (this.qual === 'achou') pronta = TAREFAS.contar('achou', this.acertos || 0) || pronta;
+    if (this.qual === 'blocos') pronta = TAREFAS.maximo('torre', this.pontos) || pronta;
+    this.tarefaPronta = pronta;
     const livroInteiro = this.qual !== 'livro' || (this.lidas && this.lidas.size === this.paginas.length);
     if (brincou && momento && livroInteiro && !(this.qual === 'achou' && this.acertos === 0)) MOMENTOS.registrar(momento);
   }
@@ -134,12 +141,12 @@ class Brincadeira extends Phaser.Scene {
     this.aplicar();
     const U = CONFIG.UI;
     const d = Math.round(this.diversao);
-    const caixa = this.add.rectangle(20, 100, 140, 82, U.CAIXA, 1).setOrigin(0, 0).setStrokeStyle(1, U.DESTAQUE).setDepth(60);
-    const linhas = texto + (d > 0 ? '\n+' + d + ' de diversão' : '');
-    escrever(this, 90, 110, linhas, { fontFamily: 'monospace', fontSize: '9px', color: U.TEXTO, align: 'center', lineSpacing: 3 })
+    const caixa = this.add.rectangle(20, 92, 140, 98, U.CAIXA, 1).setOrigin(0, 0).setStrokeStyle(1, U.DESTAQUE).setDepth(60);
+    const linhas = texto + (d > 0 ? '\n+' + d + ' de diversão' : '') + (this.tarefaPronta ? '\nTarefa do dia feita!' : '');
+    escrever(this, 90, 100, linhas, { fontFamily: 'monospace', fontSize: '9px', color: U.TEXTO, align: 'center', lineSpacing: 3 })
       .setOrigin(0.5, 0).setDepth(61);
-    const de = criarOpcao(this, 28, 158, 58, 16, 'De novo', () => this.deNovo(), 8);
-    const vo = criarOpcao(this, 94, 158, 58, 16, 'Voltar', () => this.sair(), 8);
+    const de = criarOpcao(this, 28, 168, 58, 16, 'De novo', () => this.deNovo(), 8);
+    const vo = criarOpcao(this, 94, 168, 58, 16, 'Voltar', () => this.sair(), 8);
     [de.caixa, de.rotulo, vo.caixa, vo.rotulo].forEach(o => o.setDepth(61));
     tocarSom(this, 'festa', { volume: 0.5 });
     if (MARCOS.tem('palmas')) this.palminhas();
@@ -367,17 +374,40 @@ class Brincadeira extends Phaser.Scene {
   // =============================================================
   // LIVRO DE FIGURAS
   // =============================================================
+  // v0.0.64: primeiro escolhe o livro (capas), depois lê
   iniciar_livro() {
-    this.paginas = CONFIG.ATIVIDADES.LIVRO.PAGINAS;
+    const livros = CONFIG.ATIVIDADES.LIVRO.LIVROS;
+    this.criarBebe(58, 214, 2);
+    this.placar.setText('Qual livro vamos ler?');
+    const capas = [];
+    const cores = [[0x8a3a2a, 0x5a2418], [0x2a5a8a, 0x183a5a]];
+    livros.forEach((l, i) => {
+      const x = 14 + i * 80, y = 58;
+      const capa = this.add.rectangle(x, y, 72, 96, cores[i % 2][0], 1).setOrigin(0, 0).setStrokeStyle(2, cores[i % 2][1]).setInteractive();
+      const miolo = this.add.rectangle(x + 10, y + 10, 52, 46, 0xfff4dc, 1).setOrigin(0, 0);
+      const fig = this.add.image(x + 36, y + 33, l.textura, l.paginas[0][1]).setScale(3);
+      const nome = escrever(this, x + 36, y + 62, l.nome, {
+        fontFamily: 'monospace', fontSize: '8px', color: '#fff4dc', align: 'center', wordWrap: { width: 64 }
+      }).setOrigin(0.5, 0);
+      capa.on('pointerdown', () => capa.setFillStyle(cores[i % 2][1]));
+      capa.on('pointerout', () => capa.setFillStyle(cores[i % 2][0]));
+      capa.on('pointerup', () => { capas.forEach(o => o.destroy()); this.abrirLivro(i); });
+      capas.push(capa, miolo, fig, nome);
+    });
+  }
+
+  abrirLivro(qual) {
+    const livro = CONFIG.ATIVIDADES.LIVRO.LIVROS[qual];
+    this.livroAtual = livro;
+    this.paginas = livro.paginas;
     this.pagina = 0;
     this.lidas = new Set([0]);
     this.add.image(15, 42, 'livro_aberto').setOrigin(0, 0);
-    this.figura = this.add.image(53, 88, 'pensamentos', this.paginas[0][1]).setScale(4);
+    this.figura = this.add.image(53, 88, livro.textura, this.paginas[0][1]).setScale(4);
     this.figura.setInteractive();
     this.figura.on('pointerdown', () => this.tocarFigura());
     this.palavra = escrever(this, 126, 78, '', { fontFamily: 'monospace', fontSize: '10px', color: '#3a2418', align: 'center' }).setOrigin(0.5);
     this.dica = escrever(this, 126, 112, 'toque na\nfigura', { fontFamily: 'monospace', fontSize: '7px', color: '#9a8060', align: 'center' }).setOrigin(0.5);
-    this.criarBebe(58, 214, 2);
     const seta = (x, nome, d) => {
       const tem = this.textures.exists(nome);
       const b = tem ? this.add.image(x, 146, nome).setOrigin(0, 0) : null;

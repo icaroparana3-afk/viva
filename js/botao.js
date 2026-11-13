@@ -194,6 +194,8 @@ function mostrarAviso(cena, texto, y = 205) {
 // Aparece, fica 'segundos' na tela e some devagar.
 function mostrarAvisoCaixa(cena, texto, y = 40, segundos = 2.5) {
   const U = CONFIG.UI;
+  // v0.0.64: um aviso por vez (o novo tira o anterior, para não ficarem um em cima do outro)
+  if (cena._avisoAtual) cena._avisoAtual.forEach(o => { if (o.scene) { cena.tweens.killTweensOf(o); o.destroy(); } });
   const txt = escrever(cena, CONFIG.LARGURA / 2, y + 7, texto, {
     fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO, align: 'center', lineSpacing: 3
   }).setOrigin(0.5, 0).setDepth(51);
@@ -203,6 +205,7 @@ function mostrarAvisoCaixa(cena, texto, y = 40, segundos = 2.5) {
   const caixa = cena.add.rectangle(Math.round((CONFIG.LARGURA - larg) / 2), y, larg, alt, 0x2a1838, 0.92)
     .setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA).setDepth(50);
   const itens = [caixa, txt];
+  cena._avisoAtual = itens;
   itens.forEach(o => { const a = o.alpha; o.setAlpha(0); cena.tweens.add({ targets: o, alpha: a, duration: 300 }); });
   cena.tweens.add({
     targets: itens, alpha: 0, delay: 300 + segundos * 1000, duration: 500,

@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.63: marcos do desenvolvimento, bolhas vermelhas e fim do mesversário; v0.0.62: brincadeiras do baú e câmera de fotos; v0.0.61: corrigido o quarto que ficava "meio montado", sem MENU e com brinquedos parados; v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.64: bico com vício, cortinas, resfriado, segundo livro e tarefas do dia; v0.0.63: marcos do desenvolvimento, bolhas vermelhas e fim do mesversário; v0.0.62: brincadeiras do baú e câmera de fotos; v0.0.61: corrigido o quarto que ficava "meio montado", sem MENU e com brinquedos parados; v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -150,6 +150,17 @@
   - Arte provisória feita por código (`criarEventosProvisorios` em `provisorios.js`): `balao_pensamento` 34×30, `pensamentos` 96×12 (8 quadros 12×12), `chocalho` 22×12 (2 quadros 11×12), `curativo` 7×4, `galo` 4×3 e `icone_curativo` 16×16. Cada uma tem uma chave em `ARTES_PRONTAS` (false até o autor mandar).
   - TESTE: tocar nos quadros da parede dispara imaginação → chocalho → dodói (`EVENTOS.TESTE_TOQUE_QUADROS`). Tirar antes de lançar.
   - Testado no navegador: os 3 eventos, a bolha estourando, o curativo, o curativo depois de recarregar, o sorteio automático e nenhum evento com o bebê chorando, sem erros.
+- **v0.0.64 — bico com vício, cortinas, resfriado, segundo livro e 3 tarefinhas do dia** (regras em DESIGN.md, "Bico, cortinas, resfriado e tarefas do dia"):
+  - **Chupeta separada** (`prepararChupeta` em `provisorios.js`, pixels em `CONFIG.BEBE.CHUPETA`): sai do contorno do autor e vira a camada `bebe_chupeta`; o buraco no corpo vira pele; boquinha provisória `bebe_boca` 96×32 (neutra, sorriso, sorriso com dentinho). `bebe_visual`: `chupeta(sim)`, `dentinho(sim)`. Se o autor mandar um bebê novo, a separação não é feita.
+  - **Pedido do bico** (`EVENTOS.iniciarBico` e seguintes; `CONFIG.EVENTOS.BICO`): balão com o bico, dar tocando ou arrastando, 1 minuto, vício em `save.bico`, troca por brinquedo, manha com carinho. O álbum (teste) mostra o vício.
+  - **Cortinas** (`JANELA_VIVA.criarCortinas`, `alternarCortina`; `CONFIG.CORTINA`): `save.cortinaFechada`. Raio com clarão fraco e sem susto; sol não entra; aviso de frio ou temporal.
+  - **Resfriado** (`EVENTOS.conferirResfriado`, `passoResfriado`; `CONFIG.RESFRIADO`): `save.saude.resfriadoAte`. Espirros a cada 18–35 s e narizinho vermelho.
+  - **Segundo livro** (`ATIVIDADES.LIVRO.LIVROS`): tela de escolha com as duas capas; figuras provisórias `figuras_livro2` 96×12.
+  - **Tarefas do dia** (`js/tarefas.js`, `CONFIG.TAREFAS`): `save.tarefas` e `save.estrelas`. Prancheta em (4, 22) com selo amarelo; painel com progresso, "Pegar" e bônus.
+  - **Consertos:** soltar um brinquedo em cima do bebê não conta mais como carinho; um aviso por vez (`mostrarAvisoCaixa`).
+  - **Arte provisória nova** (`ARTES_PRONTAS`, false): `icone_chupeta` 16×16, `bebe_boca` 96×32, `cortina_fechada` 36×62, `figuras_livro2` 96×12, `botao_tarefas` 14×14, `estrela_tarefa` 7×7.
+  - Testado: pedido e bico (tocando e arrastando), fim do minuto, vício subindo e descendo, manha e carinho, troca sem vício (brinca), resfriado com a cortina aberta e sem resfriado com ela fechada, clarão fraco e sem susto, segundo livro completo, tarefas feitas e pegas (3 + 2 de bônus = 5), e todos os testes anteriores, sem erros.
+  - **Próximo pacote:** estrelinhas e lojinha.
 - **v0.0.63 — marcos do desenvolvimento, bolhas vermelhas e fim do mesversário:**
   - **Bolhas vermelhas** (pedido do autor): 18% das bolhas (`ATIVIDADES.BOLHAS.VERMELHA`) tiram 2 pontos (`PERDE_VERMELHA`), nunca abaixo de zero. O bebê faz careta e a tela treme. Uma rodada que termina em 0 por causa delas ainda conta como brincadeira.
   - **Mesversário saiu** (decisão do autor: o bebê fica ~1 mês mais velho a cada visita, e a festa aparecia sempre). Só aniversário, a cada ano completo, mesmo que a volta pule o mês exato (`EVENTOS.conferirFesta`).
