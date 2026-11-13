@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.64',
+  VERSAO: '0.0.65',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -463,7 +463,7 @@ const CONFIG = {
     },
     // TESTE: tocar nos quadros da parede dispara um evento (imaginação → chocalho → dodói → ...). Tirar antes de lançar.
     TESTE_TOQUE_QUADROS: true,
-    TESTE_ORDEM: ['imaginacao', 'chocalho', 'dodoi', 'soluco', 'espirro', 'beijinho'],
+    TESTE_ORDEM: ['imaginacao', 'chocalho', 'dodoi', 'soluco', 'espirro', 'beijinho', 'bico'],   // v0.0.65: + bico
 
     // v0.0.58 — novos eventos
     BRINQUEDO: {                  // arrastar um brinquedo do chão até o berço

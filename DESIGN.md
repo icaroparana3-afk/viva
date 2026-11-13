@@ -185,7 +185,7 @@ Caderneta: a aba "Marcos" do álbum mostra os que chegaram (com dia e idade) e, 
 - **Resfriado** (primeira parte das doenças): no frio (12 °C ou menos) com a cortina aberta, a cada hora do jogo há 6% de chance. Dura 36 horas do jogo: o bebê espirra bem mais e fica com o narizinho vermelho. Cortina fechada no frio evita. Remédio e médico entram com as doenças.
 - **Segundo livro:** ao abrir o livro, escolhe entre "Coisas do bebê" e "Bichos e coisas" (vaca, cachorro, pato, peixe, flor, árvore, casa, carro).
 - **3 tarefinhas do dia:** por dia REAL (trocam à meia-noite), sorteadas entre 9: ler um livro inteiro, estourar 15 bolhas, 3 "achou!", torre de 5 blocos, tirar uma foto, 5 carinhos, dar a mamadeira, dar um brinquedo no berço, tudo acima de 70%. Feita: "Pegar" dá 1 estrelinha; as 3: +2 de bônus. Não fazer não tira nada. Prancheta embaixo do MENU, com bolinha amarela quando tem estrelinha para pegar. As estrelinhas serão usadas na lojinha (próximo pacote).
-- **Avisos:** um por vez (o novo substitui o anterior).
+- **Avisos:** um por vez, em fila (v0.0.65): se chegar outro com um na tela, ele espera a vez. O mesmo texto não repete e esperam no máximo 4.
 
 ## Ausência
 - Bebê: mais de 1 dia real sem entrar = aviso. De novo = adoção e fim da história. (Decisão do autor, 2026-11-05: 12 h reais viram 1 dia real.)

@@ -143,6 +143,10 @@ const EVENTOS = {
     else if (qual === 'soluco') EVENTOS.iniciarSoluco(q);
     else if (qual === 'espirro') EVENTOS.espirro(q);
     else if (qual === 'beijinho') EVENTOS.beijinho(q);
+    else if (qual === 'bico') {                       // v0.0.65 (teste): força o pedido do bico
+      if (q.chupetaAte) EVENTOS.tirarChupeta(q);      // se já está com o bico, tira para pedir de novo
+      EVENTOS.iniciarBico(q);
+    }
   },
 
   terminar(q) {

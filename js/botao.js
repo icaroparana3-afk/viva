@@ -29,6 +29,7 @@ function esquecerObjetos(cena) {
 // e enquadra a área 180 x 320 do jogo.
 function prepararCamera(cena) {
   esquecerObjetos(cena);
+  cena._avisoAgora = null; cena._avisoFila = [];   // v0.0.65: fila de avisos recomeça a cada abertura da cena
   const cam = cena.cameras.main;
   cam.setZoom(CONFIG.ESCALA);
   cam.centerOn(CONFIG.LARGURA / 2, CONFIG.ALTURA / 2);
@@ -192,26 +193,62 @@ function mostrarAviso(cena, texto, y = 205) {
 
 // ---------- Aviso numa caixa roxa (mesmo estilo do painel da cegonha) ----------
 // Aparece, fica 'segundos' na tela e some devagar.
+// v0.0.65: FILA. Um aviso por vez: se chegar outro enquanto um está na tela, ele espera
+// a sua vez (antes o novo tirava o anterior, e antes disso ficavam um em cima do outro).
+// Devolve a lista de objetos do aviso (fica vazia até chegar a vez dele). Para cancelar
+// um aviso (na tela ou esperando), use cancelarAvisoCaixa(cena, lista).
 function mostrarAvisoCaixa(cena, texto, y = 40, segundos = 2.5) {
+  const LIMITE_FILA = 4;
+  if (!cena._avisoFila) cena._avisoFila = [];
+  const pedido = { texto, y, segundos, itens: [], cancelado: false };
+  // o mesmo texto já na tela ou esperando: não repete
+  const repetido = (cena._avisoAgora && cena._avisoAgora.texto === texto) || cena._avisoFila.some(p => !p.cancelado && p.texto === texto);
+  if (repetido) return pedido.itens;
+  cena._avisoFila.push(pedido);
+  while (cena._avisoFila.length > LIMITE_FILA) cena._avisoFila.shift();   // fila longa demais: o mais antigo sai
+  if (!cena._avisoAgora) proximoAvisoCaixa(cena);
+  return pedido.itens;
+}
+
+// Mostra o próximo aviso da fila (se houver)
+function proximoAvisoCaixa(cena) {
+  cena._avisoAgora = null;
+  const fila = cena._avisoFila || [];
+  let p = null;
+  while (fila.length && !p) { const c = fila.shift(); if (!c.cancelado) p = c; }
+  if (!p) return;
   const U = CONFIG.UI;
-  // v0.0.64: um aviso por vez (o novo tira o anterior, para não ficarem um em cima do outro)
-  if (cena._avisoAtual) cena._avisoAtual.forEach(o => { if (o.scene) { cena.tweens.killTweensOf(o); o.destroy(); } });
-  const txt = escrever(cena, CONFIG.LARGURA / 2, y + 7, texto, {
+  cena._avisoAgora = p;
+  const txt = escrever(cena, CONFIG.LARGURA / 2, p.y + 7, p.texto, {
     fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO, align: 'center', lineSpacing: 3
   }).setOrigin(0.5, 0).setDepth(51);
   // a caixa acompanha o tamanho do texto (aceita mais de uma linha, com \n)
   const larg = Math.ceil(txt.width) + 20;
   const alt = Math.ceil(txt.height) + 12;
-  const caixa = cena.add.rectangle(Math.round((CONFIG.LARGURA - larg) / 2), y, larg, alt, 0x2a1838, 0.92)
+  const caixa = cena.add.rectangle(Math.round((CONFIG.LARGURA - larg) / 2), p.y, larg, alt, 0x2a1838, 0.92)
     .setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA).setDepth(50);
-  const itens = [caixa, txt];
-  cena._avisoAtual = itens;
-  itens.forEach(o => { const a = o.alpha; o.setAlpha(0); cena.tweens.add({ targets: o, alpha: a, duration: 300 }); });
+  p.itens.push(caixa, txt);
+  p.itens.forEach(o => { const a = o.alpha; o.setAlpha(0); cena.tweens.add({ targets: o, alpha: a, duration: 300 }); });
   cena.tweens.add({
-    targets: itens, alpha: 0, delay: 300 + segundos * 1000, duration: 500,
-    onComplete: () => itens.forEach(o => o.destroy())
+    targets: p.itens, alpha: 0, delay: 300 + p.segundos * 1000, duration: 500,
+    onComplete: () => {
+      p.itens.forEach(o => { if (o.scene) o.destroy(); });
+      if (cena._avisoAgora === p) proximoAvisoCaixa(cena);
+    }
   });
-  return itens;
+}
+
+// Tira um aviso da tela (ou da fila) antes da hora; o próximo da fila, se houver, aparece
+function cancelarAvisoCaixa(cena, itens) {
+  if (!itens) return;
+  const fila = cena._avisoFila || [];
+  const naFila = fila.find(p => p.itens === itens);
+  if (naFila) { naFila.cancelado = true; return; }
+  const atual = cena._avisoAgora;
+  if (atual && atual.itens === itens) {
+    itens.forEach(o => { if (o.scene) { cena.tweens.killTweensOf(o); o.destroy(); } });
+    proximoAvisoCaixa(cena);
+  }
 }
 
 // ---------- Campo de texto (abre o teclado do celular) ----------

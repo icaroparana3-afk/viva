@@ -108,7 +108,7 @@ const JANELA_VIVA = {
       }
     });
     q.toqueCortinaFechada.input.enabled = q.cortinaFechada;
-    if (q.cortinaFechada && q.avisoJanela) { q.avisoJanela.forEach(o => o.destroy()); q.avisoJanela = null; }
+    if (q.cortinaFechada && q.avisoJanela) { cancelarAvisoCaixa(q, q.avisoJanela); q.avisoJanela = null; }
     JANELA_VIVA.conferir(q, true);
   },
 
@@ -133,7 +133,7 @@ const JANELA_VIVA = {
       CLIMA.forcado = lista[q.testeClima];
       JANELA_VIVA.conferir(q, true);
     }
-    if (q.avisoJanela) q.avisoJanela.forEach(o => o.destroy());
+    if (q.avisoJanela) cancelarAvisoCaixa(q, q.avisoJanela);
     const txt = CLIMA.texto(q.clima) + (C.TESTE_TOQUE_JANELA ? '\n(teste: ' + (CLIMA.forcado || 'automático') + ')' : '');
     q.avisoJanela = mostrarAvisoCaixa(q, txt, CONFIG.JANELA.Y + CONFIG.JANELA.ALTURA + 3, C.AVISO_SEGUNDOS);
   },
