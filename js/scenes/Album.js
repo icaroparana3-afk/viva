@@ -37,8 +37,10 @@ class Album extends Phaser.Scene {
     this.itens = [];
 
     // v0.0.62: abas "Momentos" e "Fotos"
-    this.abaMomentos = criarOpcao(this, 28, 19, 60, 13, 'Momentos', () => this.mudarModo('momentos'), 8);
-    this.abaFotos = criarOpcao(this, 92, 19, 60, 13, 'Fotos (' + this.fotos.length + ')', () => this.mudarModo('fotos'), 8);
+    this.abaMomentos = criarOpcao(this, 6, 19, 54, 13, 'Momentos', () => this.mudarModo('momentos'), 8);
+    this.abaFotos = criarOpcao(this, 63, 19, 54, 13, 'Fotos (' + this.fotos.length + ')', () => this.mudarModo('fotos'), 8);
+    // v0.0.63: caderneta dos marcos do desenvolvimento
+    this.abaMarcos = criarOpcao(this, 120, 19, 54, 13, 'Marcos ' + MARCOS.quantos() + '/' + CONFIG.MARCOS.LISTA.length, () => this.mudarModo('marcos'), 8);
 
     if (this.textures.exists('botao_voltar_album')) {
       // v0.0.60: botões desenhados pelo autor (a seta apagada tem o próprio desenho)
@@ -96,14 +98,16 @@ class Album extends Phaser.Scene {
     this.itens.forEach(o => o.destroy());
     this.itens = [];
     const porPagina = this.modo === 'fotos' ? CONFIG.FOTOS.POR_PAGINA : A.POR_PAGINA;
-    const total = this.modo === 'fotos' ? this.fotos.length : this.momentos.length;
+    const total = this.modo === 'fotos' ? this.fotos.length : this.modo === 'marcos' ? CONFIG.MARCOS.LISTA.length : this.momentos.length;
     this.paginas = Math.max(1, Math.ceil(total / porPagina));
     this.textoPagina.setText((this.pagina + 1) + '/' + this.paginas);
     this.anterior.ativar(this.pagina > 0);
     this.proxima.ativar(this.pagina < this.paginas - 1);
     this.abaMomentos.marcar(this.modo === 'momentos');
     this.abaFotos.marcar(this.modo === 'fotos');
+    this.abaMarcos.marcar(this.modo === 'marcos');
     if (this.modo === 'fotos') { this.mostrarFotos(); return; }
+    if (this.modo === 'marcos') { this.mostrarMarcos(); return; }
 
     if (!this.momentos.length) {
       this.itens.push(escrever(this, CONFIG.LARGURA / 2, 140, 'Nenhum momento ainda.\nCuide do bebê e volte aqui!', {
@@ -189,5 +193,28 @@ class Album extends Phaser.Scene {
       this.mostrarPagina();
     }, 8);
     [voltar, apagar].forEach(b => { b.caixa.setDepth(73); b.rotulo.setDepth(74); tela.push(b.caixa, b.rotulo); });
+  }
+
+  // ---------- v0.0.63: caderneta dos marcos (os que chegaram e o que falta) ----------
+  mostrarMarcos() {
+    const U = CONFIG.UI, A = CONFIG.ALBUM, M = CONFIG.MARCOS;
+    const lista = M.LISTA.slice(this.pagina * A.POR_PAGINA, (this.pagina + 1) * A.POR_PAGINA);
+    lista.forEach((m, j) => {
+      const i = M.LISTA.indexOf(m);
+      const st = MARCOS.situacao(m);
+      const y = 34 + j * 43;
+      const caixa = this.add.rectangle(8, y, 164, 40, st.chegou ? 0x2a1838 : 0x1f1530, 1).setOrigin(0, 0)
+        .setStrokeStyle(1, st.chegou ? U.DESTAQUE : U.CAIXA_ESCOLHIDA);
+      const moldura = this.add.rectangle(13, y + 10, 20, 20, st.chegou ? 0x3d2752 : 0x2a2036, 1).setOrigin(0, 0);
+      const icone = this.add.image(23, y + 20, 'icones_marcos', i);
+      if (!st.chegou) icone.setTint(0x4a4058);              // ainda não chegou: medalha apagada
+      this.itens.push(caixa, moldura, icone);
+      this.itens.push(escrever(this, 38, y + 5, m.nome, {
+        fontFamily: 'monospace', fontSize: '8px', color: st.chegou ? '#ffffff' : '#a898b8', wordWrap: { width: 130 }, lineSpacing: 1
+      }));
+      this.itens.push(escrever(this, 38, y + 29, st.texto, {
+        fontFamily: 'monospace', fontSize: '7px', color: st.chegou ? '#b07ad6' : '#8a7f96'
+      }));
+    });
   }
 }

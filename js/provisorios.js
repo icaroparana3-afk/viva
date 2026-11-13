@@ -796,3 +796,52 @@ function criarAtividadesProvisorio(cena) {
     t.refresh();
   }
 }
+
+// ---------- Marcos do desenvolvimento (v0.0.63) ----------
+//   icones_marcos 120×12 (10 quadros 12×12: medalha com o número do marco)
+//   mao_tchau 10×11 (a mãozinha do bebê acenando)
+function criarMarcosProvisorio(cena) {
+  const falta = (nome) => !cena.textures.exists(nome);
+  if (falta('icones_marcos')) {
+    const t = cena.textures.createCanvas('icones_marcos', 120, 12);
+    const c = t.getContext();
+    const digitos = {
+      0: ['111', '101', '101', '101', '111'], 1: ['010', '110', '010', '010', '111'], 2: ['111', '001', '111', '100', '111'],
+      3: ['111', '001', '011', '001', '111'], 4: ['101', '101', '111', '001', '001'], 5: ['111', '100', '111', '001', '111'],
+      6: ['111', '100', '111', '101', '111'], 7: ['111', '001', '010', '010', '010'], 8: ['111', '101', '111', '101', '111'],
+      9: ['111', '101', '111', '001', '111']
+    };
+    const pintarDigito = (d, x, y) => digitos[d].forEach((linha, j) => [...linha].forEach((v, k) => {
+      if (v === '1') c.fillRect(x + k, y + j, 1, 1);
+    }));
+    for (let i = 0; i < 10; i++) {
+      const x = i * 12;
+      // fitinha
+      c.fillStyle = '#d04070'; c.fillRect(x + 3, 0, 2, 4); c.fillRect(x + 7, 0, 2, 4);
+      c.fillStyle = '#4a7ad0'; c.fillRect(x + 5, 0, 2, 4);
+      // medalha
+      const disco = (r, cor) => {
+        c.fillStyle = cor;
+        for (let yy = 0; yy < 9; yy++) for (let xx = 0; xx < 12; xx++) {
+          const dx = xx - 5.5, dy = yy - 4;
+          if (dx * dx + dy * dy <= r * r) c.fillRect(x + xx, 3 + yy, 1, 1);
+        }
+      };
+      disco(4.6, '#8a5a10'); disco(3.7, '#ffd860'); disco(2.6, '#ffe890');
+      c.fillStyle = '#8a5a10';
+      const n = String(i + 1);
+      if (n.length === 1) pintarDigito(+n, x + 5, 5);
+      else { pintarDigito(1, x + 2, 5); pintarDigito(0, x + 6, 5); }
+    }
+    registrarQuadros(t, 12, 12, 10);
+    t.refresh();
+  }
+  if (falta('mao_tchau')) {
+    const t = cena.textures.createCanvas('mao_tchau', 10, 11);
+    pintarPixels(t.getContext(), [
+      '.n.n.n....', 'nsnsnsn...', 'nsnsnsn.n.', 'nsssssnnsn', 'nssssssssn', 'nssssssssn',
+      '.nsssssssn', '.nssssssn.', '..nssssn..', '..nssssn..', '..nnnnnn..'
+    ], { n: '#7a4a2a', s: '#f6cfa8' }, 0, 0);
+    t.refresh();
+  }
+}

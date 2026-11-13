@@ -46,6 +46,7 @@ class Quarto extends Phaser.Scene {
     this.olhosDoToque = false; this.pulsando = false;
     this.visita = null; this.avisoJanela = null;
     this.cameraAberta = false; this.tirandoFoto = false; this.itensCamera = null; this.itensBrincar = null;
+    this.marcoAgora = false; this.esperaMarco = 2.5;
   }
 
   create() {
@@ -548,6 +549,9 @@ class Quarto extends Phaser.Scene {
     const seg = delta / 1000;
     this.tempo += seg;
     this.desenharRelogio();
+    // v0.0.63: chegou algum marco do desenvolvimento?
+    this.esperaMarco = (this.esperaMarco === undefined ? 2.5 : this.esperaMarco) - seg;
+    if (this.esperaMarco <= 0) { this.esperaMarco = CONFIG.MARCOS.CONFERIR_SEGUNDOS; EVENTOS.conferirMarco(this); }
 
     // Nuvens atravessam a janela devagar (fora do vidro ficam escondidas atrás da parede)
     const J = CONFIG.JANELA;

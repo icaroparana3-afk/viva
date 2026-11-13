@@ -96,7 +96,7 @@ Coisas que acontecem sozinhas no quarto, só com o jogo aberto e o bebê bem (ne
 ## Vínculo, festas e álbum (v0.0.58)
 - Vínculo: valor escondido que sobe com carinho e cuidado e cai com descuido. Muda a recepção na volta, os corações do carinho e o beijinho espontâneo.
 - Recepção: ao voltar, o bebê bem cuidado recebe você com festa.
-- Mesversário a cada mês até 1 ano; depois, só aniversário (decisão do autor).
+- Festa só no aniversário, a cada ano completo (v0.0.63: o mesversário saiu, decisão do autor, porque o bebê fica ~1 mês mais velho a cada visita e a festa aparecia toda vez). Se a volta pular o mês exato, a festa acontece mesmo assim.
 - Álbum de momentos: as primeiras vezes e as festas, guardadas sozinhas, com o dia do jogo e a idade.
 - Tutorial: a mãozinha ensina o painel e os brinquedos, uma vez cada.
 
@@ -149,7 +149,7 @@ Textos completos do autor (guardados para uma futura tela de detalhes):
 Objetivo do autor: o jogador ficar mais tempo no jogo e ter motivos para voltar. Regra: recompensa, nunca castigo; nada de obrigação com hora marcada.
 Ordem combinada (Etapa 8, bebê):
 1. **Pacote 1 (v0.0.62, feito):** brincadeiras do baú (bolhas de sabão, cadê-achou, livro de figuras, torre de blocos) e câmera de fotos.
-2. **Marcos do desenvolvimento** que cabem no bebê (pular os que forem de etapas futuras).
+2. **Marcos do desenvolvimento** (v0.0.63, feito).
 3. **3 tarefinhas do dia** (sem castigo se não fizer).
 4. **Estrelinhas e lojinha** (roupas, decoração, brinquedos).
 - Banho: fica para OUTRO cômodo (banheiro), para não juntar tudo no quarto.
@@ -165,6 +165,14 @@ Como funciona:
 - **Torre de blocos:** o bloco anda no alto; tocar solta. Precisa ficar 45% em cima do outro, senão a torre cai (o bebê ri do mesmo jeito). Com 8 blocos, o bebê derruba tudo rindo. +2 por bloco, +4 ao derrubar.
 - **Câmera** (botão ao lado do álbum): um visor 80×80 que dá para arrastar pelo quarto; o bebê sorri para a foto. As fotos (até 40) ficam no álbum, na aba "Fotos": miniaturas, foto grande com dia e idade, e dá para apagar. Ficam no localStorage `viva_fotos`, fora do save.
 - Contagens e recordes em `save.atividades` (servem para as tarefas do dia e os marcos).
+- **Bolhas vermelhas (v0.0.63, pedido do autor):** 18% das bolhas são vermelhas e tiram 2 pontos se estouradas (nunca abaixo de zero); o bebê faz careta e a tela treme. Fuja delas!
+
+## Marcos do desenvolvimento (v0.0.63)
+Cada marco chega quando o bebê tem a IDADE mínima (meses do jogo) E o jogador fez a conquista pedida. Se a idade chegou e falta a conquista, ele espera, nunca se perde. Um marco por vez, com festinha (medalha sobe do bebê, "Novo marco!") e entra no álbum.
+Na ordem: sorriso para você (1 mês, carinho), primeira gargalhada (3 meses, 15 risadas nas brincadeiras), segura o chocalho sozinho (4 meses, 3 chocalhos), tenta pegar as bolhas (5 meses, 30 bolhas), primeiro dentinho (6 meses, só a idade), entende o cadê-achou (8 meses, 10 "achou!"), bate palminhas (9 meses, ler o livro todo 2 vezes), dá tchauzinho (10 meses, carinho), adora derrubar torres (12 meses, 3 torres), manda beijinho (14 meses, muito carinho).
+Os marcos que mudam o jogo: gargalhada (o bebê ri mais nas brincadeiras, +1 coração), bate palminhas (bate palmas no fim das brincadeiras) e dá tchauzinho (acena quando você volta ao jogo).
+Ficaram de fora (são de etapas futuras): engatinhar, ficar em pé e andar (varanda), primeira palavra (Etapa 14), papinha (cozinha) e dormir (etapa do sono). O dentinho é só comemoração: a chupeta cobre a boca.
+Caderneta: a aba "Marcos" do álbum mostra os que chegaram (com dia e idade) e, nos outros, a idade e o que falta ("Falta: chocalho 1/3"). O carinho aparece sem número ("mais carinho"), porque o vínculo é escondido.
 
 ## Ausência
 - Bebê: mais de 1 dia real sem entrar = aviso. De novo = adoção e fim da história. (Decisão do autor, 2026-11-05: 12 h reais viram 1 dia real.)

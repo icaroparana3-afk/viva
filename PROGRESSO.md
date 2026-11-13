@@ -3,7 +3,7 @@
 > Se o chat ficar longo, cole este arquivo num chat novo para continuar de onde parou.
 
 ## Etapa atual
-**Etapa 8.2 — Sinais de cuidado** (v0.0.62: brincadeiras do baú e câmera de fotos; v0.0.61: corrigido o quarto que ficava "meio montado", sem MENU e com brinquedos parados; v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
+**Etapa 8.2 — Sinais de cuidado** (v0.0.63: marcos do desenvolvimento, bolhas vermelhas e fim do mesversário; v0.0.62: brincadeiras do baú e câmera de fotos; v0.0.61: corrigido o quarto que ficava "meio montado", sem MENU e com brinquedos parados; v0.0.60: bolos, mesinhas, gato do susto, ícones e botões do álbum do autor; v0.0.59: chocalho do autor, dodói menos frequente e proteção contra o travamento ao voltar do álbum; v0.0.58: estações e clima, visitas, novos eventos, vínculo, festas, álbum, tutorial e sons provisórios; aguardando "aprovado")
 
 ## O que está pronto
 - **Etapa 0 (aprovada):** pasta do projeto, Live Server, repositório `viva` no GitHub, GitHub Pages ligado em https://icaroparana3-afk.github.io/viva/
@@ -150,6 +150,14 @@
   - Arte provisória feita por código (`criarEventosProvisorios` em `provisorios.js`): `balao_pensamento` 34×30, `pensamentos` 96×12 (8 quadros 12×12), `chocalho` 22×12 (2 quadros 11×12), `curativo` 7×4, `galo` 4×3 e `icone_curativo` 16×16. Cada uma tem uma chave em `ARTES_PRONTAS` (false até o autor mandar).
   - TESTE: tocar nos quadros da parede dispara imaginação → chocalho → dodói (`EVENTOS.TESTE_TOQUE_QUADROS`). Tirar antes de lançar.
   - Testado no navegador: os 3 eventos, a bolha estourando, o curativo, o curativo depois de recarregar, o sorteio automático e nenhum evento com o bebê chorando, sem erros.
+- **v0.0.63 — marcos do desenvolvimento, bolhas vermelhas e fim do mesversário:**
+  - **Bolhas vermelhas** (pedido do autor): 18% das bolhas (`ATIVIDADES.BOLHAS.VERMELHA`) tiram 2 pontos (`PERDE_VERMELHA`), nunca abaixo de zero. O bebê faz careta e a tela treme. Uma rodada que termina em 0 por causa delas ainda conta como brincadeira.
+  - **Mesversário saiu** (decisão do autor: o bebê fica ~1 mês mais velho a cada visita, e a festa aparecia sempre). Só aniversário, a cada ano completo, mesmo que a volta pule o mês exato (`EVENTOS.conferirFesta`).
+  - **Marcos do desenvolvimento** (`js/marcos.js`, `CONFIG.MARCOS`): 10 marcos que chegam por idade + conquista, um de cada vez, com festinha no quarto (`EVENTOS.conferirMarco`, conferido a cada 4 s) e momento no álbum (`marco_<id>`). Guardados em `save.marcos`. Efeitos: gargalhada (+1 coração e risada mais longa nas brincadeiras), palminhas (no fim das brincadeiras), tchauzinho (na recepção, ao voltar). Contagens novas em `save.atividades`: risadas, bolhas_total, acertos_achou, livros_completos.
+  - **Álbum:** terceira aba "Marcos N/10" (caderneta), com o que falta para cada um.
+  - **Sons provisórios novos:** palmas, marco. **Arte provisória:** `icones_marcos` 120×12 (10 medalhas 12×12 numeradas, na ordem da lista) e `mao_tchau` 10×11 (`ARTES_PRONTAS`, false).
+  - Testado: 5 marcos chegando um por vez aos 9 meses, a caderneta com o que falta, nenhuma festa aos 9 meses e aniversário ao pular de 9 para 13 meses, bolha vermelha (0 → +1+3 = 4 → 2), palminhas e tchauzinho, e os testes anteriores, sem erros.
+  - **Próximo pacote:** 3 tarefinhas do dia; depois estrelinhas e lojinha.
 - **v0.0.62 — brincadeiras do baú e câmera de fotos** (pacote 1 do plano para prender o jogador; regras em DESIGN.md, "Brincadeiras, câmera e o plano..."):
   - **Baú de brinquedos** (`CONFIG.ATIVIDADES.BAU`): tocar abre o menu "Vamos brincar?" (`Quarto.abrirBrincadeiras`). Mãozinha do tutorial para o baú (`TUTORIAL.MAO_BAU_*`, `sinais.mao_bau`).
   - **Cena nova `Brincadeira`** (`js/scenes/Brincadeira.js`), aberta por cima do quarto pausado: bolhas de sabão, cadê-achou, livro de figuras e torre de blocos. Bebê de perto (escala 2 ou 3). Tela de fim com "De novo" e "Voltar". Recompensas em `CONFIG.ATIVIDADES`; contagens, recordes e palavras em `save.atividades`.

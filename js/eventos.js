@@ -99,6 +99,7 @@ const EVENTOS = {
   // O bebê está bem o bastante para um evento?
   pode(q) {
     return !q.mamando && !q.painelAberto && !q.recusando && !q.pulando && !q.dodoi
+      && !q.marcoAgora && !q.cameraAberta && !q.itensBrincar
       && ['nada', 'triste'].includes(q.sinalBebe);
   },
 
@@ -585,10 +586,51 @@ const EVENTOS = {
     const coracoes = festa ? 3 : 1;
     for (let i = 0; i < coracoes; i++) q.time.delayedCall(i * 250, () => EVENTOS.coracao(q, (i - 1) * 6));
     if (festa) { tocarSom(q, 'risada', { volume: 0.7 }); MOMENTOS.registrar('primeira_recepcao'); }
+    if (MARCOS.tem('tchau')) EVENTOS.tchauzinho(q);
     q.time.delayedCall(1500, () => { q.olhosDoToque = false; if (!q.mamando) q.visual.piscar(false); });
   },
 
-  // ---------- Mesversário (até 1 ano) e aniversário (depois) ----------
+  // Marco "Dá tchauzinho" (v0.0.63): ao voltar, a mãozinha do bebê acena
+  tchauzinho(q) {
+    const Q = CONFIG.QUARTO;
+    const mao = q.add.image(Q.BEBE_X + 27, Q.BEBE_Y + 14, 'mao_tchau').setOrigin(0.5, 1).setDepth(36);
+    q.tweens.add({ targets: mao, angle: { from: -25, to: 25 }, duration: 160, yoyo: true, repeat: 4,
+      onComplete: () => q.tweens.add({ targets: mao, alpha: 0, duration: 200, onComplete: () => mao.destroy() }) });
+  },
+
+  // ---------- Marcos do desenvolvimento (v0.0.63) ----------
+  // Chamado de tempos em tempos pelo quarto. Um marco por vez, com festinha.
+  conferirMarco(q) {
+    if (q.marcoAgora || q.festaAgora || q.painelAberto || q.fechandoPainel || q.itensBrincar || q.cameraAberta || q.mamando) return;
+    if (q.ev && q.ev.ativo) return;
+    const m = MARCOS.conferir();
+    if (!m) return;
+    const M = CONFIG.MARCOS, Q = CONFIG.QUARTO;
+    q.marcoAgora = true;
+    const i = M.LISTA.indexOf(m);
+    tocarSom(q, 'marco');
+    mostrarAvisoCaixa(q, 'Novo marco!\n' + m.nome, 44, M.AVISO_SEGUNDOS);
+    q.olhosDoToque = true;
+    q.visual.piscar(true, true);
+    EVENTOS.pulinho(q, 2, 120, 0);
+    // a medalha sobe do bebê, com estrelinhas em volta
+    const cx = Q.BEBE_X + 16, cy = Q.BEBE_Y + 2;
+    const med = q.add.image(cx, cy, 'icones_marcos', i).setDepth(45).setScale(2).setAlpha(0);
+    q.tweens.add({ targets: med, y: cy - 22, alpha: 1, duration: 500, ease: 'Back.easeOut' });
+    for (let k = 0; k < 8; k++) {
+      const ang = k * Math.PI / 4;
+      const e = q.add.rectangle(cx, cy - 22, 2, 2, 0xffd860).setDepth(44);
+      q.tweens.add({ targets: e, x: cx + Math.cos(ang) * 16, y: cy - 22 + Math.sin(ang) * 16, alpha: 0, delay: 400, duration: 600, onComplete: () => e.destroy() });
+    }
+    q.time.delayedCall(M.AVISO_SEGUNDOS * 1000, () => {
+      q.tweens.add({ targets: med, alpha: 0, duration: 300, onComplete: () => med.destroy() });
+      q.olhosDoToque = false;
+      if (!q.mamando && q.visual) q.visual.piscar(false);
+      q.marcoAgora = false;
+    });
+  },
+
+  // ---------- Aniversário (a cada ano; o mesversário saiu na v0.0.63) ----------
   conferirFesta(q) {
     const i = TEMPO.idade();
     const meses = i.anos * 12 + i.meses;
@@ -596,11 +638,15 @@ const EVENTOS = {
     if (!s) return;
     if (!s.festas) { const x = Estado.carregar(); x.festas = { ultimoMes: meses }; Estado.salvar(); return; }
     if (meses <= s.festas.ultimoMes || q.painelAberto || q.festaAgora) return;
+    const mesAntes = s.festas.ultimoMes;
     const x = Estado.carregar();
     x.festas = { ultimoMes: meses };
     Estado.salvar();
-    if (meses < 12) EVENTOS.festa(q, 'mes', meses);
-    else if (meses % 12 === 0) EVENTOS.festa(q, 'ano', meses / 12);
+    // v0.0.63: sem mesversário (decisão do autor: o bebê quase sempre está ~1 mês mais
+    // velho a cada visita, e a festa aparecia toda vez). Só aniversário, a cada ano completo,
+    // mesmo que a volta do jogador pule o mês exato do aniversário.
+    const anosAntes = Math.floor(mesAntes / 12), anos = Math.floor(meses / 12);
+    if (anos > anosAntes && anos >= 1) EVENTOS.festa(q, 'ano', anos);
   },
 
   festa(q, tipo, n) {

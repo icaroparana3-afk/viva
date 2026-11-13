@@ -12,7 +12,7 @@
 // (o Claude faz isso). Arquivos novos entram na lista ARQUIVOS.
 // =============================================================
 
-const VERSAO = '0.0.62';
+const VERSAO = '0.0.63';
 const CACHE = 'viva-' + VERSAO;
 const PHASER = 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js';
 const ESPERA_REDE = 4000;   // ms: se a internet demorar mais que isso, usa a cópia
@@ -33,6 +33,7 @@ const ARQUIVOS = [
   './js/janela.js',
   './js/main.js',
   './js/mapa.js',
+  './js/marcos.js',
   './js/momentos.js',
   './js/necessidades.js',
   './js/provisorios.js',
@@ -157,8 +158,10 @@ const ARQUIVOS = [
   './assets/audio/provisorios/estouro.wav',
   './assets/audio/provisorios/festa.wav',
   './assets/audio/provisorios/hic.wav',
+  './assets/audio/provisorios/marco.wav',
   './assets/audio/provisorios/obturador.wav',
   './assets/audio/provisorios/pagina.wav',
+  './assets/audio/provisorios/palmas.wav',
   './assets/audio/provisorios/risada.wav',
   './assets/audio/provisorios/sopro.wav',
   './assets/audio/provisorios/toc.wav',

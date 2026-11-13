@@ -34,6 +34,7 @@ class Brincadeira extends Phaser.Scene {
     this.aplicado = false;
     this.passo = null;
     this.ultimaRisada = 0;
+    this.risadas = 0; this.estouradas = 0; this.acertos = 0; this.vermelhas = 0;   // v0.0.63: contam para os marcos
 
     // Fundo: o quarto escurecido atrás; segura os toques para não irem ao quarto
     this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x1b1225, 0.78).setOrigin(0, 0).setInteractive();
@@ -70,6 +71,9 @@ class Brincadeira extends Phaser.Scene {
 
   rir(segundos = 0.6, coracoes = 1) {
     if (!this.bebe) return;
+    this.risadas = (this.risadas || 0) + 1;
+    // marco "Primeira gargalhada": ri mais e solta um coração a mais
+    if (MARCOS.tem('gargalhada')) { segundos += 0.25; coracoes += 1; }
     this.rindo = true;
     this.bebe.piscar(true, true);
     if (this.time.now - this.ultimaRisada > 600) { tocarSom(this, 'risada'); this.ultimaRisada = this.time.now; }
@@ -90,27 +94,38 @@ class Brincadeira extends Phaser.Scene {
   }
 
   // ---------- Recompensa e fim ----------
+  // Brincou de verdade? (nas bolhas, os pontos podem voltar a 0 por causa das vermelhas)
+  brincou() {
+    return this.pontos > 0 || (this.estouradas || 0) > 0;
+  }
+
   aplicar() {
     if (this.aplicado) return;
     this.aplicado = true;
     const A = CONFIG.ATIVIDADES;
     const d = Math.round(this.diversao);
     if (d > 0) NEC.mudar('diversao', d);
-    if (this.pontos > 0) NEC.mudar('energia', A.ENERGIA);
+    const brincou = this.brincou();
+    if (brincou) NEC.mudar('energia', A.ENERGIA);
     if (this.vinculo > 0) VINCULO.mudar(this.vinculo);
     // contagens (servem para as tarefas do dia e os marcos depois)
     const s = Estado.carregar();
     if (s) {
       s.atividades = s.atividades || {};
       const a = s.atividades;
-      a[this.qual] = (a[this.qual] || 0) + (this.pontos > 0 ? 1 : 0);
+      a[this.qual] = (a[this.qual] || 0) + (brincou ? 1 : 0);
+      // v0.0.63: contagens que liberam os marcos do desenvolvimento
+      a.risadas = (a.risadas || 0) + (this.risadas || 0);
+      if (this.qual === 'bolhas') a.bolhas_total = (a.bolhas_total || 0) + (this.estouradas || 0);
+      if (this.qual === 'achou') a.acertos_achou = (a.acertos_achou || 0) + (this.acertos || 0);
+      if (this.qual === 'livro' && this.lidas && this.lidas.size === this.paginas.length) a.livros_completos = (a.livros_completos || 0) + 1;
       const rec = 'recorde_' + this.qual;
       if (this.qual !== 'livro' && this.pontos > (a[rec] || 0)) a[rec] = this.pontos;
       Estado.salvar();
     }
     const momento = { bolhas: 'primeiras_bolhas', achou: 'primeiro_achou', livro: 'primeiro_livro', blocos: 'primeira_torre' }[this.qual];
     const livroInteiro = this.qual !== 'livro' || (this.lidas && this.lidas.size === this.paginas.length);
-    if (this.pontos > 0 && momento && livroInteiro && !(this.qual === 'achou' && this.acertos === 0)) MOMENTOS.registrar(momento);
+    if (brincou && momento && livroInteiro && !(this.qual === 'achou' && this.acertos === 0)) MOMENTOS.registrar(momento);
   }
 
   fim(texto) {
@@ -127,7 +142,27 @@ class Brincadeira extends Phaser.Scene {
     const vo = criarOpcao(this, 94, 158, 58, 16, 'Voltar', () => this.sair(), 8);
     [de.caixa, de.rotulo, vo.caixa, vo.rotulo].forEach(o => o.setDepth(61));
     tocarSom(this, 'festa', { volume: 0.5 });
+    if (MARCOS.tem('palmas')) this.palminhas();
     void caixa;
+  }
+
+  // Marco "Bate palminhas": no fim da brincadeira o bebê bate palmas (provisório:
+  // brilhinhos nas mãos e o som de palmas, até a arte do bebê batendo palmas)
+  palminhas() {
+    if (!this.bebe) return;
+    const e = this.bebeEscala, cx = this.bebeX + 16 * e, cy = this.bebeY + 22 * e;
+    this.time.delayedCall(250, () => tocarSom(this, 'palmas'));
+    for (let i = 0; i < 3; i++) {
+      this.time.delayedCall(250 + i * 170, () => {
+        if (!this.bebe) return;
+        this.rir(0.3, 0);
+        for (let k = 0; k < 4; k++) {
+          const ang = k * Math.PI / 2 + Math.PI / 4;
+          const b = this.add.rectangle(cx, cy, 2, 2, 0xffffff).setDepth(30);
+          this.tweens.add({ targets: b, x: cx + Math.cos(ang) * 8, y: cy + Math.sin(ang) * 8, alpha: 0, duration: 260, onComplete: () => b.destroy() });
+        }
+      });
+    }
   }
 
   deNovo() {
@@ -137,7 +172,7 @@ class Brincadeira extends Phaser.Scene {
   }
 
   sair(aviso) {
-    if (!this.aplicado && this.pontos > 0) this.aplicar();   // saiu antes do fim: ganha o que já brincou
+    if (!this.aplicado && this.brincou()) this.aplicar();   // saiu antes do fim: ganha o que já brincou
     const q = this.scene.get('Quarto');
     this.scene.resume('Quarto', { brincou: this.qual, aviso });
     this.scene.stop();
@@ -156,7 +191,7 @@ class Brincadeira extends Phaser.Scene {
     this.barra = this.add.rectangle(6, 30, 168, 3, 0x7b4aa6).setOrigin(0, 0);
     this.add.rectangle(6, 30, 168, 3, 0x000000, 0).setOrigin(0, 0).setStrokeStyle(1, 0x2a1838);
     tocarSom(this, 'sopro');
-    this.placar.setText('Estoure as bolhas!');
+    this.placar.setText('Estoure! Fuja das vermelhas');
     this.passo = (dt) => {
       this.tempo -= dt;
       this.barra.width = Math.max(0, 168 * this.tempo / B.SEGUNDOS);
@@ -186,8 +221,12 @@ class Brincadeira extends Phaser.Scene {
     b.x0 = x0; b.py = 300; b.vida = 0;
     b.vel = Phaser.Math.Between(B.SUBIDA[0], B.SUBIDA[1]);
     b.freq = Phaser.Math.FloatBetween(1.2, 2.4); b.amp = Phaser.Math.Between(4, 12);
-    b.dourada = Math.random() < B.DOURADA;
+    // v0.0.63: a bolha VERMELHA tira pontos (dá para evitar); a dourada vale 3
+    const sorte = Math.random();
+    b.vermelha = sorte < B.VERMELHA;
+    b.dourada = !b.vermelha && sorte < B.VERMELHA + B.DOURADA;
     if (b.dourada) b.setTint(0xffd860);
+    if (b.vermelha) b.setTint(0xff4040);
     b.setInteractive(new Phaser.Geom.Rectangle(-3, -3, 18, 18), Phaser.Geom.Rectangle.Contains);   // um pouco maior que a bolha: mais fácil de acertar
     b.on('pointerdown', () => this.estourar(b));
     this.bolhas.push(b);
@@ -199,14 +238,27 @@ class Brincadeira extends Phaser.Scene {
     b.estourou = true;
     b.disableInteractive();
     b.setFrame(1);
-    tocarSom(this, 'estouro');
-    const vale = b.dourada ? 3 : 1;
-    this.pontos += vale;
-    this.diversao = Math.min(B.DIVERSAO_MAX, this.pontos * B.DIVERSAO_POR_BOLHA);
     this.vinculo = B.VINCULO;
+    if (b.vermelha) {
+      // bolha vermelha: perde pontos (nunca abaixo de zero) e o bebê faz careta
+      tocarSom(this, 'estouro', { rate: 0.6 });
+      this.pontos = Math.max(0, this.pontos - B.PERDE_VERMELHA);
+      this.vermelhas = (this.vermelhas || 0) + 1;
+      this.textoNoAr(b.x, b.y - 8, '-' + B.PERDE_VERMELHA, '#ff6060');
+      this.cameras.main.shake(120, 0.006);
+      if (this.bebe && !this.rindo) {
+        this.bebe.olharBaixo(true);
+        this.time.delayedCall(500, () => this.bebe && this.bebe.olharBaixo(false));
+      }
+    } else {
+      tocarSom(this, 'estouro');
+      this.pontos += b.dourada ? 3 : 1;
+      this.estouradas++;
+      if (b.dourada) this.textoNoAr(b.x, b.y - 8, '+3', '#ffd860');
+      this.rir(0.5, b.dourada ? 2 : 1);
+    }
+    this.diversao = Math.min(B.DIVERSAO_MAX, this.pontos * B.DIVERSAO_POR_BOLHA);
     this.placar.setText('Bolhas: ' + this.pontos);
-    if (b.dourada) this.textoNoAr(b.x, b.y - 8, '+3', '#ffd860');
-    this.rir(0.5, b.dourada ? 2 : 1);
     this.tweens.add({ targets: b, alpha: 0, duration: 180, onComplete: () => b.destroy() });
   }
 

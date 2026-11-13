@@ -135,6 +135,8 @@ class Carregando extends Phaser.Scene {
     if (EV.livro_aberto) this.load.image('livro_aberto', './assets/ui/livro_aberto.png');
     if (EV.bloco_brinquedo) this.load.spritesheet('bloco_brinquedo', './assets/sprites/bloco_brinquedo.png', { frameWidth: 14, frameHeight: 14 });
     if (EV.icones_atividades) this.load.spritesheet('icones_atividades', './assets/ui/icones_atividades.png', { frameWidth: 12, frameHeight: 12 });
+    if (EV.icones_marcos) this.load.spritesheet('icones_marcos', './assets/ui/icones_marcos.png', { frameWidth: 12, frameHeight: 12 });
+    if (EV.mao_tchau) this.load.image('mao_tchau', './assets/sprites/mao_tchau.png');
     ['botao_camera', 'moldura_camera', 'botao_foto'].forEach(n => { if (EV[n]) this.load.image(n, './assets/ui/' + n + '.png'); });
     if (EV.icones_album) this.load.spritesheet('icones_album', './assets/ui/icones_album.png', { frameWidth: 12, frameHeight: 12 });
     if (EV.botao_album) this.load.image('botao_album', './assets/ui/botao_album.png');
@@ -202,6 +204,7 @@ class Carregando extends Phaser.Scene {
       frameRate: 3, repeat: -1 });
     criarPainelNecessidadesProvisorio(this);   // só cria as peças que ainda não chegaram
     criarClimaProvisorio(this);      // v0.0.58: sol, raio, visitas, folha seca, bolo, ícones do álbum
+    criarMarcosProvisorio(this);     // v0.0.63: medalhas dos marcos e a mãozinha do tchau
     criarAtividadesProvisorio(this); // v0.0.62: bolhas, mãos, livro, blocos, ícones e câmera
     criarEventosProvisorios(this);   // v0.0.57: nuvem, pensamentos, chocalho, curativo, galo (só os que faltam)
     criarLuzAbajur(this);       // brilho do abajur (feito por código)

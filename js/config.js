@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.62',
+  VERSAO: '0.0.63',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -96,6 +96,9 @@ const CONFIG = {
     botao_camera: false,      // assets/ui/botao_camera.png — 14×14 (ao lado do botão do álbum)
     moldura_camera: false,    // assets/ui/moldura_camera.png — 84×84 (só os 4 cantos do visor, meio transparente)
     botao_foto: false,        // assets/ui/botao_foto.png — 26×26 (o botão redondo de tirar a foto)
+    // v0.0.63: marcos
+    icones_marcos: false,     // assets/ui/icones_marcos.png — 120×12 (10 quadros 12×12, na ordem de CONFIG.MARCOS.LISTA)
+    mao_tchau: false,         // assets/sprites/mao_tchau.png — 10×11 (a mãozinha do bebê acenando; o jogo balança)
     icones_album: false,      // assets/ui/icones_album.png — 8 quadros 12×12 (96×12): chuva, neve, raio, folha, flor, bolo, soluço, espirro
     botao_album: false,       // assets/ui/botao_album.png — 14×14
     botoes_som: true,  // assets/ui/botao_musica(_off).png e botao_som(_off).png — 16×16 cada (do autor)
@@ -587,7 +590,7 @@ const CONFIG = {
   // Sons sintetizados (assets/audio/provisorios/*.wav) até chegarem os do autor.
   SONS_PROVISORIOS: ['clique', 'abrir', 'choro', 'choro_forte', 'risada', 'chocalho', 'toc', 'estouro',
                      'hic', 'espirro', 'trovao', 'chuva', 'festa', 'beijinho',
-                     'obturador', 'pagina', 'achou', 'sopro', 'tombo'],   // v0.0.62: brincadeiras e câmera
+                     'obturador', 'pagina', 'achou', 'sopro', 'tombo', 'palmas', 'marco'],   // v0.0.62: brincadeiras e câmera
 
   // ---------- BRINCADEIRAS (v0.0.62) ----------
   // Tocar no BAÚ de brinquedos do quarto abre o menu das brincadeiras.
@@ -600,6 +603,8 @@ const CONFIG = {
     BOLHAS: {
       SEGUNDOS: 30, INTERVALO: [0.45, 0.9], SUBIDA: [18, 30],  // pixels por segundo
       VIDA: 6, DOURADA: 0.08,     // chance de uma bolha dourada (vale 3)
+      VERMELHA: 0.18,             // v0.0.63: chance de uma bolha vermelha (tira pontos se estourar)
+      PERDE_VERMELHA: 2,          // pontos que a bolha vermelha tira (nunca fica abaixo de zero)
       DIVERSAO_POR_BOLHA: 1, DIVERSAO_MAX: 18, VINCULO: 1
     },
     ACHOU: {
@@ -615,6 +620,35 @@ const CONFIG = {
       MAXIMO: 8, VELOCIDADE: 45, ACELERA: 8,   // pixels por segundo do bloco no alto; + a cada andar
       SOBRA_MINIMA: 0.45,         // o bloco precisa ficar pelo menos 45% em cima do outro
       DIVERSAO_POR_BLOCO: 2, DIVERSAO_DERRUBAR: 4, VINCULO: 1
+    }
+  },
+
+  // ---------- MARCOS DO DESENVOLVIMENTO (v0.0.63) ----------
+  // Cada marco chega com a IDADE mínima (meses do jogo) E uma conquista de cuidado
+  // ou brincadeira (regra). Se a idade chegou e falta a conquista, ele espera:
+  // nunca se perde. Ficaram de fora os marcos de etapas futuras: engatinhar, ficar
+  // em pé e andar (varanda), primeira palavra (Etapa 14), papinha (cozinha), dormir.
+  // regra: vinculo (carinho), risadas, chocalhos, bolhas_total, acertos_achou,
+  //        livros_completos, torres (vezes que brincou de blocos); {} = só a idade
+  MARCOS: {
+    CONFERIR_SEGUNDOS: 4,         // de quanto em quanto tempo o quarto confere se chegou um marco
+    AVISO_SEGUNDOS: 4,
+    LISTA: [
+      { id: 'sorriso',    nome: 'Primeiro sorriso para você', meses: 1,  regra: { vinculo: 35 } },
+      { id: 'gargalhada', nome: 'Primeira gargalhada',        meses: 3,  regra: { risadas: 15 } },
+      { id: 'pega',       nome: 'Segura o chocalho sozinho',  meses: 4,  regra: { chocalhos: 3 } },
+      { id: 'bolhas',     nome: 'Tenta pegar as bolhas',      meses: 5,  regra: { bolhas_total: 30 } },
+      { id: 'dentinho',   nome: 'Nasceu o primeiro dentinho', meses: 6,  regra: {} },
+      { id: 'esconde',    nome: 'Entende o cadê-achou',       meses: 8,  regra: { acertos_achou: 10 } },
+      { id: 'palmas',     nome: 'Bate palminhas',             meses: 9,  regra: { livros_completos: 2 } },
+      { id: 'tchau',      nome: 'Dá tchauzinho',              meses: 10, regra: { vinculo: 55 } },
+      { id: 'torre',      nome: 'Adora derrubar torres',      meses: 12, regra: { torres: 3 } },
+      { id: 'beijo',      nome: 'Manda beijinho',             meses: 14, regra: { vinculo: 80 } }
+    ],
+    // como cada regra aparece na caderneta ("Falta: chocalho 1/3")
+    NOMES_REGRA: {
+      vinculo: 'mais carinho', risadas: 'risadas', chocalhos: 'chocalho', bolhas_total: 'bolhas',
+      acertos_achou: '"achou!"', livros_completos: 'livros', torres: 'torres'
     }
   },
 
