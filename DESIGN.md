@@ -101,7 +101,7 @@ Coisas que acontecem sozinhas no quarto, só com o jogo aberto e o bebê bem (ne
 - Tutorial: a mãozinha ensina o painel e os brinquedos, uma vez cada.
 
 ## Bebê
-- Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome. A mamadeira enche a fome e a sede juntas (decisão do autor, 2026-11-05). Depois, na cozinha.
+- Alimentação: 0 a 1 ano, mamadeira no berço até encher a fome (tocar no botão da mamadeira OU arrastá-la até o bebê, v0.0.70). A mamadeira enche a fome e a sede juntas (decisão do autor, 2026-11-05). Depois, na cozinha.
 - Banho: banheira; sabonete faz espuma, chuveiro tira. Brincar suja.
 - Roupa e clima: frio pede roupa quente, calor pede roupa fresca. Frio + roupa errada = resfriado (cuidados e remédio). Calor + roupa errada = chora mais, sem dizer por quê.
 - Brincar: sala (assistir) ou varanda (brinquedos). Muda com a idade.
@@ -187,9 +187,13 @@ Caderneta: a aba "Marcos" do álbum mostra os que chegaram (com dia e idade) e, 
 - **3 tarefinhas do dia:** por dia REAL (trocam à meia-noite), sorteadas entre 9: ler um livro inteiro, estourar 15 bolhas, 3 "achou!", torre de 5 blocos, tirar uma foto, 5 carinhos, dar a mamadeira, dar um brinquedo no berço, tudo acima de 70%. Feita: "Pegar" dá 1 estrelinha; as 3: +2 de bônus. Não fazer não tira nada. Prancheta embaixo do MENU, com bolinha amarela quando tem estrelinha para pegar. As estrelinhas serão usadas na lojinha (próximo pacote).
 - **Avisos:** um por vez, em fila (v0.0.65): se chegar outro com um na tela, ele espera a vez. O mesmo texto não repete e esperam no máximo 4.
 
+## Quadro do MENU (v0.0.67)
+- O botão MENU do quarto abre um quadro com Álbum, Lojinha, Menu principal e Fechar. No topo do quarto ficam MENU, prancheta das tarefas (onde era o álbum), câmera, humor e a caixinha do nome.
+
 ## Lojinha (v0.0.66)
 - **Moeda:** as estrelinhas das tarefas do dia (1 por tarefa, +2 com as 3: até 5 por dia real).
-- **Onde:** sacolinha ao lado da prancheta, no quarto. Tela própria com vitrine e 3 abas.
+- **Onde:** no quadro do MENU (v0.0.67). Tela própria com vitrine e 3 abas.
+- **Estrelinhas (v0.0.68):** o número só aparece na lojinha; não há contador no quarto nem no painel das tarefas. (Tentamos uma plaquinha no quarto na v0.0.67 e ela saiu.)
 - **Comprou, é seu para sempre**, e já começa a usar. Dá para trocar de roupa, voltar à cor original ou tirar um enfeite sem perder nada.
 - **Roupas** (4 a 10 estrelinhas): bodies, macacões e pijamas, feitos por código em cima do desenho do bebê (o contorno do autor continua por cima). O bebê aparece vestido no quarto e nas brincadeiras.
 - **Quarto:** parede (8) e tapete (5) em rosa, azul, menta, amarela, lilás ou pêssego; a cor original do quarto é de graça. Enfeites: móbile (10, tocar faz girar e diverte o bebê), varal de luzinhas (8) e estrelas na parede (6), que acendem à noite, e plantinha (5).

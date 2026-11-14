@@ -51,6 +51,7 @@ class Quarto extends Phaser.Scene {
     this.bicoConferir = undefined; this.bicoDescanso = 0;
     this.dicaCortinaDada = false; this.itensTarefas = null; this.proximoEspirroResfriado = null; this.ultimaHoraResfriado = null;
     this.enfeites = null; this.brilhos = null; this.mobileGirando = false;   // v0.0.66: lojinha
+    this.itensMenu = null;                                                  // v0.0.67: quadro do MENU
   }
 
   create() {
@@ -140,19 +141,16 @@ class Quarto extends Phaser.Scene {
     EVENTOS.criarNuvem(this);
 
     // ---------- Topo: botão de voltar ao menu ----------
-    criarBotaoImg(this, 4, 4, 'botao_menu', () => irPara(this, 'Menu'));   // botão do autor (34×14)
-    // v0.0.58: álbum de momentos (botão 14×14 ao lado do MENU)
-    criarBotaoImg(this, CONFIG.ALBUM.BOTAO_X, CONFIG.ALBUM.BOTAO_Y, 'botao_album', () => { if (!this.painelAberto) irPara(this, 'Album'); });
-    // v0.0.62: câmera de fotos (botão ao lado do álbum) e baú de brinquedos (abre as brincadeiras)
+    // v0.0.67: o MENU abre um quadro no quarto (álbum, lojinha e voltar ao menu principal)
+    criarBotaoImg(this, 4, 4, 'botao_menu', () => this.abrirMenu());   // botão do autor (34×14)
+    // v0.0.62: câmera de fotos (botão ao lado do MENU) e baú de brinquedos (abre as brincadeiras)
     criarBotaoImg(this, CONFIG.FOTOS.BOTAO_X, CONFIG.FOTOS.BOTAO_Y, 'botao_camera', () => this.abrirCamera());
-    // v0.0.64: tarefas do dia (prancheta); a bolinha amarela avisa que tem estrelinha para pegar
+    // v0.0.68: a prancheta das tarefas ficou onde era o álbum; as estrelinhas só aparecem na lojinha
     const T = CONFIG.TAREFAS;
     criarBotaoImg(this, T.BOTAO_X, T.BOTAO_Y, 'botao_tarefas', () => this.abrirTarefas());
-    this.seloTarefa = this.add.circle(T.BOTAO_X + 13, T.BOTAO_Y + 1, 2.5, 0xffd860).setStrokeStyle(1, 0x2a1838).setVisible(false);
+    this.seloTarefa = this.add.circle(T.BOTAO_X + 13, T.BOTAO_Y + 1, 2.5, 0xffd860).setStrokeStyle(1, 0x2a1838).setVisible(false).setDepth(5);
     this.tweens.add({ targets: this.seloTarefa, scale: 1.4, duration: 450, yoyo: true, repeat: -1 });
     this.atualizarSeloTarefa();
-    // v0.0.66: lojinha das estrelinhas (sacolinha ao lado da prancheta)
-    criarBotaoImg(this, CONFIG.LOJA.BOTAO_X, CONFIG.LOJA.BOTAO_Y, 'botao_loja', () => this.abrirLoja());
     const BAU = CONFIG.ATIVIDADES.BAU;
     this.add.zone(BAU.X, BAU.Y, BAU.LARGURA, BAU.ALTURA).setOrigin(0, 0).setInteractive()
       .on('pointerup', () => this.abrirBrincadeiras());
@@ -640,16 +638,54 @@ class Quarto extends Phaser.Scene {
   // =============================================================
   tarefa(tipo, n = 1, maximo = false) {
     const pronta = maximo ? TAREFAS.maximo(tipo, n) : TAREFAS.contar(tipo, n);
-    if (pronta && !this.itensTarefas) mostrarAvisoCaixa(this, 'Tarefa feita!\nPegue sua estrelinha.', 44, 2.5);
+    if (pronta && !this.itensTarefas) mostrarAvisoCaixa(this, 'Tarefa feita!\nPegue na prancheta.', 44, 2.5);
     this.atualizarSeloTarefa();
   }
 
   atualizarSeloTarefa() {
-    if (this.seloTarefa) this.seloTarefa.setVisible(TAREFAS.prontas() > 0);
+    const prontas = TAREFAS.prontas() > 0;
+    if (this.seloTarefa) this.seloTarefa.setVisible(prontas);
+  }
+
+  // ---------- v0.0.67: quadro do MENU ----------
+  abrirMenu() {
+    if (this.itensMenu) { this.fecharMenu(); return; }
+    if (this.painelAberto || this.fechandoPainel || this.itensBrincar || this.cameraAberta) return;
+    this.fecharTarefas();
+    tocarSom(this, 'abrir');
+    const U = CONFIG.UI;
+    const itens = this.itensMenu = [];
+    const fundo = this.add.rectangle(0, 0, CONFIG.LARGURA, CONFIG.ALTURA, 0x000000, 0.5).setOrigin(0, 0).setDepth(85).setInteractive();
+    fundo.on('pointerup', () => this.fecharMenu());
+    const caixa = this.add.rectangle(30, 92, 120, 136, U.CAIXA, 1).setOrigin(0, 0).setStrokeStyle(1, U.DESTAQUE).setDepth(86).setInteractive();
+    const titulo = escrever(this, 90, 99, 'Menu', { fontFamily: 'monospace', fontSize: '10px', color: U.TEXTO }).setOrigin(0.5, 0).setDepth(87);
+    itens.push(fundo, caixa, titulo);
+    const opcao = (y, texto, icone, fn) => {
+      const b = criarOpcao(this, 40, y, 100, 22, texto, fn, 9);
+      b.caixa.setDepth(87); b.rotulo.setDepth(88);
+      itens.push(b.caixa, b.rotulo);
+      if (icone) {
+        b.rotulo.x += 8;
+        itens.push(this.add.image(51, y + 11, icone).setDepth(88));
+      }
+      return b;
+    };
+    opcao(116, 'Álbum', 'botao_album', () => { this.fecharMenu(); irPara(this, 'Album'); });
+    opcao(144, 'Lojinha', 'botao_loja', () => { this.fecharMenu(); this.abrirLoja(); });
+    opcao(172, 'Menu principal', null, () => { this.fecharMenu(); irPara(this, 'Menu'); });
+    const fechar = criarOpcao(this, 60, 202, 60, 14, 'Fechar', () => this.fecharMenu(), 8);
+    fechar.caixa.setDepth(87); fechar.rotulo.setDepth(88);
+    itens.push(fechar.caixa, fechar.rotulo);
+  }
+
+  fecharMenu() {
+    if (!this.itensMenu) return;
+    this.itensMenu.forEach(o => { if (o.scene) o.destroy(); });
+    this.itensMenu = null;
   }
 
   abrirTarefas() {
-    if (this.painelAberto || this.fechandoPainel || this.itensBrincar || this.cameraAberta || this.itensTarefas) return;
+    if (this.painelAberto || this.fechandoPainel || this.itensBrincar || this.cameraAberta || this.itensTarefas || this.itensMenu) return;
     tocarSom(this, 'abrir');
     this.itensTarefas = [];
     this.mostrarTarefas();
@@ -694,10 +730,8 @@ class Quarto extends Phaser.Scene {
     });
     // estrelinhas e o bônus
     const todas = st.lista.every(t => t.pega);
-    itens.push(this.add.image(22, 230, 'estrela_tarefa').setDepth(88));
-    itens.push(escrever(this, 29, 226, '× ' + TAREFAS.estrelas(), { fontFamily: 'monospace', fontSize: '8px', color: '#ffd860' }).setDepth(88));
-    itens.push(escrever(this, 164, 226, todas ? 'Amanhã tem mais!' : 'As 3: +' + T.BONUS_TODAS + ' de bônus', {
-      fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6' }).setOrigin(1, 0).setDepth(88));
+    itens.push(escrever(this, 90, 226, todas ? 'Amanhã tem mais!' : 'As 3 juntas: +' + T.BONUS_TODAS + ' de bônus', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#b07ad6' }).setOrigin(0.5, 0).setDepth(88));
     const fechar = criarOpcao(this, 60, 242, 60, 14, 'Fechar', () => this.fecharTarefas(), 8);
     fechar.caixa.setDepth(88); fechar.rotulo.setDepth(89);
     itens.push(fechar.caixa, fechar.rotulo);
@@ -707,11 +741,11 @@ class Quarto extends Phaser.Scene {
     const ganho = TAREFAS.pegar(i);
     if (!ganho) return;
     tocarSom(this, 'achou');
-    // a estrelinha voa até o contador
+    // a estrelinha voa para cima, em direção à prancheta
     const [x, y] = [150, 92 + i * 44 + 29];
     for (let k = 0; k < ganho; k++) {
       const e = this.add.image(x, y, 'estrela_tarefa').setDepth(95).setScale(2);
-      this.tweens.add({ targets: e, x: 22, y: 230, scale: 1, delay: k * 120, duration: 450, ease: 'Sine.easeIn', onComplete: () => e.destroy() });
+      this.tweens.add({ targets: e, x: CONFIG.TAREFAS.BOTAO_X + 7, y: CONFIG.TAREFAS.BOTAO_Y + 7, scale: 0.4, delay: k * 120, duration: 450, ease: 'Sine.easeIn', onComplete: () => e.destroy() });
     }
     if (ganho > CONFIG.TAREFAS.ESTRELAS_POR_TAREFA) mostrarAvisoCaixa(this, 'As 3 tarefas!\n+' + CONFIG.TAREFAS.BONUS_TODAS + ' estrelinhas de bônus!', 30, 2.5);
     this.time.delayedCall(500 + ganho * 120, () => { if (this.itensTarefas) this.mostrarTarefas(); });
@@ -730,7 +764,7 @@ class Quarto extends Phaser.Scene {
   // =============================================================
   podeBrincar() {
     if (this.painelAberto || this.fechandoPainel || this.mamando || this.festaAgora) return false;
-    if (this.cameraAberta || this.itensBrincar || this.itensTarefas || (this.ev && this.ev.ativo)) return false;
+    if (this.cameraAberta || this.itensBrincar || this.itensTarefas || this.itensMenu || (this.ev && this.ev.ativo)) return false;
     return true;
   }
 
@@ -795,9 +829,11 @@ class Quarto extends Phaser.Scene {
   }
 
   // v0.0.66: lojinha (tela própria; na volta o quarto se monta de novo com as compras)
+  // v0.0.67: como o álbum, abre a qualquer hora (só não com outro quadro aberto)
   abrirLoja() {
-    if (!this.podeBrincar()) return;
+    if (this.painelAberto || this.fechandoPainel || this.itensBrincar || this.cameraAberta) return;
     this.fecharTarefas();
+    this.fecharMenu();
     tocarSom(this, 'abrir');
     irPara(this, 'Lojinha');
   }
@@ -935,10 +971,32 @@ class Quarto extends Phaser.Scene {
     const bx = N.BOTAO_MAMADEIRA_X, by = N.BOTAO_MAMADEIRA_Y;
     const caixa = this.add.rectangle(bx, by, 22, 38, 0x2a1838, 0.85).setOrigin(0, 0).setStrokeStyle(1, U.CAIXA_ESCOLHIDA);
     this.add.image(bx + 3, by + 3, 'mamadeira', 17).setOrigin(0, 0);
-    this.add.zone(bx - 2, by - 2, 26, 42).setOrigin(0, 0).setInteractive()
-      .on('pointerdown', () => caixa.setFillStyle(0x5e3487, 0.95))
-      .on('pointerout', () => caixa.setFillStyle(0x2a1838, 0.85))
-      .on('pointerup', () => { caixa.setFillStyle(0x2a1838, 0.85); this.darMamadeira(); });
+    // v0.0.70: tocar dá a mamadeira; ARRASTAR a mamadeira até o bebê (no berço) também
+    const zonaMamadeira = this.add.zone(bx - 2, by - 2, 26, 42).setOrigin(0, 0).setInteractive({ draggable: true });
+    let arrastou = false, fantasma = null, semArrastar = false;
+    const solta = () => { caixa.setFillStyle(0x2a1838, 0.85); };
+    zonaMamadeira
+      .on('pointerdown', () => { arrastou = false; caixa.setFillStyle(0x5e3487, 0.95); })
+      .on('pointerout', solta)
+      .on('pointerup', () => { solta(); if (!arrastou) this.darMamadeira(); })
+      .on('dragstart', () => {
+        semArrastar = !!(this.mamando || this.pulando || this.painelAberto || this.recusando || this.itensMenu || this.itensTarefas || this.cameraAberta);
+        if (semArrastar) return;
+        arrastou = true;
+        this.esconderMaozinha();
+        fantasma = this.add.image(bx + 3, by + 3, 'mamadeira', 17).setOrigin(0.5, 0.5).setDepth(60);
+      })
+      .on('drag', (p) => { if (fantasma) fantasma.setPosition(Math.round(p.worldX), Math.round(p.worldY)); })
+      .on('dragend', (p) => {
+        solta();
+        if (semArrastar || !fantasma) return;
+        const f = fantasma; fantasma = null;
+        const A = CONFIG.EVENTOS.BRINQUEDO.SOLTAR;   // a área do berço
+        const noBebe = p.worldX >= A.X && p.worldX <= A.X + A.LARGURA && p.worldY >= A.Y && p.worldY <= A.Y + A.ALTURA;
+        if (noBebe) { f.destroy(); this.darMamadeira(); return; }
+        // soltou fora: a mamadeira volta para o botão
+        this.tweens.add({ targets: f, x: bx + 11, y: by + 19, duration: 250, ease: 'Sine.easeOut', onComplete: () => f.destroy() });
+      });
 
     // Balão de pedido (Etapa 8.2): ícone 16×16 do que ele quer + selo 8×8 de como ele está
     this.balaoIcone = this.add.image(S.BALAO_ICONE_X, S.BALAO_ICONE_Y, 'icones_necessidades16', 0).setOrigin(0, 0);

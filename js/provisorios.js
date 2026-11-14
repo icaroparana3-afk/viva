@@ -179,14 +179,14 @@ function criarJanelaProvisoria(cena) {
 }
 
 // ---------- Luz do abajur (Etapa 5) ----------
-//   luz_abajur  120×96  brilho em anéis (estilo pixel), mais forte no meio
+//   luz_abajur  150×120  brilho em anéis (estilo pixel), mais forte no meio
 // A cor é aplicada pelo jogo (CONFIG.QUARTO.LUZ_COR); aqui é branco com transparência.
 function criarLuzAbajur(cena) {
-  const L = 120, A = 96;
+  const L = 150, A = 120;
   const t = cena.textures.createCanvas('luz_abajur', L, A);
   const c = t.getContext();
   // Anéis: [raio, opacidade]. Na divisa entre dois anéis, xadrez (dithering) para ficar com cara de pixel art.
-  const aneis = [[16, 0.4], [28, 0.26], [42, 0.15], [58, 0.07]];
+  const aneis = [[18, 0.45], [32, 0.31], [48, 0.2], [66, 0.1]];
   for (let y = 0; y < A; y++) for (let x = 0; x < L; x++) {
     const dx = (x + 0.5 - L / 2), dy = (y + 0.5 - A / 2) * 1.25;   // um pouco mais larga que alta
     const d = Math.sqrt(dx * dx + dy * dy);

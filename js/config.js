@@ -18,7 +18,7 @@ const CONFIG = {
 
   // Versão do jogo. Aumente a cada envio ao GitHub (0.0.2 → 0.0.3 ...).
   // Ela aparece no rodapé: assim você confere se o celular pegou a versão nova.
-  VERSAO: '0.0.66',
+  VERSAO: '0.0.70',
 
   // Transição entre telas: tempo para escurecer (e para a próxima clarear), em segundos.
   TRANSICAO_SEGUNDOS: 0.25,
@@ -103,7 +103,7 @@ const CONFIG = {
     botao_tarefas: false,     // v0.0.64: assets/ui/botao_tarefas.png — 14×14 (a prancheta das tarefas do dia)
     estrela_tarefa: false,    // v0.0.64: assets/ui/estrela_tarefa.png — 7×7 (a moeda das tarefas e da lojinha)
     // v0.0.66: lojinha (enquanto false, o jogo desenha um provisório em js/provisorios.js)
-    botao_loja: false,        // assets/ui/botao_loja.png — 14×14 (a sacolinha da lojinha, no quarto)
+    botao_loja: false,        // assets/ui/botao_loja.png — 14×14 (a sacolinha da lojinha, no quadro do MENU)
     deco_mobile: false,       // assets/sprites/deco_mobile.png — 64×24 (2 quadros 32×24: o móbile balançando)
     deco_varal: false,        // assets/sprites/deco_varal.png — 48×12 (varal de luzinhas apagado) e deco_varal_luz.png 48×12 (só o brilho, aceso à noite)
     deco_estrela: false,      // assets/sprites/deco_estrela.png — 5×5 (adesivo de estrela na parede; à noite brilha)
@@ -257,8 +257,8 @@ const CONFIG = {
     LUZ_CENTRO_X: 163, LUZ_CENTRO_Y: 243,        // centro do brilho
     LUZ_COR: '#ffd88a',                          // cor da luz
     LUZ_FORCA_NOITE: 1,                          // brilho à noite (0 a 1)
-    LUZ_FORCA_DIA: 0.45,                         // brilho de dia (mais fraco: já está claro)
-    NOITE_ESCURECER_ABAJUR: 0.12,                // escuro da noite com o abajur aceso (sem ele: CONFIG.JANELA.NOITE_ESCURECER)
+    LUZ_FORCA_DIA: 0.52,                         // brilho de dia (mais fraco: já está claro)
+    NOITE_ESCURECER_ABAJUR: 0.09,                // escuro da noite com o abajur aceso (sem ele: CONFIG.JANELA.NOITE_ESCURECER)
     LUZ_TROCA_SEGUNDOS: 0.25                     // tempo para acender/apagar
   },
 
@@ -601,7 +601,7 @@ const CONFIG = {
 
   // ---------- ÁLBUM DE MOMENTOS (v0.0.58) ----------
   ALBUM: {
-    BOTAO_X: 42, BOTAO_Y: 4,      // botão 14×14 ao lado do MENU, no quarto
+    // v0.0.67: o álbum abre pelo quadro do MENU (não tem mais botão no quarto)
     POR_PAGINA: 6, MAXIMO: 300
   },
 
@@ -663,7 +663,7 @@ const CONFIG = {
   // 3 tarefinhas por dia REAL (trocam à meia-noite). Cada uma feita: tocar em "Pegar"
   // dá estrelinhas (para a lojinha, no próximo pacote). As 3: bônus. Sem castigo.
   TAREFAS: {
-    BOTAO_X: 4, BOTAO_Y: 22,      // prancheta 14×14 embaixo do MENU (em cima ela encostava na carinha de humor)
+    BOTAO_X: 42, BOTAO_Y: 4,      // prancheta 14×14 ao lado do MENU (v0.0.68: onde ficava o álbum)
     POR_DIA: 3, ESTRELAS_POR_TAREFA: 1, BONUS_TODAS: 2,
     // tipo, texto, alvo, ícone [textura, quadro]; maximo: vale o maior valor do dia (não soma)
     LISTA: [
@@ -684,7 +684,7 @@ const CONFIG = {
   // Comprou, é seu para sempre: dá para trocar de roupa, voltar à cor original ou tirar um enfeite.
   // Roupas e cores do quarto são feitas por código a partir dos desenhos do autor (não precisam de arte nova).
   LOJA: {
-    BOTAO_X: 20, BOTAO_Y: 22,     // sacolinha 14×14 ao lado da prancheta
+    // v0.0.68: a lojinha abre pelo quadro do MENU; as estrelinhas só aparecem na lojinha.
     POR_PAGINA: 9,                // 3 × 3 na vitrine
     // Roupas: cor1 (fundo), cor2 (desenho), padrao: liso | listras | bolinhas | estrelas;
     // mangas: 'curta' | 'longa' (sem = regata); pernas: cobre as pernas (macacão/pijama)
@@ -780,7 +780,7 @@ const CONFIG = {
 
   // ---------- CÂMERA E FOTOS (v0.0.62) ----------
   FOTOS: {
-    BOTAO_X: 60, BOTAO_Y: 4,      // botão 14×14 ao lado do álbum
+    BOTAO_X: 60, BOTAO_Y: 4,      // botão 14×14 ao lado da prancheta
     TAMANHO: 80,                  // a foto é um quadrado de 80×80 pixels do jogo
     MAXIMO: 40,                   // fotos guardadas (a mais antiga sai)
     POR_PAGINA: 20,               // no álbum: 4 colunas × 5 linhas de miniaturas 40×40
